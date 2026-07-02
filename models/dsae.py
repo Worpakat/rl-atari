@@ -437,7 +437,7 @@ class FrameDecoder(nn.Module):
 
         self.projection = nn.Sequential(
             LinearBlock(content_dim + dynamics_dim, conv_dim * 2, use_norm=False),
-            LinearBlock(conv_dim * 2,flattened_dim,use_norm=False),
+            LinearBlock(conv_dim * 2, flattened_dim, use_norm=False),
         )
 
         self.deconv_layers = nn.Sequential(
@@ -494,6 +494,7 @@ class FrameDecoder(nn.Module):
         latent = latent.reshape(batch_size * self.sequence_length, -1)
 
         x = self.projection(latent)
+        print("1", x.shape)
         
         x = x.reshape(
             batch_size * self.sequence_length,
@@ -502,7 +503,12 @@ class FrameDecoder(nn.Module):
             self.feature_width,
         )
 
+        print("2", x.shape)
+        
+
         x = self.deconv_layers(x)
+        
+        print("3", x.shape)
 
         x = x.reshape(
             batch_size,
