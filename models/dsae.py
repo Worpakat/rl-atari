@@ -512,8 +512,6 @@ class FrameDecoder(nn.Module):
             self.input_width,
         )
 
-        print(x.shape)
-
         return x
     
 
@@ -615,7 +613,7 @@ class DisentangledVAE(nn.Module):
             content,
             dynamics
         )
-        print("Model forward reconstruction:", reconstruction.shape)
+    
         return {
             "content_mean": content_mean,
             "content_logvar": content_logvar,

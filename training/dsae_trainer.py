@@ -131,8 +131,6 @@ class DSAETrainer:
         if self.batch_buffer.can_sample(self.config.batch_size) == False:
             return
 
-        print(f"Optimization step {self.optimization_step}: Optimizing...")
-
         batch = self.batch_buffer.sample(self.config.batch_size)
 
         frames = batch["frames"].to(self.device, non_blocking=True)
@@ -148,9 +146,6 @@ class DSAETrainer:
             dynamics_prior_logvar,
             reconstruction,
         ) = self.model(frames).values()
-
-        print("Reconstruction", reconstruction.shape)
-        print("Frames", frames.shape)
 
         loss_reconstruction = reconstruction_loss(input_frames=frames, reconstructed_frames=reconstruction)
 
@@ -246,7 +241,9 @@ class DSAETrainer:
             reconstruction=logs["reconstruction"][index : index+1].squeeze(0),
             name=f"opt_step_{self.optimization_step}"
         )
-        print(f"Environment step {self.global_step}; Episode {self.episode}; Optimization step {self.optimization_step}, : Reconstruction saved at {record_path}")
+        print(f"Environment step {self.global_step}; Episode {self.episode}; Optimization step {self.optimization_step}; Total loss {logs['total_loss']} : Reconstruction saved at {record_path}")
+        
+
 
     def _optuna_step(self, logs: dict):
         """
@@ -283,8 +280,6 @@ class DSAETrainer:
 
                 if logs is None:
                     continue
-
-                print(f"Optimization step {self.optimization_step}: \n {logs['total_loss']}")
 
                 self._logging_step(logs)
 
