@@ -494,8 +494,7 @@ class FrameDecoder(nn.Module):
         latent = latent.reshape(batch_size * self.sequence_length, -1)
 
         x = self.projection(latent)
-        print("1", x.shape)
-        
+    
         x = x.reshape(
             batch_size * self.sequence_length,
             self.conv_channels,
@@ -503,12 +502,7 @@ class FrameDecoder(nn.Module):
             self.feature_width,
         )
 
-        print("2", x.shape)
-        
-
         x = self.deconv_layers(x)
-        
-        print("3", x.shape)
 
         x = x.reshape(
             batch_size,
@@ -517,6 +511,8 @@ class FrameDecoder(nn.Module):
             self.input_height,
             self.input_width,
         )
+
+        print(x.shape)
 
         return x
     
