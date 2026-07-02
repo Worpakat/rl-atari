@@ -14,8 +14,8 @@
     "content_kl_weight": 1.0,
     "dynamics_kl_weight": 1.0,
 
-    "checkpoint_period": 50,
-    "reconstruction_period": 300,
+    "checkpoint_period": 300,
+    "reconstruction_period": 75,
 
     "input_channels": 3,
     "input_height": 176,
