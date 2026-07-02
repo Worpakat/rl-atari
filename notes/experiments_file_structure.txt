@@ -1,0 +1,26 @@
+experiments/
+│
+├── experiment_001/
+│   │
+│   ├── config.json
+│   ├── notes.txt                # Optional, handwritten notes
+│   │
+│   ├── checkpoints/
+│   │   ├── checkpoint_000100.pt
+│   │   ├── checkpoint_000200.pt
+│   │   └── ...
+│   │
+│   ├── logs/
+│   │   ├── metrics.csv
+│   │   └── checkpoint_history.csv
+│   │
+│   ├── reconstructions/
+│   │   ├── step_000100/
+│   │   ├── step_000200/
+│   │   └── ...
+│   │
+│   └── videos/                  # RL phase
+│
+├── experiment_002/
+│
+└── ...

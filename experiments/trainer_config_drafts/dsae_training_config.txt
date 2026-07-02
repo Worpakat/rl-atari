@@ -1,0 +1,33 @@
+* experiment_dir : Root direction of experiment.
+* reconstruction_period : Reconstruction sequence save period. 
+* sequence_length : One raw state sequences length.
+* batch_size: Size of batch that is fed to model.
+* environment_name : Environment's name as it is passed to ``gym.make()`` function.
+* max_optimization_steps / max_environment_steps / max_episodes: Training stop point.
+* reconstruction_weight : This and following two are loss weights.
+* content_kl_weight
+* dynamics_kl_weight
+* checkpoint_period : How often model, optimizer and other training assets saved to local direction. In optimization steps.
+
+
+##----MODEL_ HYPER_PARAMETERS----
+
+* input_channels: One frame channels.
+* input_height : One frame height.
+* input_width : One frame width.
+
+* content_dim : Content encoder output size for one and only content vector.
+* dynamics_dim : Dynamics encoder output size for one dynamics vector. There is one for each frames.
+
+* conv_channels : DSAE frame encoder conv block's channel.
+* conv_dim : Frame encoder output size. (one 1d vector for each frame)  
+
+* hidden_dim : LSTMs and RNNs hidden dimension size.
+* lstm_layers :  
+* rnn_layers : 
+
+##----OPTIMIZER_HYPER_PARAMETERS----
+
+* learning_rate
+* adam_betas
+* weight_decay
