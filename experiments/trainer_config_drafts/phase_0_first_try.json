@@ -22,12 +22,12 @@
     "input_width": 160,
 
     "content_dim": 512,
-    "dynamics_dim": 64,
+    "dynamics_dim": 32,
 
-    "conv_channels": 128,
-    "conv_dim": 2048,
+    "conv_channels": 96,
+    "conv_dim": 1024,
 
-    "hidden_dim": 512,
+    "hidden_dim": 480,
     "lstm_layers": 1,
     "rnn_layers": 1,
 
