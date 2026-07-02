@@ -149,6 +149,9 @@ class DSAETrainer:
             reconstruction,
         ) = self.model(frames)
 
+        print("Reconstruction", reconstruction.shape)
+        print("Frames", frames.shape)
+
         loss_reconstruction = reconstruction_loss(input_frames=frames, reconstructed_frames=reconstruction)
 
         loss_content_kl = content_kl_loss(content_mean, content_logvar)
