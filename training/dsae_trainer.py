@@ -147,7 +147,7 @@ class DSAETrainer:
             dynamics_prior_mean,
             dynamics_prior_logvar,
             reconstruction,
-        ) = self.model(frames)
+        ) = self.model(frames).values()
 
         print("Reconstruction", reconstruction.shape)
         print("Frames", frames.shape)
