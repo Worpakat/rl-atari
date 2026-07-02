@@ -243,8 +243,7 @@ class DSAETrainer:
         )
         print(f"Environment step {self.global_step}; Episode {self.episode}; Optimization step {self.optimization_step}; Total loss {logs['total_loss']} : Reconstruction saved at {record_path}")
         
-
-
+        
     def _optuna_step(self, logs: dict):
         """
         Reports intermediate results to Optuna and checks whether the

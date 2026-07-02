@@ -99,7 +99,7 @@ class SequenceReplayBuffer:
         """
 
         return {
-            "buffer": list(self.buffer),
+            "buffer": list(self._memory),
         }
 
 
