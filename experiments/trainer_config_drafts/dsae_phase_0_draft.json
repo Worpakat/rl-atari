@@ -4,7 +4,7 @@
     "environment_name": "ALE/Riverraid-v5",
 
     "sequence_length": 4,
-    "batch_size": 32,
+    "batch_size": 1,
 
     "max_optimization_steps": 50,
     "max_environment_steps": null,
@@ -18,14 +18,14 @@
     "reconstruction_period": 10,
 
     "input_channels": 3,
-    "input_height": 180,
+    "input_height": 176,
     "input_width": 160,
 
-    "content_dim": 128,
+    "content_dim": 64,
     "dynamics_dim": 16,
 
     "conv_channels": 8,
-    "conv_dim": 512,
+    "conv_dim": 256,
 
     "hidden_dim": 128,
     "lstm_layers": 1,
