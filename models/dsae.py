@@ -613,9 +613,9 @@ class DisentangledVAE(nn.Module):
 
         reconstruction = self.frame_decoder(
             content,
-            dynamics,
+            dynamics
         )
-
+        print("Model forward reconstruction:", reconstruction.shape)
         return {
             "content_mean": content_mean,
             "content_logvar": content_logvar,
