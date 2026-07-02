@@ -242,8 +242,8 @@ class DSAETrainer:
         index = torch.randint(0, logs["frames"].size(0), (1,)).item()
 
         record_path = self.recorder.save(
-            original=logs["frames"][index : index+1],
-            reconstruction=logs["reconstruction"][index : index+1],
+            original=logs["frames"][index : index+1].squeeze(0),
+            reconstruction=logs["reconstruction"][index : index+1].squeeze(0),
             name=f"opt_step_{self.optimization_step}"
         )
         print(f"Environment step {self.global_step}; Episode {self.episode}; Optimization step {self.optimization_step}, : Reconstruction saved at {record_path}")
@@ -284,7 +284,7 @@ class DSAETrainer:
                 if logs is None:
                     continue
 
-                print(f"Optimization step {self.optimization_step}: \n {logs}")
+                print(f"Optimization step {self.optimization_step}: \n {logs['total_loss']}")
 
                 self._logging_step(logs)
 
