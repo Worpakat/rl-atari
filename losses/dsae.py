@@ -23,9 +23,9 @@ def reconstruction_loss(
     Reconstruction loss between the input and reconstructed frame sequences.
     """
     return F.mse_loss(
-        reconstructed_frames,
-        input_frames,
-        reduction=reduction,
+        input=reconstructed_frames,        
+        target=input_frames,
+        reduction=reduction
     )
 
 
