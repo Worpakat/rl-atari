@@ -28,7 +28,7 @@ def preprocess_frame(
         Tensor with shape (C, H, W).
     """
 
-    frame = np.concatenate((frame[:165], frame[175:190]), axis=0)
+    frame = np.concatenate((frame[:161], frame[175:190]), axis=0)
     frame = np.transpose(frame, (2, 0, 1))
     frame = frame.astype(np.float32)
 
