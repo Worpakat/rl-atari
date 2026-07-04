@@ -9,7 +9,7 @@ obs, info = env.reset()
 
 last_obs = None
 
-for _ in range(100):
+for _ in range(1000):
     action = env.action_space.sample()
     obs, reward, terminated, truncated, info = env.step(action)
     
@@ -21,9 +21,9 @@ for _ in range(100):
 env.close()
 
 
-obs_list = last_obs.tolist()    
+# obs_list = last_obs.tolist()    
 
-# Save obs as json
-with open("frame_sample.json", "w") as f:
-    json.dump(obs_list, f)
+# # Save obs as json
+# with open("frame_sample.json", "w") as f:
+#     json.dump(obs_list, f)
 

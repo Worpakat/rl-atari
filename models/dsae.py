@@ -153,6 +153,7 @@ class FrameEncoder(nn.Module):
         input_height: int,
         input_width: int,
         conv_channels: int = 256,
+        conv_block: int = 4,
         conv_dim: int = 2048,
     ):
         super().__init__()
@@ -166,10 +167,10 @@ class FrameEncoder(nn.Module):
 
         self.conv_layers = nn.Sequential(
             ConvBlock(input_channels, conv_channels, kernel_size=5, stride=1, padding=2),
-            ConvBlock(conv_channels, conv_channels, kernel_size=5, stride=2, padding=2),
-            ConvBlock(conv_channels, conv_channels, kernel_size=5, stride=2, padding=2),
-            ConvBlock(conv_channels, conv_channels, kernel_size=5, stride=2, padding=2),
         )
+            
+        for _ in range(conv_block - 1):   
+            self.conv_layers.append(ConvBlock(conv_channels, conv_channels, kernel_size=5, stride=2, padding=2))
 
         with torch.no_grad(): # We run this to get the `flattened_dim`.
             dummy = torch.zeros(1, input_channels, input_height, input_width)
