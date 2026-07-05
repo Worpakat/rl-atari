@@ -1,8 +1,12 @@
+from dataclasses import dataclass
+from abc import ABC, abstractmethod
 from collections import deque
+
 import random
 
 import numpy as np
 import torch
+
 
 
 class FrameSequenceBuffer:
@@ -41,7 +45,80 @@ class FrameSequenceBuffer:
         return np.stack(tuple(self._buffer), axis=0)
 
 
-class SequenceReplayBuffer:
+
+##----------NEC_Specials----------##
+
+@dataclass(slots=True)
+class Transition:
+    """
+    One environment transition collected during trajectory generation.
+    """
+
+    state: np.ndarray
+    action: int
+    reward: float
+    representation: torch.Tensor | None = None
+
+@dataclass(slots=True)
+class ReplayMemoryUnit:
+    """
+    One replay memory sample used for network optimization.
+    """
+
+    state: np.ndarray
+    action: int
+    q_target: float
+
+# ------------------------------------
+
+
+class BaseBuffer(ABC):
+
+    def __init__(
+        self,
+        capacity: int,
+    ):
+        self.capacity = capacity
+        self._memory = deque(maxlen=capacity)
+
+    def __len__(self) -> int:
+        return len(self._memory)
+
+    def can_sample(
+        self,
+        batch_size: int,
+    ) -> bool:
+        return len(self) >= batch_size
+
+    def sample(
+        self,
+        batch_size: int,
+    ):
+        return random.sample(self._memory, batch_size)
+
+    def clear(self) -> None:
+        self._memory.clear()
+
+    def state_dict(self) -> dict:
+        return {
+            "memory": list(self._memory),
+        }
+
+    def load_state_dict(
+        self,
+        state_dict: dict,
+    ) -> None:
+        self._memory.clear()
+        self._memory.extend(state_dict["memory"])
+
+    @abstractmethod
+    def append(self, *args, **kwargs):
+        pass
+
+
+#-----Used_for_DSAE--------
+
+class SequenceReplayBuffer(BaseBuffer):
     """
     Replay buffer storing frame sequences.
 
@@ -50,63 +127,59 @@ class SequenceReplayBuffer:
     rewards, next states and terminal flags for RL training.
     """
 
-    def __init__(self, capacity: int):
-        self.capacity = capacity
-        self._memory = deque(maxlen=capacity)
+    def append(
+        self,
+        frame_sequence: np.ndarray,
+    ) -> None:
 
-    def __len__(self) -> int:
-        return len(self._memory)
-
-    def append(self, frame_sequence: np.ndarray) -> None:
-        """
-        Stores one frame sequence.
-
-        Parameters
-        ----------
-        frame_sequence:
-            Numpy array of shape (sequence_length, C, H, W).
-        """
-        # Prevent later modifications by storing an independent tensor.
         self._memory.append(frame_sequence.copy())
 
-    def can_sample(self, batch_size: int) -> bool:
-        return len(self) >= batch_size
+    def sample(
+        self,
+        batch_size: int,
+    ) -> dict[str, torch.Tensor]:
 
-    def sample(self, batch_size: int) -> dict[str, torch.Tensor]:
-        """
-        Randomly samples a mini-batch.
-
-        Returns
-        -------
-        dict
-            {
-                "frames": Tensor of shape
-                          (batch_size, sequence_length, C, H, W)
-            }
-        """
-        batch = random.sample(self._memory, batch_size)
+        batch = super().sample(batch_size)
 
         return {
             "frames": torch.from_numpy(np.stack(batch, axis=0))
         }
+    
 
-    def clear(self) -> None:
-        self._memory.clear()
+#-----Used_for_NEC--------
 
-    def state_dict(self):
-        """
-        Returns the replay buffer state.
-        """
+class ReplayMemory(BaseBuffer):
 
-        return {
-            "buffer": list(self._memory),
-        }
+    def append(
+        self,
+        state: np.ndarray,
+        action: int,
+        q_target: float,
+    ) -> None:
 
+        self._memory.append(
+            ReplayMemoryUnit(
+                state=state.copy(),
+                action=action,
+                q_target=q_target,
+            )
+        )
 
-    def load_state_dict(self, state_dict):
-        """
-        Restores the replay buffer state.
-        """
+class TransitionQueue(BaseBuffer):
 
-        self.buffer.clear()
-        self.buffer.extend(state_dict["buffer"])
+    def __getitem__(
+        self,
+        index: int,
+    ) -> Transition:
+
+        return self._memory[index]
+
+    def is_full(self) -> bool:
+        return len(self) == self.capacity
+
+    def append(
+        self,
+        transition: Transition,
+    ) -> None:
+
+        self._memory.append(transition)

@@ -3,6 +3,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 
+
 @dataclass(slots=True)
 class MemoryEntry:
     """
@@ -35,6 +36,7 @@ class LookupResult:
     neighbor_keys: torch.Tensor | None = None
     neighbor_values: torch.Tensor | None = None
     neighbor_auxiliary: torch.Tensor | None = None
+
 
 class DND:
     """
