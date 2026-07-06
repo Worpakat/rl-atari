@@ -4,10 +4,12 @@ import torch
 import torch.nn as nn
 
 
-@dataclass(slots=True)
-class MemoryEntry:
+@dataclass(slots=True) 
+class MemoryEntry: 
     """
     Represents one entry stored in the DND.
+
+    # ! WARNING: NOT USED ANYWHERE. Can be removed
 
     Attributes:
         key:
@@ -30,8 +32,8 @@ class MemoryEntry:
 @dataclass(slots=True)
 class LookupResult:
     value: torch.Tensor
-    indices: torch.Tensor | None = None
-    generations: torch.Tensor | None = None
+    neighbor_indices: torch.Tensor | None = None
+    neighbor_generations: torch.Tensor | None = None
     similarities: torch.Tensor | None = None
     neighbor_keys: torch.Tensor | None = None
     neighbor_values: torch.Tensor | None = None
@@ -110,6 +112,12 @@ class DND:
         """
 
         return self.memory_size
+    
+    def get_index(self, key: torch.Tensor) -> int:
+        return self.neighbor_index(key)
+
+    def get_value(self, index: int) -> torch.Tensor:
+        return self.values[index]
 
     def clear(self):
         """
@@ -128,7 +136,7 @@ class DND:
         
         self._stale_index = True
 
-    def insert(self, entry: MemoryEntry):
+    def insert(self, key, value, auxiliary = None):
         """
         Stages a memory entry for insertion.
 
@@ -136,11 +144,11 @@ class DND:
         ``commit()`` is called.
         """
 
-        self._pending_keys.append(entry.key)
-        self._pending_values.append(entry.value)
+        self._pending_keys.extend(key)
+        self._pending_values.extend(value)
         
         if self.use_auxiliary:
-            self._pending_auxiliary.append(entry.auxiliary)
+            self._pending_auxiliary.extend(auxiliary)
 
         self._stale_index = True
 
@@ -259,16 +267,16 @@ class DND:
             self.neighbor_index.build(self.keys)
             self._stale_index = False
 
-        indices = self.neighbor_index.search(key, self.num_neighbors)
+        neighbor_indices = self.neighbor_index.search(key, self.num_neighbors)
         
-        neighbor_generations = self.generations[indices]
-        neighbor_keys = self.keys[indices]
-        neighbor_values = self.values[indices]
+        neighbor_generations = self.generations[neighbor_indices]
+        neighbor_keys = self.keys[neighbor_indices]
+        neighbor_values = self.values[neighbor_indices]
 
         neighbor_auxiliary = None
 
         if self.use_auxiliary:
-            neighbor_auxiliary = self.auxiliary[indices]
+            neighbor_auxiliary = self.auxiliary[neighbor_indices]
 
         similarities = self.similarity_function(
             key=key,
@@ -284,8 +292,8 @@ class DND:
         result = LookupResult(value=estimated_value)
 
         if return_indices:
-            result.indices = indices
-            result.generations = neighbor_generations
+            result.neighbor_indices = neighbor_indices
+            result.neighbor_generations = neighbor_generations
 
         if return_similarities:
             result.similarities = similarities
@@ -304,13 +312,14 @@ class DND:
         self,
         indices: torch.Tensor,
         values: torch.Tensor | None = None,
+        changes: torch.Tensor | None = None,
         keys: torch.Tensor | None = None,
         auxiliary: torch.Tensor | None = None,
         ):
         """
         Updates existing memory entries.
 
-        Any of ``values``, ``keys`` or ``auxiliary`` may be omitted.
+        Any of ``values``, ``changes``, ``keys`` or ``auxiliary`` may be omitted.
         Only the provided memory components are updated.
         """
 
@@ -328,6 +337,9 @@ class DND:
 
         if values is not None:
             self.values[indices] = values
+
+        if changes is not None:
+            self.values[indices] += changes
 
         if auxiliary is not None:
 

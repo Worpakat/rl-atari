@@ -80,15 +80,12 @@ class NECTrainer:
 
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
-
-    
+  
     
     def _finished(self) -> bool:
         """
         Returns whether training has finished.
         """
-
-
 
 
     def _environment_step(self):
@@ -144,6 +141,80 @@ class NECTrainer:
                 self.sequence_buffer.append(observation)
 
 
+    def _memory_optimization_step(self):
+        """
+        Computes N-step targets for the collected trajectory, updates the
+        episodic memories and stores processed transitions into the replay
+        memory.
+        """
+
+        updates_to_be_applied = []
+
+        lookup_requirements = self.agent.update_strategy.lookup_requirements
+
+        for transition_index, transition in enumerate(self.transition_queue):
+
+            # Compute N-step target.
+            q_target = self._compute_q_target(transition_index)
+
+            representation = transition.representation
+
+            # If representation stored in the transition is `None`, compute it.
+            if representation is None: 
+                encoder_output = self.agent.encode(
+                    frames=torch.from_numpy(transition.state).unsqueeze(0).to(self.device),
+                    random_sampling=True,
+                )
+                transition.representation = encoder_output.representation
+                
+
+            # Determine whether the state already exists in memory.
+            contains = self.agent.contains(transition.representation, transition.action)
+
+            if contains: # State exists in memory.
+
+                # Update memory with original Bellman update
+                update_request = self.agent.create_memory_update_request(
+                    transition=transition,
+                    q_target=q_target,
+                    lookup_result=None
+                )
+                updates_to_be_applied.append(update_request)
+
+
+            else: # State does not exist in memory. 
+
+                # Lookup action-specific DND.
+                lookup_result = self.agent.lookup_to_dnd(
+                    action=transition.action,
+                    representation=transition.representation,
+                    auxiliary=None,  # Placeholder for future optional auxiliary.
+                    return_indices=lookup_requirements.return_indices,
+                    return_similarities=lookup_requirements.return_similarities,
+                    return_neighbors=lookup_requirements.return_neighbors,
+                )
+
+                # Create memory update request.
+                update_request = self.agent.create_memory_update_request(
+                    transition=transition,
+                    q_target=q_target,
+                    lookup_result=lookup_result,
+                    exploration_update=self.config.exploration_update,
+                )
+                updates_to_be_applied.extend(update_request)
+
+
+            # Store transition for network optimization.
+            transition.representation = None
+            self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
+
+        # Apply all memory updates simultaneously.
+        self.agent.apply_memory_updates(updates_to_be_applied)
+
+
+    
+
+
 
 
     def _optimization_step(self):
@@ -152,11 +223,7 @@ class NECTrainer:
         transitions have been collected.
         """
 
-    def _memory_optimization_step(self):
-        """
-        Computes N-step targets, updates the DND memories and stores the
-        processed transitions into the replay memory.
-        """
+
 
     def _network_optimization_step(self):
         """

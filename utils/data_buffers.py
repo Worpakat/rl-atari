@@ -149,14 +149,7 @@ class SequenceReplayBuffer(BaseBuffer):
 #-----Used_for_NEC--------
 
 class ReplayMemory(BaseBuffer):
-
-    def append(
-        self,
-        state: np.ndarray,
-        action: int,
-        q_target: float,
-    ) -> None:
-
+    def append(self, state: np.ndarray, action: int, q_target: float) -> None:
         self._memory.append(
             ReplayMemoryUnit(
                 state=state.copy(),

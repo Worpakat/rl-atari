@@ -4,7 +4,8 @@ from abc import ABC, abstractmethod
 import torch
 import torch.nn as nn
 
-from models.dnd import LookupResult, DND
+from models.dnd import LookupResult, DND, MemoryEntry
+from utils.data_buffers import Transition
 
 @dataclass(slots=True)
 class MemoryUpdateRequest:
@@ -17,6 +18,9 @@ class MemoryUpdateRequest:
     remaining independent of the particular update strategy.
 
     Attributes:
+        update_or_insert: 
+            Whether purpose is an update or an insert of a new entry.
+        
         action:
             Action whose DND should be updated.
 
@@ -24,46 +28,36 @@ class MemoryUpdateRequest:
             Index of the primary memory entry to update. ``None`` if a
             new entry should be inserted.
 
+        key:
+            State representation associated with the memory entry.
+        
+        is_change:
+            Whether the update value is a change amount or a new value for assignment.
+
+        update_value:
+            Update value to be added to or assigned to the associated memory value.
+
+        
         generation:
             Generation number of the primary memory entry. Used to verify
             that the entry has not been overwritten before the update is
             applied.
 
-        key:
-            State representation associated with the memory entry.
-
-        value:
-            Updated value to assign to the memory entry.
-
         auxiliary:
             Optional auxiliary representation associated with the key.
 
-        neighbor_indices:
-            Optional neighboring entry indices affected by the update.
-
-        neighbor_generations:
-            Generation numbers corresponding to the neighboring entries.
-
-        neighbor_values:
-            Updated values for the neighboring entries.
-
-        neighbor_weights:
-            Optional weights used when updating neighboring entries.
         """
 
+    update_or_insert: str
     action: int
-
-    index: int | None
-    generation: int | None
-
     key: torch.Tensor
-    value: torch.Tensor
+    is_change: bool 
+    index: int | None 
+    update_value: torch.Tensor
+
+    generation: int | None
     auxiliary: torch.Tensor | None = None
 
-    neighbor_indices: torch.Tensor | None = None
-    neighbor_generations: torch.Tensor | None = None
-    neighbor_values: torch.Tensor | None = None
-    neighbor_weights: torch.Tensor | None = None
 
 
 class MemoryUpdateStrategy(ABC):
@@ -81,39 +75,88 @@ class MemoryUpdateStrategy(ABC):
     those requests to the corresponding DNDs.
     """
 
-    @abstractmethod
-    def apply(
-        self,
-        dnds: list[DND],
-        lookup_results: list[LookupResult],
-        actions: torch.Tensor,
-        keys: torch.Tensor,
-        values: torch.Tensor,
-        auxiliary: torch.Tensor | None = None,
-    ) -> None:
+    def __init__(
+            self, 
+            learning_rate: float
+            ) -> None:
+        
+        self.learning_rate = learning_rate
+
+    def calculate_bellman_update_change(self, current_value: torch.Tensor, q_target: torch.Tensor):
         """
-        Applies memory updates to the provided DNDs.
-
-        Args:
-            dnds:
-                Action-specific differentiable neural dictionaries.
-
-            lookup_results:
-                Lookup results corresponding to the queried states.
-
-            actions:
-                Action index for each sample.
-
-            keys:
-                State representations associated with the updates.
-
-            values:
-                Target values (typically N-step targets) to be written
-                into memory.
-
-            auxiliary:
-                Optional auxiliary representations associated with the
-                keys.
+        """
+        return self.learning_rate * (q_target - current_value)
+    
+    @abstractmethod
+    def calculate_memory_update_request(
+        self,
+        dnd: DND,
+        transition: Transition,
+        q_target: torch.Tensor,
+        lookup_result: LookupResult,
+        exploration_update: bool = False
+        ) -> list[MemoryUpdateRequest]:
+        
+        """
+        Makes update calculations for DND memory state values according to implemented spesific strategy. 
+        And returns to be updated informations as list of MemoryUpdateRequest.
+        Does not applies yet.
         """
 
         raise NotImplementedError
+
+    def apply(self, dnds: list[DND],update_requests: list[MemoryUpdateRequest]) -> None:
+        """
+        Applies all prepared memory updates.
+
+        Existing entries are updated before any new entries are inserted so
+        that pending insertions cannot invalidate existing memory indices.
+        """
+
+        requests_by_action: dict[int, list[MemoryUpdateRequest]] = {}
+
+        for request in update_requests:
+            requests_by_action.setdefault(request.action, []).append(request)
+
+        for action, requests in requests_by_action.items():
+
+            dnd = dnds[action]
+
+            updates = [request for request in requests if request.update_or_insert == "update"]
+            inserts = [request for request in requests if request.update_or_insert == "insert"]
+
+            # Existing memory updates.
+            update_changes = [request for request in updates if request.is_change]
+            update_assigns = [request for request in updates if not request.is_change]
+
+            if update_changes:
+
+                indices = torch.tensor(
+                    [request.index for request in update_changes],
+                    dtype=torch.long,
+                    device=dnd.device,
+                )
+                changes = torch.stack([request.update_value for request in update_changes])
+
+                dnd.update(indices=indices, changes=changes)
+
+            if update_assigns:
+
+                indices = torch.tensor(
+                    [request.index for request in update_assigns], 
+                    dtype=torch.long, 
+                    device=dnd.device)
+                values = torch.stack([request.update_value for request in update_assigns])
+
+                dnd.update(indices=indices, values=values)
+
+            
+            # New memory entries.
+            if inserts:
+
+                keys = [request.key for request in inserts]
+                values = [request.update_value for request in inserts]
+
+                dnd.insert(keys, values)
+
+                dnd.commit()

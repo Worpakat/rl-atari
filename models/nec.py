@@ -6,6 +6,7 @@ import torch.nn as nn
 from models.dnd import DND, LookupResult
 from models.seq_enc import NECEncoder, EncoderOutput
 from models.memory_update import MemoryUpdateRequest, MemoryUpdateStrategy
+from utils.data_buffers import Transition
 
 class NECAgent(nn.Module):
     """
@@ -42,6 +43,26 @@ class NECAgent(nn.Module):
         """
 
         return self.encoder(frames, random_sampling=random_sampling)
+    def lookup_to_dnd(
+        self,
+        action: int,
+        representation: torch.Tensor,
+        auxiliary: torch.Tensor | None = None,
+        return_indices: bool = False,
+        return_similarities: bool = False,
+        return_neighbors: bool = False,
+    ):
+        """
+        
+        """
+
+        return self.dnds[action].lookup(
+            key=representation,
+            auxiliary=auxiliary,
+            return_indices=return_indices,
+            return_similarities=return_similarities,
+            return_neighbors=return_neighbors,
+        )
     
     def lookup(
         self,
@@ -89,8 +110,8 @@ class NECAgent(nn.Module):
             )
             for dnd in self.dnds
         ]
-    
 
+    
     def choose_action(
         self,
         encoder_output: EncoderOutput,
@@ -113,17 +134,11 @@ class NECAgent(nn.Module):
             Selected action.
         """
 
-        #
         # Exploration.
-        #
-
         if random.random() < epsilon:
             return random.randrange(len(self.dnds))
 
-        #
         # Exploitation.
-        #
-
         results = self.lookup(
             representation=encoder_output.representation,
             auxiliary=encoder_output.auxiliary,
@@ -132,59 +147,73 @@ class NECAgent(nn.Module):
         
         return int(torch.argmax(q_values).item())
     
-    def forward(
-        self,
-        frames: torch.Tensor,
-        random_sampling: bool = True,
-        return_indices: bool = False,
-        return_similarities: bool = False,
-        return_neighbors: bool = False,
-    ) -> tuple[list[LookupResult], EncoderOutput]:
-        """
-        Encodes a sequence of frames and estimates the action values.
 
-        This is a convenience wrapper combining the encoder and the DND
-        lookups. Besides the action value estimates, the complete encoder
-        outputs are returned so that the trainer can compute any required
-        auxiliary losses.
+    def create_memory_update_request(
+        self,
+        transition: Transition,
+        q_target: torch.Tensor,
+        lookup_result: LookupResult|None,
+        exploration_update: bool = False,
+        ) -> MemoryUpdateRequest | list[MemoryUpdateRequest]:
+        """
+        Makes self.update_strategy calculate update values for given transition and returns 
+        MemoryUpdateRequest or list of MemoryUpdateRequest objects.
+        """
+
+        if lookup_result is None: 
+            # No insert required, update given keys value with target by original bellman equation.
+            dnd = self.dnds[transition.action]
+            
+            index = dnd.get_index(transition.representation)
+            current_value = dnd.get_value(index)
+            
+            update_value = self.update_strategy.calculate_bellman_update_change(current_value, q_target)
+            
+            return MemoryUpdateRequest(
+                update_or_insert='update',
+                action=transition.action,
+                index=index,
+                key=transition.representation,
+                is_change=True,
+                update_value=update_value,
+            )
+
+        else:
+            # Insert required, update given keys value with target by original bellman equation.
+            dnd = self.dnds[transition.action]
+            
+            return self.update_strategy.calculate_memory_update_request(
+                                            dnd=dnd,
+                                            transition=transition,
+                                            q_target=q_target,
+                                            lookup_result=lookup_result,
+                                            exploration_update=exploration_update,)
+                        
+         
+    def apply_memory_updates(
+        self,
+        update_requests: list[MemoryUpdateRequest],
+    ) -> None:
+        """
+        Applies memory update requests using the configured update strategy.
+
+        The update strategy is responsible for interpreting each request and
+        modifying the corresponding action-specific DND.
 
         Args:
-            frames:
-                Batch of frame sequences.
-
-            random_sampling:
-                Whether to sample from the posterior distributions during
-                encoding.
-
-            return_indices:
-                Whether DND lookups should return neighbor indices.
-
-            return_similarities:
-                Whether DND lookups should return neighbor similarity scores.
-
-            return_neighbors:
-                Whether DND lookups should return neighbor information.
-
-        Returns:
-            lookup_results:
-                Lookup result for each action.
-
-            encoder_output:
-                Complete encoder outputs.
+            update_requests:
+                Collection of memory update requests generated by the trainer.
         """
 
-        encoder_output = self.encode(frames=frames, random_sampling=random_sampling)
+        self.update_strategy.apply(dnds=self.dnds, update_requests=update_requests)
 
-        lookup_results = self.lookup(
-            representation=encoder_output.representation,
-            auxiliary=encoder_output.auxiliary,
-            return_indices=return_indices,
-            return_similarities=return_similarities,
-            return_neighbors=return_neighbors,
-        )
 
-        return lookup_results, encoder_output
-    
+
+
+
+
+
+            
     def get_dnd(
         self,
         action: int,
@@ -203,22 +232,3 @@ class NECAgent(nn.Module):
         return self.dnds[action]
 
 
-    def apply_memory_updates(
-        self,
-        update_requests: list[MemoryUpdateRequest],
-    ) -> None:
-        """
-        Applies memory update requests using the configured update strategy.
-
-        The update strategy is responsible for interpreting each request and
-        modifying the corresponding action-specific DND.
-
-        Args:
-            update_requests:
-                Collection of memory update requests generated by the trainer.
-        """
-
-        self.update_strategy.apply(
-            dnds=self.dnds,
-            update_requests=update_requests,
-        )
