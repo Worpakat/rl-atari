@@ -68,7 +68,7 @@ class ReplayMemoryUnit:
 
     state: np.ndarray
     action: int
-    q_target: float
+    q_target: torch.Tensor
 
 # ------------------------------------
 
@@ -158,6 +158,16 @@ class ReplayMemory(BaseBuffer):
                 q_target=q_target,
             )
         )
+    def extract_batch(batch: list[ReplayMemoryUnit]) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+        """
+        Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
+        """
+
+        states = torch.from_numpy(np.stack([transition.state for transition in batch]))
+        actions = [transition.action for transition in batch]
+        q_targets = torch.stack([transition.q_target for transition in batch]).squeeze()
+        
+        return states, actions, q_targets
 
 class TransitionQueue(BaseBuffer):
 

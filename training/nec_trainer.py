@@ -33,14 +33,14 @@ class NECTrainer:
     def __init__(
         self,
         agent: NECAgent,
-        optimizer: torch.optim.Optimizer,
+        encoder_optimizer: torch.optim.Optimizer,
         config: TrainingConfig,
         experiment_dir: str | Path,
         device: str | torch.device = "cpu",
         trial=None,
     ):
         self.agent = agent
-        self.optimizer = optimizer
+        self.encoder_optimizer = encoder_optimizer
         self.config = config
         self.trial = trial
 
@@ -188,7 +188,7 @@ class NECTrainer:
                 # Lookup action-specific DND.
                 lookup_result = self.agent.lookup_to_dnd(
                     action=transition.action,
-                    representation=transition.representation,
+                    key=transition.representation,
                     auxiliary=None,  # Placeholder for future optional auxiliary.
                     return_indices=lookup_requirements.return_indices,
                     return_similarities=lookup_requirements.return_similarities,
@@ -213,24 +213,53 @@ class NECTrainer:
         self.agent.apply_memory_updates(updates_to_be_applied)
 
 
-    
-
-
-
-
-    def _optimization_step(self):
-        """
-        Performs one reinforcement learning optimization step if enough
-        transitions have been collected.
-        """
-
-
 
     def _network_optimization_step(self):
         """
         Optimizes the encoder (and optionally the DND keys) using
         mini-batches sampled from replay memory.
         """
+
+
+        if not self.replay_memory.can_sample(self.config.batch_size):
+            return
+
+        for _ in range(self.config.network_optimization_steps):
+
+            # Sample a mini-batch.
+            batch = self.replay_memory.sample(self.config.batch_size)
+            states, actions, q_targets = self.replay_memory.extract_batch(batch)
+
+            # Encode state sequences.
+            encoder_output = self.agent.encode(states, random_sampling=True)
+
+            # Estimate Q-values from the episodic memories.
+            predicted_q_values = self.agent.lookup_batch(
+                representations=encoder_output.representation,
+                auxiliary=encoder_output.auxiliary,
+                actions=actions,
+                track_key_updates=self.config.key_updates,
+            )
+
+            # Compute optimization loss.
+            loss = self._compute_network_loss(
+                predicted_q_values=predicted_q_values,
+                q_targets=q_targets,
+            )
+
+            # Optimize encoder.
+            self.encoder_optimizer.zero_grad()
+            self.agent.zero_key_gradients()
+
+            loss.backward()
+
+            self.encoder_optimizer.step()
+
+            # Optionally optimize DND keys.
+            if self.config.key_updates:
+                self.agent.step_key_optimizers()
+
+
 
     def _logging_step(self, logs):
         ...

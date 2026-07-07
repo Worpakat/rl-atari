@@ -59,6 +59,7 @@ class DND:
         num_neighbors: int = 50,
         neighbor_index=None,
         similarity_function=None,
+        learning_rate: float = 1e-3,
         device = torch.device("cpu"),
     ):
         self.representation_dim = representation_dim
@@ -71,7 +72,7 @@ class DND:
         
         self.neighbor_index = neighbor_index
         self.similarity_function = similarity_function
-
+        self.learning_rate = learning_rate
         self.device = device
 
         self.keys = torch.empty(
@@ -105,6 +106,11 @@ class DND:
         self._pending_auxiliary = [] if self.use_auxiliary else None
 
         self._stale_index = True
+
+        self.key_optimizer: torch.optim.Optimizer | None = None
+        self.optimizer_stale = True 
+        # This is becomes True when new keys inserted, which is in the 'commit()'.
+        # If it is False, unnecessary optimizer initializations are avoided during key update.
 
     def __len__(self) -> int:
         """
@@ -231,6 +237,7 @@ class DND:
             self._pending_auxiliary.clear()
 
         self._stale_index = True
+        self.optimizer_stale = True
         
     def contains(self, key: torch.Tensor,) -> bool:
         """
@@ -254,6 +261,7 @@ class DND:
         return_indices: bool = False,
         return_similarities: bool = False,
         return_neighbors: bool = False,
+        track_key_updates: bool = False # This one not required at the moment. It might be used in the future for optimization.
     ) -> LookupResult:
         """
         Retrieves the nearest neighbors of the given key and estimates its
@@ -352,3 +360,20 @@ class DND:
                 )
 
             self.auxiliary[indices] = auxiliary
+            
+    def initialize_key_optimizer(self) -> None:
+        """
+        Creates the key optimizer if it does not exist or if the key tensor
+        has been structurally modified.
+        """
+
+        if not self.trainable_keys:
+            return
+
+        if (
+            self.key_optimizer is None
+            or self.optimizer_stale
+        ):
+            self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
+
+            self.optimizer_stale = False

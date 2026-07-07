@@ -46,27 +46,29 @@ class NECAgent(nn.Module):
     def lookup_to_dnd(
         self,
         action: int,
-        representation: torch.Tensor,
+        key: torch.Tensor,
         auxiliary: torch.Tensor | None = None,
         return_indices: bool = False,
         return_similarities: bool = False,
         return_neighbors: bool = False,
+        track_key_updates: bool = False,
     ) -> LookupResult:
         """
         
         """
 
         return self.dnds[action].lookup(
-            key=representation,
+            key=key,
             auxiliary=auxiliary,
             return_indices=return_indices,
             return_similarities=return_similarities,
             return_neighbors=return_neighbors,
+            track_key_updates=track_key_updates
         )
     
     def lookup(
         self,
-        representation: torch.Tensor,
+        key: torch.Tensor,
         auxiliary: torch.Tensor | None = None,
         return_indices: bool = False,
         return_similarities: bool = False,
@@ -80,7 +82,7 @@ class NECAgent(nn.Module):
         avoid unnecessary memory allocations during training.
 
         Args:
-            representation:
+            key:
                 State representation produced by the encoder.
 
             auxiliary:
@@ -102,7 +104,7 @@ class NECAgent(nn.Module):
 
         return [
             dnd.lookup(
-                key=representation,
+                key=key,
                 auxiliary=auxiliary,
                 return_indices=return_indices,
                 return_similarities=return_similarities,
@@ -140,7 +142,7 @@ class NECAgent(nn.Module):
 
         # Exploitation.
         results = self.lookup(
-            representation=encoder_output.representation,
+            key=encoder_output.representation,
             auxiliary=encoder_output.auxiliary,
         )
         q_values = torch.stack([result.q_value for result in results])
@@ -192,7 +194,7 @@ class NECAgent(nn.Module):
                                             lookup_result=lookup_result,
                                             exploration_update=exploration_update,)
                         
-         
+
     def apply_memory_updates(
         self,
         update_requests: list[MemoryUpdateRequest],
@@ -210,28 +212,68 @@ class NECAgent(nn.Module):
 
         self.update_strategy.apply(dnds=self.dnds, update_requests=update_requests)
 
+    ## ==========Batch_Update_Methods===========
 
-
-
-
-
-
-            
-    def get_dnd(
+    def lookup_batch(
         self,
-        action: int,
-    ) -> DND:
+        representations: torch.Tensor,
+        actions: torch.Tensor,
+        auxiliary: torch.Tensor | None = None,
+        track_key_updates: bool = False,
+    ) -> torch.Tensor:
         """
-        Returns the DND corresponding to the given action.
+        Performs DND lookups for a mini-batch.
 
-        Args:
-            action:
-                Discrete action index.
+        Optionally prepares the DNDs for trainable key optimization and
+        records the memory entries participating in the lookups.
 
         Returns:
-            Action-specific differentiable neural dictionary.
+            Tensor of predicted Q-values with shape (batch_size,).
         """
 
-        return self.dnds[action]
+        if track_key_updates:
+
+            for dnd in self.dnds:
+                dnd.initialize_key_optimizer()
+
+        predictions = []
+
+        for batch_index, (representation, action) in enumerate(
+            zip(representations, actions)
+        ):
+
+            lookup_result = self.lookup_to_dnd(
+                action=action,
+                key=representation,
+                auxiliary=None if auxiliary is None else auxiliary[batch_index],
+                track_key_updates=track_key_updates,
+            )
+
+            predictions.append(lookup_result.value) 
+
+        return torch.stack(predictions)
+
+    def zero_key_gradients(self) -> None:
+        """
+        Clears gradients of all trainable DND key optimizers.
+        """
+
+        for dnd in self.dnds:
+
+            if dnd.key_optimizer is not None:
+                dnd.key_optimizer.zero_grad()
+
+
+    def step_key_optimizers(self) -> None:
+        """
+        Updates all trainable DND keys.
+        """
+
+        for dnd in self.dnds:
+
+            if dnd.key_optimizer is not None:
+                dnd.key_optimizer.step()
+                dnd.rebuild_index()
+            
 
 
