@@ -58,6 +58,14 @@ class MemoryUpdateRequest:
     generation: int | None
     auxiliary: torch.Tensor | None = None
 
+@dataclass(slots=True)
+class LookupRequirements:
+    """
+    """
+    return_indices: bool = False
+    return_similarities: bool = False
+    return_neighbors: bool = False
+
 
 
 class MemoryUpdateStrategy(ABC):
@@ -75,12 +83,10 @@ class MemoryUpdateStrategy(ABC):
     those requests to the corresponding DNDs.
     """
 
-    def __init__(
-            self, 
-            learning_rate: float
-            ) -> None:
+    def __init__(self,  learning_rate: float) -> None:
         
         self.learning_rate = learning_rate
+
 
     def calculate_bellman_update_change(self, current_value: torch.Tensor, q_target: torch.Tensor):
         """
@@ -160,3 +166,212 @@ class MemoryUpdateStrategy(ABC):
                 dnd.insert(keys, values)
 
                 dnd.commit()
+
+class OriginalNECUpdateStrategy(MemoryUpdateStrategy):
+    """
+    Inserts new memory entries as original NEC does: Assigns N-step Q target directly.
+    """
+    def __init__(
+        self,
+        learning_rate: float
+        ) -> None:
+        super().__init__(learning_rate)
+        
+        self.lookup_requirements = LookupRequirements() # All False
+
+    def calculate_memory_update_request(
+        self,
+        dnd: DND,
+        transition: Transition,
+        q_target: torch.Tensor,
+        lookup_result: LookupResult,
+        exploration_update: bool = False
+        ) -> list[MemoryUpdateRequest]:
+        
+        return [MemoryUpdateRequest(
+            update_or_insert='insert',
+            action=transition.action,
+            key=transition.representation,
+            index=None,
+            is_change=False,
+            update_value=q_target,
+        )]
+
+
+class Option1UpdateStrategy(MemoryUpdateStrategy):
+    """
+    Theoretically first, assigns lookup estimate, 
+    then applies Bellman update with N-step Q target.
+
+    exploration_lr:
+        To keep N-step Q target's effect high in case of action selected randomly.
+        It should be a high rate, e.g. 0.8, 0.9 etc. 
+        Hence it resembles original NEC insertion, assigning N-step Q target directly.
+    """
+    def __init__(self, learning_rate: float, exploration_lr: float) -> None:
+        super().__init__(learning_rate)
+        
+        self.exploration_lr = exploration_lr
+
+        self.lookup_requirements = LookupRequirements() # All False
+
+    def calculate_exploration_update_change(self, current_value: torch.Tensor, q_target: torch.Tensor):
+        return self.exploration_lr * (q_target - current_value)
+
+    def calculate_memory_update_request(
+        self,
+        dnd: DND,
+        transition: Transition,
+        q_target: torch.Tensor,
+        lookup_result: LookupResult,
+        exploration_update: bool = False
+        ) -> list[MemoryUpdateRequest]:
+
+        # Exploitation action
+        if not transition.is_exploration_action: 
+            td_error = self.calculate_bellman_update_change(lookup_result.value, q_target)
+            update_value = lookup_result.value + td_error
+
+            return [MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=update_value,
+            )]
+
+        # Exploration action
+        if exploration_update: # Exploration update mode is active
+            td_error = self.calculate_exploration_update_change(lookup_result.value, q_target)
+            update_value = lookup_result.value + td_error 
+
+            return [MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=update_value,
+            )]
+        
+        else: # Exploration update mode is inactive, drops to original update
+            return [MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=q_target,
+            )]
+
+            
+            
+
+
+    
+
+
+class Option2UpdateStrategy(Option1UpdateStrategy):
+    """
+    neighbor_shrink:
+        Used to shrink neighbor updates more.
+    """
+    def __init__(self, learning_rate, exploration_lr, neighbor_shrink):
+        super().__init__(learning_rate, exploration_lr)
+
+        self.neighbor_shrink = neighbor_shrink
+
+        self.lookup_requirements = LookupRequirements(
+                                            return_similarities=True, # Similarity scores
+                                            return_neighbors=True, # Keys and values
+                                            return_indices=True, # Neighbor indices
+                                            )
+
+    def calculate_memory_update_request(
+        self,
+        dnd: DND,
+        transition: Transition,
+        q_target: torch.Tensor,
+        lookup_result: LookupResult,
+        exploration_update: bool = False
+        ) -> list[MemoryUpdateRequest]:
+
+        # Neighbor information retrieved from lookup
+        neighbor_indices = lookup_result.neighbor_indices
+        neighbor_keys = lookup_result.neighbor_keys
+        neighbor_values = lookup_result.neighbor_values
+        neighbor_similarities = lookup_result.neighbor_similarities
+
+
+        # Exploitation action
+        if not transition.is_exploration_action: 
+            td_error = self.calculate_bellman_update_change(lookup_result.value, q_target)
+            state_update_value = lookup_result.value + td_error
+
+            q_target_tensor = torch.full_like(neighbor_values, fill_value=q_target.item).to(dnd.device)
+            scalar_rates= self.learning_rate * self.neighbor_shrink * neighbor_similarities
+            neighbor_update_values = neighbor_values + scalar_rates * (q_target_tensor - neighbor_values)
+
+            requests = [MemoryUpdateRequest(
+                update_or_insert='update',
+                action=transition.action,
+                key=key,
+                index=index,
+                is_change=False, # ! We've done summation with old values.
+                update_value=update_value,
+            ) for index, key, update_value in zip(neighbor_indices, neighbor_keys, neighbor_update_values)]
+            
+
+            requests.append(MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=state_update_value,
+            ))
+
+            return requests
+
+        # Exploration action
+        if exploration_update: # Exploration update mode is active
+            td_error = self.calculate_exploration_update_change(lookup_result.value, q_target) # !!
+            state_update_value = lookup_result.value + td_error
+
+            q_target_tensor = torch.full_like(neighbor_values, fill_value=q_target.item).to(dnd.device)
+            scalar_rates= self.learning_rate * self.neighbor_shrink * neighbor_similarities * (1 - self.exploration_lr)
+            neighbor_update_values = neighbor_values + scalar_rates * (q_target_tensor - neighbor_values)
+            ##!!! We shrink scalar_rates more `1 - exploration_lr`. By this way, updates' effect drops significantly.
+            # Because eventually, lookup results are not actually used for decision of this transition. 
+
+            requests = [MemoryUpdateRequest(
+                update_or_insert='update',
+                action=transition.action,
+                key=key,
+                index=index,
+                is_change=False, # ! We've done summation with old values.
+                update_value=update_value,
+            ) for index, key, update_value in zip(neighbor_indices, neighbor_keys, neighbor_update_values)]
+            
+
+            requests.append(MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=state_update_value,
+            ))
+
+            return requests
+        
+        else: # Exploration update mode is inactive, drops to original update
+            return [MemoryUpdateRequest(
+                update_or_insert='insert',
+                action=transition.action,
+                key=transition.representation,
+                index=None,
+                is_change=False,
+                update_value=q_target,
+            )]

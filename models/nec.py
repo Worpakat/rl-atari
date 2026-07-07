@@ -51,7 +51,7 @@ class NECAgent(nn.Module):
         return_indices: bool = False,
         return_similarities: bool = False,
         return_neighbors: bool = False,
-    ):
+    ) -> LookupResult:
         """
         
         """
@@ -130,13 +130,13 @@ class NECAgent(nn.Module):
 
         Returns
         -------
-        int
-            Selected action.
+        (int, bool)
+            Selected action and whether it was an exploration action.
         """
 
         # Exploration.
         if random.random() < epsilon:
-            return random.randrange(len(self.dnds))
+            return (random.randrange(len(self.dnds)), True)
 
         # Exploitation.
         results = self.lookup(
@@ -145,7 +145,7 @@ class NECAgent(nn.Module):
         )
         q_values = torch.stack([result.q_value for result in results])
         
-        return int(torch.argmax(q_values).item())
+        return (int(torch.argmax(q_values).item()), False)
     
 
     def create_memory_update_request(
@@ -158,6 +158,9 @@ class NECAgent(nn.Module):
         """
         Makes self.update_strategy calculate update values for given transition and returns 
         MemoryUpdateRequest or list of MemoryUpdateRequest objects.
+
+        ``lookup_result`` determines whether an insert or update is required 
+        for given transition state representation. 
         """
 
         if lookup_result is None: 

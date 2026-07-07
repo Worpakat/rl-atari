@@ -136,7 +136,10 @@ class DND:
         
         self._stale_index = True
 
-    def insert(self, key, value, auxiliary = None):
+    def insert(self, 
+               key: list[torch.Tensor], 
+               value: list[torch.Tensor], 
+               auxiliary = None):
         """
         Stages a memory entry for insertion.
 

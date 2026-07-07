@@ -58,6 +58,7 @@ class Transition:
     action: int
     reward: float
     representation: torch.Tensor | None = None
+    is_exploration_action: bool = False
 
 @dataclass(slots=True)
 class ReplayMemoryUnit:

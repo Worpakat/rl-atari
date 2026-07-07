@@ -103,7 +103,7 @@ class NECTrainer:
         )
 
         # Select action.
-        action = self.agent.choose_action(encoder_output, self.config.epsilon)
+        action, is_exploration = self.agent.choose_action(encoder_output, self.config.epsilon)
 
         # Environment interaction.
         observation, reward, terminated, truncated, _ = self.environment.step(action)
@@ -121,7 +121,8 @@ class NECTrainer:
                     encoder_output.representation.detach().cpu()
                     if self.config.cache_representations
                     else None
-                )
+                ),
+                is_exploration_action=is_exploration
             )
         )
 
