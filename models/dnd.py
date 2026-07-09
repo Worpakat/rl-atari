@@ -291,8 +291,8 @@ class DND:
 
         similarities = self.similarity_function(
             key=key,
-            keys=neighbor_keys,
-            auxiliary=neighbor_auxiliary,
+            neighbor_keys=neighbor_keys,
+            neighbor_auxiliary=neighbor_auxiliary,
         )
 
         estimated_value = (
