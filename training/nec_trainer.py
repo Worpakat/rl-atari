@@ -22,7 +22,7 @@ from utils.checkpoint import CheckpointManager
 
 from utils.misc import ensure_directory, preprocess_frame
 
-from losses.dsae import reconstruction_loss, content_kl_loss, dynamics_kl_loss
+from losses.nec_loss import compute_network_loss
 
 
 class NECTrainer:
@@ -87,6 +87,111 @@ class NECTrainer:
         Returns whether training has finished.
         """
 
+    def _warmup_finished(self) -> bool:
+        """
+        Returns whether warmup has finished.
+        """
+        return self.global_step >= self.config.warmup_steps
+
+    def warmup(self):
+        """
+        Populates the replay memory and DNDs using a random policy before
+        reinforcement learning begins.
+        """
+
+        print("Starting warmup...")
+
+        while not self._warmup_finished():
+
+            self._setup()
+
+            while True:
+
+                action = self.environment.action_space.sample()
+
+                observation, reward, terminated, truncated, _ = (
+                    self.environment.step(action)
+                )
+
+                observation = preprocess_frame(observation)
+
+                self.sequence_buffer.append(observation)
+
+                if not self.sequence_buffer.is_ready():
+                    continue
+
+                state = self.sequence_buffer.get_sequence()
+                
+                encoder_output = self.agent.encode(
+                    torch.from_numpy(state).unsqueeze(0).to(self.device),
+                    random_sampling=False,
+                )
+
+                self.transition_queue.append(
+                    Transition(
+                        state=state,
+                        action=action,
+                        reward=reward,
+                        representation = (
+                            encoder_output.representation.detach().cpu()
+                            if self.config.cache_representations
+                            else None
+                            ),
+                        is_exploration_action=True
+                    )
+                )
+
+                self.global_step += 1
+
+                if terminated or truncated:
+                    break
+
+            q_targets = self.agent.compute_q_targets(
+                transition_queue=self.transition_queue,
+                gamma=self.config.gamma,
+                n_step=self.config.n_step,
+                warmup=True,
+            )
+
+            updates_to_be_applied = []
+
+            for transition, q_target in zip(self.transition_queue, q_targets):
+
+                # Determine whether the state already exists in memory.
+                contains = self.agent.contains(transition.representation, transition.action)
+
+                if contains: # State exists in memory.
+
+                    # Update memory with original Bellman update
+                    update_request = self.agent.create_memory_update_request(
+                        transition=transition,
+                        q_target=q_target,
+                        lookup_result=None
+                    )
+                    updates_to_be_applied.append(update_request)
+
+                else: # State does not exist in memory. 
+
+                    # Create memory update request: Original NEC Q-target insert
+                    update_request = self.agent.create_memory_update_request(
+                        transition=transition,
+                        q_target=q_target,
+                        lookup_result=None,
+                        warmup=True,
+                        exploration_update=False
+                    )
+                    updates_to_be_applied.extend(update_request)
+
+                # Store transition for network optimization.
+                transition.representation = None
+                self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
+
+            self.agent.apply_memory_updates(updates_to_be_applied)
+
+            self.episode += 1
+
+        print("Warmup completed.")
+
 
     def _environment_step(self):
         """
@@ -99,7 +204,7 @@ class NECTrainer:
 
         encoder_output = self.agent.encode(
             frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
-            random_sampling=True,
+            random_sampling=False,
         )
 
         # Select action.
@@ -109,7 +214,6 @@ class NECTrainer:
         observation, reward, terminated, truncated, _ = self.environment.step(action)
         observation = preprocess_frame(observation)
         self.sequence_buffer.append(observation)
-
         
         # Store transition.
         self.transition_queue.append(
@@ -151,20 +255,25 @@ class NECTrainer:
 
         updates_to_be_applied = []
 
-        lookup_requirements = self.agent.update_strategy.lookup_requirements
+        lookup_requirements = self.agent.update_strategy.lookup_requirements   
+        
+        # Compute N-step targets at once.
+        q_targets = self.agent._compute_q_targets(
+            transition_queue=self.transition_queue,
+            gamma=self.config.gamma,
+            n_step=self.config.n_step,
+        )
 
         for transition_index, transition in enumerate(self.transition_queue):
 
-            # Compute N-step target.
-            q_target = self._compute_q_target(transition_index)
-
+            q_target = q_targets[transition_index]
             representation = transition.representation
 
             # If representation stored in the transition is `None`, compute it.
             if representation is None: 
                 encoder_output = self.agent.encode(
                     frames=torch.from_numpy(transition.state).unsqueeze(0).to(self.device),
-                    random_sampling=True,
+                    random_sampling=False,
                 )
                 transition.representation = encoder_output.representation
                 
@@ -220,7 +329,6 @@ class NECTrainer:
         mini-batches sampled from replay memory.
         """
 
-
         if not self.replay_memory.can_sample(self.config.batch_size):
             return
 
@@ -231,27 +339,27 @@ class NECTrainer:
             states, actions, q_targets = self.replay_memory.extract_batch(batch)
 
             # Encode state sequences.
-            encoder_output = self.agent.encode(states, random_sampling=True)
+            encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
             # Estimate Q-values from the episodic memories.
             predicted_q_values = self.agent.lookup_batch(
                 representations=encoder_output.representation,
-                auxiliary=encoder_output.auxiliary,
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
 
             # Compute optimization loss.
-            loss = self._compute_network_loss(
+            loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
                 q_targets=q_targets,
+                encoder_output=encoder_output
             )
 
             # Optimize encoder.
             self.encoder_optimizer.zero_grad()
             self.agent.zero_key_gradients()
 
-            loss.backward()
+            loss['total_loss'].backward()
 
             self.encoder_optimizer.step()
 

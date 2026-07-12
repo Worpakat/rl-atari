@@ -11,9 +11,9 @@ from models.dsae import (reparameterize,
 @dataclass
 class EncoderOutput:
     representation: torch.Tensor
+    posterior_latents: torch.Tensor | None = None
     posterior_mean: torch.Tensor | None = None
     posterior_logvar: torch.Tensor | None = None
-    posterior_latents: torch.Tensor | None = None
     prior_mean: torch.Tensor | None = None
     prior_logvar: torch.Tensor | None = None
     frame_features: torch.Tensor | None = None
@@ -184,7 +184,7 @@ class SequentialEncoder(nn.Module):
             hidden_dim=hidden_dim,
         )
 
-    def forward(self, frames: torch.Tensor, random_sampling: bool = True):
+    def forward(self, frames: torch.Tensor, random_sampling: bool = True) -> EncoderOutput:
         """
         Encodes a frame sequence into posterior and prior latent
         distributions.
@@ -195,26 +195,26 @@ class SequentialEncoder(nn.Module):
         posterior_mean, posterior_logvar, posterior_latents = (
             self.sequence_encoder(
                 frame_features,
-                random_sampling=random_sampling,
+                random_sampling=True,
             )
         )
 
         prior_mean, prior_logvar, _ = self.sequence_prior(
             batch_size=frames.size(0),
             device=frames.device,
-            random_sampling=random_sampling,
+            random_sampling=True,
         )
 
         if self.flatten_output:
             posterior_latents = posterior_latents.flatten(start_dim=1)
 
-        return (
-            posterior_mean,
-            posterior_logvar,
-            posterior_latents,
-            prior_mean,
-            prior_logvar,
-            frame_features,
+        return EncoderOutput(
+            representation=posterior_latents if random_sampling else posterior_mean,
+            posterior_latents=posterior_latents,
+            posterior_mean=posterior_mean,
+            posterior_logvar=posterior_logvar,
+            prior_mean=prior_mean,
+            prior_logvar=prior_logvar,
         )
     
 
@@ -224,5 +224,5 @@ class NECEncoder(nn.Module):
         self.encoder = encoder
         self.flatten_output = flatten_output
 
-    def forward(self, frames: torch.Tensor, random_sampling: bool = True):
+    def forward(self, frames: torch.Tensor, random_sampling: bool = True) -> EncoderOutput:
         return self.encoder(frames, random_sampling=random_sampling)

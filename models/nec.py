@@ -3,10 +3,13 @@ import random
 import torch
 import torch.nn as nn
 
+from utils.misc import discount
+from utils.data_buffers import Transition, TransitionQueue
 from models.dnd import DND, LookupResult
 from models.seq_enc import NECEncoder, EncoderOutput
-from models.memory_update import MemoryUpdateRequest, MemoryUpdateStrategy
-from utils.data_buffers import Transition
+from models.memory_update import (MemoryUpdateRequest,
+                                  MemoryUpdateStrategy, 
+                                  OriginalNECUpdateStrategy)
 
 class NECAgent(nn.Module):
     """
@@ -27,7 +30,10 @@ class NECAgent(nn.Module):
 
         self.encoder = encoder
         self.dnds = dnds
+
         self.update_strategy = update_strategy
+        self.original_update_strategy = OriginalNECUpdateStrategy(self.update_strategy.learning_rate)
+        # ! This one used for 'warmup' phase update and inserts.
 
     
     def encode(
@@ -43,6 +49,7 @@ class NECAgent(nn.Module):
         """
 
         return self.encoder(frames, random_sampling=random_sampling)
+    
     def lookup_to_dnd(
         self,
         action: int,
@@ -112,7 +119,6 @@ class NECAgent(nn.Module):
             )
             for dnd in self.dnds
         ]
-
     
     def choose_action(
         self,
@@ -148,27 +154,96 @@ class NECAgent(nn.Module):
         q_values = torch.stack([result.q_value for result in results])
         
         return (int(torch.argmax(q_values).item()), False)
-    
+
+    def compute_q_targets(
+        self,
+        transition_queue: TransitionQueue,
+        gamma: float,
+        n_step: int,
+        warmup: bool = False,
+    ) -> torch.Tensor:
+        """
+        Computes N-step Q targets for every transition in the trajectory.
+        """
+
+        transition_count = len(transition_queue)
+        rewards = torch.tensor(
+            [transition.reward for transition in transition_queue],
+            dtype=torch.float32,
+        )
+
+        # Discounted returns beginning from every timestep.
+        discounted_returns = torch.from_numpy(discount(rewards.numpy(), gamma))
+
+        q_targets = torch.empty_like(discounted_returns)
+
+        for transition_index in range(transition_count):
+            # Warmup or insufficient future transitions.
+            
+            if (warmup or transition_index + n_step >= transition_count):
+                q_targets[transition_index] = discounted_returns[transition_index]
+
+                continue
+
+            # N-step discounted reward.
+            discounted_reward = (
+                discounted_returns[transition_index]
+                - (gamma ** n_step) * discounted_returns[transition_index + n_step]
+            )
+
+            # Bootstrap estimate.
+            bootstrap_transition = transition_queue[transition_index + n_step]
+            
+            if bootstrap_transition.representation is None:
+                bootstrap_transition.representation = self.encode(
+                    frames=torch.from_numpy(bootstrap_transition.state).unsqueeze(0).to(self.encoder.device),
+                    random_sampling=False, # We use 'posterior_mean's as representations for stability
+                ).representation.detach().cpu()
+            
+            lookup_results = self.lookup(representation=bootstrap_transition.representation)
+
+            bootstrap_value = torch.stack(
+                [result.value for result in lookup_results]
+            ).max()
+
+            q_targets[transition_index] = (discounted_reward + (gamma ** n_step) * bootstrap_value)
+
+        return q_targets
+
+    def contains(self ,key: torch.Tensor, action: int) -> bool:
+        """
+        Returns whether the given key already exists in committed memory.
+        """
+        return self.dnds[action].contains(key)
 
     def create_memory_update_request(
         self,
         transition: Transition,
         q_target: torch.Tensor,
         lookup_result: LookupResult|None,
+        update_or_insert: str = 'insert',
+        warmup: bool = False,
         exploration_update: bool = False,
         ) -> MemoryUpdateRequest | list[MemoryUpdateRequest]:
         """
         Makes self.update_strategy calculate update values for given transition and returns 
         MemoryUpdateRequest or list of MemoryUpdateRequest objects.
-
-        ``lookup_result`` determines whether an insert or update is required 
-        for given transition state representation. 
         """
-
-        if lookup_result is None: 
-            # No insert required, update given keys value with target by original bellman equation.
+        
+        if lookup_result is None: ### !!! CARRY THIS PART to UPDATE STRATEGY CLASS TOO !!! ###
             dnd = self.dnds[transition.action]
             
+            #----------------Warmup_Phase_Insert----------------------------
+            if warmup and update_or_insert == 'insert': 
+
+                return self.original_update_strategy.calculate_memory_update_request(
+                                                dnd=dnd,
+                                                transition=transition,
+                                                q_target=q_target,)
+
+            #-----------------------------------------------------------------
+            
+            # No insert required, update given keys value with target by original bellman equation.
             index = dnd.get_index(transition.representation)
             current_value = dnd.get_value(index)
             
@@ -238,9 +313,7 @@ class NECAgent(nn.Module):
 
         predictions = []
 
-        for batch_index, (representation, action) in enumerate(
-            zip(representations, actions)
-        ):
+        for batch_index, (representation, action) in enumerate(zip(representations, actions)):
 
             lookup_result = self.lookup_to_dnd(
                 action=action,
@@ -263,7 +336,6 @@ class NECAgent(nn.Module):
             if dnd.key_optimizer is not None:
                 dnd.key_optimizer.zero_grad()
 
-
     def step_key_optimizers(self) -> None:
         """
         Updates all trainable DND keys.
@@ -273,7 +345,7 @@ class NECAgent(nn.Module):
 
             if dnd.key_optimizer is not None:
                 dnd.key_optimizer.step()
-                dnd.rebuild_index()
+                dnd.build_index()
             
 
 

@@ -57,7 +57,7 @@ class DND:
         auxiliary_dim: int = 1, 
         max_memory: int = 500000,
         num_neighbors: int = 50,
-        neighbor_index=None,
+        neighbor_index = None,
         similarity_function=None,
         learning_rate: float = 1e-3,
         device = torch.device("cpu"),
@@ -116,11 +116,13 @@ class DND:
         """
         Returns the number of committed memory entries.
         """
-
         return self.memory_size
     
     def get_index(self, key: torch.Tensor) -> int:
-        return self.neighbor_index(key)
+        """
+        Returns the index of the given key in the searchable memory.s
+        """
+        return self.neighbor_index.find(key)
 
     def get_value(self, index: int) -> torch.Tensor:
         return self.values[index]
@@ -255,6 +257,12 @@ class DND:
             torch.all(self.keys == key, dim=1)
             ).item()
     
+    def build_index(self):
+        """
+        Rebuilds the neighbor index.
+        """
+        self.neighbor_index.build(self.keys)
+    
     def lookup(
         self,
         key: torch.Tensor,
@@ -275,7 +283,7 @@ class DND:
             raise RuntimeError("Cannot perform lookup on an empty DND.")
 
         if self._stale_index:
-            self.neighbor_index.build(self.keys)
+            self.build_index()
             self._stale_index = False
 
         neighbor_indices = self.neighbor_index.search(key, self.num_neighbors)
@@ -377,3 +385,5 @@ class DND:
             self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
 
             self.optimizer_stale = False
+
+    

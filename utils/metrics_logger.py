@@ -40,7 +40,7 @@ class MetricsLogger:
             Path of the created CSV file.
         """
 
-        filename = (f"metrics_{step_name}_" f"{start_step:08d}_{end_step:08d}.csv")
+        filename = (f"metrics_{step_name}_{start_step:08d}_{end_step:08d}.csv")
         filepath = self.logs_dir / filename
 
         dataframe = pd.DataFrame(self.records)

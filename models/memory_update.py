@@ -184,7 +184,7 @@ class OriginalNECUpdateStrategy(MemoryUpdateStrategy):
         dnd: DND,
         transition: Transition,
         q_target: torch.Tensor,
-        lookup_result: LookupResult,
+        lookup_result: LookupResult | None = None,
         exploration_update: bool = False
         ) -> list[MemoryUpdateRequest]:
         
@@ -264,12 +264,6 @@ class Option1UpdateStrategy(MemoryUpdateStrategy):
                 is_change=False,
                 update_value=q_target,
             )]
-
-            
-            
-
-
-    
 
 
 class Option2UpdateStrategy(Option1UpdateStrategy):
