@@ -4,19 +4,19 @@ import json
 
 env = gym.make("ALE/Riverraid-v5", render_mode="human")
 
+print(env.action_space.n)
+# obs, info = env.reset()
 
-obs, info = env.reset()
+# last_obs = None
 
-last_obs = None
-
-for _ in range(1000):
-    action = env.action_space.sample()
-    obs, reward, terminated, truncated, info = env.step(action)
+# for _ in range(1000):
+#     action = env.action_space.sample()
+#     obs, reward, terminated, truncated, info = env.step(action)
     
-    last_obs = obs
+#     last_obs = obs
 
-    if terminated or truncated:
-        obs, info = env.reset()
+#     if terminated or truncated:
+#         obs, info = env.reset()
 
 env.close()
 

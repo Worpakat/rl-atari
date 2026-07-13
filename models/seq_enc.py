@@ -219,10 +219,12 @@ class SequentialEncoder(nn.Module):
     
 
 class NECEncoder(nn.Module):
-    def __init__(self, encoder: SequentialEncoder, flatten_output: bool = False, **kwargs):
+    """
+    This class exists for naming convenience.
+    """
+    def __init__(self, encoder: SequentialEncoder, **kwargs):
         super().__init__()
         self.encoder = encoder
-        self.flatten_output = flatten_output
 
     def forward(self, frames: torch.Tensor, random_sampling: bool = True) -> EncoderOutput:
         return self.encoder(frames, random_sampling=random_sampling)

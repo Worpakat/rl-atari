@@ -6,6 +6,8 @@ import torch
 
 import gymnasium as gym
 import ale_py
+
+from training.evaluator import Evaluator
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 from models.nec import NECAgent
@@ -13,8 +15,7 @@ from models.nec import NECAgent
 from utils.data_buffers import (FrameSequenceBuffer, 
                                 TransitionQueue, 
                                 ReplayMemory,
-                                Transition,
-                                ReplayMemoryUnit)
+                                Transition)
 
 from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
@@ -49,6 +50,14 @@ class NECTrainer:
 
         self.logger = MetricsLogger(self.experiment_dir)
         self.checkpoint_manager = CheckpointManager(self.experiment_dir)
+        self.evaluator = (
+                Evaluator(
+                    self.agent, 
+                    self.config, 
+                    self.experiment_dir, 
+                    self.device)
+                )
+        self.episode_reward = 0
 
         self.environment = gym.make(config.environment_name, render_mode=None)
 
@@ -61,6 +70,7 @@ class NECTrainer:
         self.global_step = 0
         self.episode = 0
         self.optimization_step = 0
+        self.checkpoint_start = config.checkpoint_start
     
     
     def _setup(self):
@@ -78,11 +88,11 @@ class NECTrainer:
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
   
-    
     def _finished(self) -> bool:
         """
         Returns whether training has finished.
         """
+        return self.episode >= self.config.max_episodes
 
     def _warmup_finished(self) -> bool:
         """
@@ -194,52 +204,60 @@ class NECTrainer:
         Executes one environment interaction and stores the resulting
         transition in the trajectory buffer.
         """
+        terminated = False
+        truncated = False
 
-        # Encode current state.
-        state = self.sequence_buffer.get_sequence()
+        while not (terminated or truncated) and not self.transition_queue.is_full():
 
-        encoder_output = self.agent.encode(
-            frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
-            random_sampling=False,
-        )
+            # Encode current state.
+            state = self.sequence_buffer.get_sequence()
 
-        # Select action.
-        action, is_exploration = self.agent.choose_action(encoder_output, self.config.epsilon)
-
-        # Environment interaction.
-        observation, reward, terminated, truncated, _ = self.environment.step(action)
-        observation = preprocess_frame(observation)
-        self.sequence_buffer.append(observation)
-        
-        # Store transition.
-        self.transition_queue.append(
-            Transition(
-                state=state,
-                action=action,
-                reward=reward,
-                representation = (
-                    encoder_output.representation.detach().cpu()
-                    if self.config.cache_representations
-                    else None
-                ),
-                is_exploration_action=is_exploration
+            encoder_output = self.agent.encode(
+                frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
+                random_sampling=False,
             )
-        )
 
-        self.global_step += 1
+            # Select action.
+            action, is_exploration = self.agent.choose_action(encoder_output, self.config.epsilon)
 
-        if terminated or truncated:
-
-            self.episode += 1
-
-            observation, _ = self.environment.reset()
+            # Environment interaction.
+            observation, reward, terminated, truncated, _ = self.environment.step(action)
+            self.total_reward += reward
 
             observation = preprocess_frame(observation)
+            self.sequence_buffer.append(observation)
+            
+            # Store transition.
+            self.transition_queue.append(
+                Transition(
+                    state=state,
+                    action=action,
+                    reward=reward,
+                    representation = (
+                        encoder_output.representation.detach().cpu()
+                        if self.config.cache_representations
+                        else None
+                    ),
+                    is_exploration_action=is_exploration
+                )
+            )
 
-            self.sequence_buffer.clear()
+            self.global_step += 1
 
-            for _ in range(self.config.sequence_length):
-                self.sequence_buffer.append(observation)
+            if terminated or truncated or self.transition_queue.is_full():
+                # Either episode ends or trajectory is full, in which case we stop.
+                self.episode += 1
+
+                observation, _ = self.environment.reset()
+
+                observation = preprocess_frame(observation)
+
+                self.sequence_buffer.clear()
+
+                for _ in range(self.config.sequence_length):
+                    self.sequence_buffer.append(observation)
+                
+                break
 
     def _memory_optimization_step(self):
         """
@@ -247,13 +265,12 @@ class NECTrainer:
         episodic memories and stores processed transitions into the replay
         memory.
         """
-
         updates_to_be_applied = []
 
         lookup_requirements = self.agent.update_strategy.lookup_requirements   
         
         # Compute N-step targets at once.
-        q_targets = self.agent._compute_q_targets(
+        q_targets = self.agent.compute_q_targets(
             transition_queue=self.transition_queue,
             gamma=self.config.gamma,
             n_step=self.config.n_step,
@@ -327,7 +344,13 @@ class NECTrainer:
 
         losses = []
 
-        for _ in range(self.config.network_optimization_steps):
+        # Network will be optimized every 'network_optimization_period' transitions.
+        steps = int(len(self.transition_queue) / self.config.network_optimization_period)
+        
+        # Last place it is used in an episode, we clear the transition queue to gain space.
+        self.transition_queue.clear() 
+
+        for _ in range(steps):
 
             # Sample a mini-batch.
             batch = self.replay_memory.sample(self.config.batch_size)
@@ -370,6 +393,15 @@ class NECTrainer:
 
         return losses
 
+    
+    ##=========LOGGING_AND_EVALUATION===========
+    
+    def _should_checkpoint(self):
+        return self.episode % self.config.checkpoint_period == 0
+    
+    def _should_evaluate(self):
+        return self.episode % self.config.evaluation_period == 0
+    
     def _logging_step(self, logs: dict | None):
         """
         Records training metrics.
@@ -380,9 +412,18 @@ class NECTrainer:
                 optimization_step=l['optimization_step'],
                 environment_step=self.global_step,
                 episode=self.episode,
+                total_reward=self.episode_reward,
                 total_loss=l["total_loss"],
                 td_loss=l["td_loss"],
                 kl_loss=logs["kl_loss"],
+            )
+        
+        if self._should_checkpoint(): # Saving logs and checkpoint simultaneously.
+            self.logger.save(
+                start_step=self.checkpoint_start,
+                end_step=self.optimization_step,
+                step_name="opt_step",
+                clear=True
             )
 
     def _checkpoint_step(self, logs: dict):
@@ -416,10 +457,9 @@ class NECTrainer:
             filename=f"step_{self.optimization_step}"
         )
 
-    def _recording_step(self):
-        """
-        Records gameplay videos periodically.
-        """
+        self.checkpoint_start = self.optimization_step
+
+
 
     def _optuna_step(self, logs):
         ...
@@ -436,10 +476,7 @@ class NECTrainer:
 
             while not self._finished():
                 
-                self.transition_queue.clear()
-
-                while not self.transition_queue.is_full():
-                    self._environment_step()
+                self._environment_step()
 
                 self._memory_optimization_step()
 
@@ -451,12 +488,16 @@ class NECTrainer:
                     self._checkpoint_step()
 
                 if self._should_evaluate():
+                    print("Evaluating...")
+                    evaluation_summary = self.evaluator.evaluate(
+                        num_episodes=self.config.evaluation_episodes,
+                        render_mode='rgb_array',
+                        record_video=self.config.record_video,
+                        log_file_custom=f"ep_{self.episode}",
+                        video_file_custom=f"ep_{self.episode}"
+                    )
 
-                    evaluation_logs = self.evaluator.evaluate()
-
-                    self._evaluation_step(evaluation_logs)
-
-                    self._optuna_step(evaluation_logs)
+                    self._optuna_step(evaluation_summary)
 
             return self.logger.last()
 

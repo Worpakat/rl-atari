@@ -123,7 +123,8 @@ class NECAgent(nn.Module):
     def choose_action(
         self,
         encoder_output: EncoderOutput,
-        epsilon: float,
+        epsilon: float = 0.0,
+        exploration: bool = True
     ) -> int:
         """
         Selects an action using an epsilon-greedy policy.
@@ -143,7 +144,7 @@ class NECAgent(nn.Module):
         """
 
         # Exploration.
-        if random.random() < epsilon:
+        if exploration and random.random() < epsilon:
             return (random.randrange(len(self.dnds)), True)
 
         # Exploitation.
