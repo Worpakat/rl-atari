@@ -430,10 +430,7 @@ class NECTrainer:
         """
         Saves a training checkpoint periodically.
         """
-
-        if self.optimization_step % self.config.checkpoint_period != 0:
-            return
-
+        
         checkpoint = {
             "model": self.agent.state_dict(),
             "optimizer": self.encoder_optimizer.state_dict(),

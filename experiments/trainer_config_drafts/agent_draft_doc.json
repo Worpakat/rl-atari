@@ -1,0 +1,101 @@
+{
+    // -----------------------------
+    // Environment
+    // -----------------------------
+
+    "environment_name": "CartPole-v1",          // Gymnasium environment name
+    "experiment_dir": "experiments/test",       // Output directory
+
+    // -----------------------------
+    // Training
+    // -----------------------------
+
+    "warmup_steps": 5000,                       // Random warmup interactions
+    "max_episodes": 1000000,                    // Total training episodes
+    "batch_size": 32,                           // Replay mini-batch size
+    "replay_memory_size": 100000,              // Replay buffer capacity
+    "transition_queue_size": 100,              // N-step trajectory length
+    "cache_representations": true,             // Wheter store representations in transition queue
+
+    // -----------------------------
+    // Evaluation
+    // -----------------------------
+
+    "checkpoint_period": 10,                   // Episodes between checkpoints
+    "evaluation_period": 10,                   // Episodes between evaluations
+    "evaluation_episodes": 3,                  // Number of evaluation episodes
+    "record_video": true,                      // Record video during evaluation
+
+    // -----------------------------
+    // RL
+    // -----------------------------
+
+    "gamma": 0.99,                              // Discount factor
+    "n_step": 10,                               // N-step Q-learning
+    "epsilon_start": 1.0,                       // Initial epsilon
+    "epsilon_end": 0.05,                        // Final epsilon
+    "epsilon_decay": 100000,                    // Linear/exponential decay parameter
+
+    // -----------------------------
+    // Encoder
+    // -----------------------------
+
+    "sequence_length": 4,                       // Number of consecutive frames
+    "input_channels": 1,                        // Frame channels
+    "input_height": 84,                         // Input height
+    "input_width": 84,                          // Input width
+
+    "content_dim": 256,                         // Representation dimension
+    "conv_channels": 256,                       // CNN channels
+    "conv_block": 4,                            // Number of convolution blocks
+    "conv_dim": 2048,                           // Flattened CNN output
+    "hidden_dim": 512,                          // LSTM hidden dimension
+    "lstm_layers": 1,                           // Number of LSTM layers
+    "flatten_output": true,                     // Flatten encoder output
+
+    "representation_dim": 256,                  // Final representation size
+
+    // -----------------------------
+    // Optimization
+    // -----------------------------
+
+    "encoder_learning_rate": 0.0001,            // Adam learning rate
+    "kl_loss_weight": 0.2,                     // KL loss weight
+    "key_updates": true,                        // Update DND keys
+    "network_optimization_period": 4,           // Transitions between network updates
+
+    // -----------------------------
+    // DND
+    // -----------------------------
+
+    "num_actions": 2,                           // Action count
+
+    "dnd_max_memory": 500000,                   // Maximum DND entries
+    "dnd_num_neighbors": 50,                    // KNN lookup count
+
+    "dnd_duplicate_threshold": 1e-6,            // Duplicate key threshold
+
+    "dnd_learning_rate": 0.0001,                // Key optimizer learning rate
+    "dnd_q_learning_rate": 0.1,                 // Bellman update rate
+    "dnd_exploration_update": true,             // Update inserted memories during exploration (Option 1 and 2)
+    "dnd_exploration_q_lr": 0.025,              // Exploration update multiplier (Option 1 and 2)
+    "dnd_neighbor_shrink": 0.5,                 // Neighbor update shrink factor (Option 2 only)
+
+    "dnd_value_dim": 1,                         // Stored value dimension
+
+    "use_auxiliary": false,                     // Whether auxiliary vectors are stored
+    "auxiliary_dim": 1,                         // Auxiliary vector dimension
+
+    // -----------------------------
+    // Memory Update
+    // -----------------------------
+
+    "update_strategy": "nec_original",          // nec_original | option_1 | option_2
+    "exploration_update": false,                // Update inserted memories during exploration
+
+    // -----------------------------
+    // Similarity
+    // -----------------------------
+
+    "similarity_function": "exponential_inverse" // exponential_inverse | inverse_distance
+}
