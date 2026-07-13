@@ -37,12 +37,10 @@ class NECTrainer:
         config: TrainingConfig,
         experiment_dir: str | Path,
         device: str | torch.device = "cpu",
-        trial=None,
     ):
         self.agent = agent
         self.encoder_optimizer = encoder_optimizer
         self.config = config
-        self.trial = trial
 
         self.device = torch.device(device)
         self.agent.to(self.device)
@@ -51,7 +49,6 @@ class NECTrainer:
 
         self.logger = MetricsLogger(self.experiment_dir)
         self.checkpoint_manager = CheckpointManager(self.experiment_dir)
-        self.recorder = VideoRecorder(self.experiment_dir, save_every=config.video_period)
 
         self.environment = gym.make(config.environment_name, render_mode=None)
 
@@ -192,7 +189,6 @@ class NECTrainer:
 
         print("Warmup completed.")
 
-
     def _environment_step(self):
         """
         Executes one environment interaction and stores the resulting
@@ -244,7 +240,6 @@ class NECTrainer:
 
             for _ in range(self.config.sequence_length):
                 self.sequence_buffer.append(observation)
-
 
     def _memory_optimization_step(self):
         """
@@ -321,8 +316,6 @@ class NECTrainer:
         # Apply all memory updates simultaneously.
         self.agent.apply_memory_updates(updates_to_be_applied)
 
-
-
     def _network_optimization_step(self):
         """
         Optimizes the encoder (and optionally the DND keys) using
@@ -331,6 +324,8 @@ class NECTrainer:
 
         if not self.replay_memory.can_sample(self.config.batch_size):
             return
+
+        losses = []
 
         for _ in range(self.config.network_optimization_steps):
 
@@ -367,13 +362,59 @@ class NECTrainer:
             if self.config.key_updates:
                 self.agent.step_key_optimizers()
 
+            # Store loss to be logged.
+            loss['optimization_step'] = self.optimization_step
+            losses.append(loss)
 
+            self.optimization_step += 1
 
-    def _logging_step(self, logs):
-        ...
+        return losses
 
-    def _checkpoint_step(self, logs):
-        ...
+    def _logging_step(self, logs: dict | None):
+        """
+        Records training metrics.
+        """
+        # Multiple optimization steps
+        for l in logs:
+            self.logger.log(
+                optimization_step=l['optimization_step'],
+                environment_step=self.global_step,
+                episode=self.episode,
+                total_loss=l["total_loss"],
+                td_loss=l["td_loss"],
+                kl_loss=logs["kl_loss"],
+            )
+
+    def _checkpoint_step(self, logs: dict):
+        """
+        Saves a training checkpoint periodically.
+        """
+
+        if self.optimization_step % self.config.checkpoint_period != 0:
+            return
+
+        checkpoint = {
+            "model": self.agent.state_dict(),
+            "optimizer": self.encoder_optimizer.state_dict(),
+            "training_state": {
+                "optimization_step": self.optimization_step,
+                "environment_step": self.global_step,
+                "episode": self.episode,
+            },
+            "metrics": {
+                "total_loss": logs["total_loss"],
+                "reconstruction_loss": logs["reconstruction_loss"],
+                "content_kl_loss": logs["content_kl_loss"],
+                "dynamics_kl_loss": logs["dynamics_kl_loss"],
+            },
+            "replay_memory": self.replay_memory.state_dict(),
+            "config": self.config.to_dict(),
+        }
+
+        self.checkpoint_manager.save(
+            checkpoint,
+            filename=f"step_{self.optimization_step}"
+        )
 
     def _recording_step(self):
         """
@@ -387,33 +428,38 @@ class NECTrainer:
         """
         Starts NEC training.
         """
-
         self._setup()
-
-        if self.config.use_warmup:
-            self._warmup()
 
         print("Starting training...")
 
         try:
+
             while not self._finished():
+                
+                self.transition_queue.clear()
 
-                self._environment_step()
+                while not self.transition_queue.is_full():
+                    self._environment_step()
 
-                logs = self._optimization_step()
+                self._memory_optimization_step()
 
-                if logs is None:
-                    continue
+                logs = self._network_optimization_step()
 
                 self._logging_step(logs)
 
-                self._checkpoint_step(logs)
+                if self._should_checkpoint():
+                    self._checkpoint_step()
 
-                self._recording_step()
+                if self._should_evaluate():
 
-                self._optuna_step(logs)
+                    evaluation_logs = self.evaluator.evaluate()
+
+                    self._evaluation_step(evaluation_logs)
+
+                    self._optuna_step(evaluation_logs)
 
             return self.logger.last()
 
         finally:
+
             self.environment.close()

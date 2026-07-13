@@ -346,6 +346,14 @@ class NECAgent(nn.Module):
             if dnd.key_optimizer is not None:
                 dnd.key_optimizer.step()
                 dnd.build_index()
-            
+    
+    def state_dict(self) -> dict:
+        """
+        Returns the state dictionary of the NEC agent.
+        """
+        return {
+            "encoder": self.encoder.state_dict(),
+            "dnds": [dnd.state_dict() for dnd in self.dnds],
+        }
 
 

@@ -8,9 +8,9 @@ def compute_network_loss(
     predicted_q_values: torch.Tensor,
     q_targets: torch.Tensor,
     encoder_output: EncoderOutput,
-    dynamics_kl_loss_weight: float = 1.0,
+    kl_loss_weight: float = 1.0,
     reduction: str = "mean",
-) -> torch.Tensor:
+) -> dict[str, torch.Tensor]:
     """
     Computes the optimization loss for the encoder.
     """
@@ -29,12 +29,12 @@ def compute_network_loss(
 
     # Total loss
     total_loss = (
-        (1 - dynamics_kl_loss_weight) * td_loss
-        + dynamics_kl_loss_weight * kl_loss
+        (1 - kl_loss_weight) * td_loss
+        + kl_loss_weight * kl_loss
     )
 
     return {
         "total_loss": total_loss,
         "td_loss": td_loss,
-        "dynamics_kl_loss": kl_loss,
+        "kl_loss": kl_loss,
     }

@@ -326,7 +326,6 @@ class DND:
 
         return result
 
-
     def update(
         self,
         indices: torch.Tensor,
@@ -378,12 +377,18 @@ class DND:
         if not self.trainable_keys:
             return
 
-        if (
-            self.key_optimizer is None
-            or self.optimizer_stale
-        ):
+        if (self.key_optimizer is None or self.optimizer_stale):
+            
             self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
-
             self.optimizer_stale = False
 
+    def state_dict(self) -> dict:
+        """
+        Returns the state dictionary of the DND.
+        """
+        return {
+            "keys": self.keys,
+            "values": self.values,
+            "auxiliary": self.auxiliary,
+        }
     
