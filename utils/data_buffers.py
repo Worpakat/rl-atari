@@ -165,7 +165,7 @@ class ReplayMemory(BaseBuffer):
 
         states = torch.from_numpy(np.stack([transition.state for transition in batch]))
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).squeeze()
+        q_targets = torch.stack([transition.q_target for transition in batch])
         
         return states, actions, q_targets
 
