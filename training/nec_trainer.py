@@ -206,7 +206,6 @@ class NECTrainer:
 
             self.agent.apply_memory_updates(updates_to_be_applied)
 
-            self.episode += 1
 
         print("Warmup completed.")
 
@@ -500,7 +499,7 @@ class NECTrainer:
                 self._logging_step(logs)
 
                 if self._should_checkpoint():
-                    self._checkpoint_step()
+                    self._checkpoint_step(logs)
 
                 if self._should_evaluate():
                     print("Evaluating...")
