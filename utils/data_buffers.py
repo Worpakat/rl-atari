@@ -158,7 +158,7 @@ class ReplayMemory(BaseBuffer):
                 q_target=q_target,
             )
         )
-    def extract_batch(batch: list[ReplayMemoryUnit]) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+    def extract_batch(self, batch: list[ReplayMemoryUnit]) -> tuple[torch.Tensor, list[int], torch.Tensor]:
         """
         Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
         """
