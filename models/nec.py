@@ -265,8 +265,6 @@ class NECAgent(nn.Module):
             current_value = dnd.get_value(index)
             
             update_value = self.update_strategy.calculate_bellman_update_change(current_value, q_target)
-            
-            print(f"Existing memory update, index: {index}")
 
             return MemoryUpdateRequest(
                 update_or_insert='update',

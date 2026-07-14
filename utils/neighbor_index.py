@@ -99,7 +99,6 @@ class FaissIndex(NeighborIndex):
         """
 
         if self.keys is None or len(self.keys) == 0:
-            print("Index find, first None")
             return None
 
         _, indices = self.index.search(
@@ -115,7 +114,5 @@ class FaissIndex(NeighborIndex):
 
         if distance <= self.duplicate_threshold:
             return index
-
-        print("Index find, last None")
 
         return None
