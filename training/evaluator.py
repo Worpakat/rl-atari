@@ -178,7 +178,6 @@ class Evaluator:
 
     def evaluate(
         self,
-        num_episodes: int,
         render_mode: str | None = None,
         log_file_custom: str | None = None,
         record_video: bool = False,
