@@ -268,6 +268,7 @@ class DND:
     def lookup(
         self,
         key: torch.Tensor,
+        auxiliary: torch.Tensor | None = None,
         return_indices: bool = False,
         return_similarities: bool = False,
         return_neighbors: bool = False,
