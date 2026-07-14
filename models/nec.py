@@ -331,12 +331,8 @@ class NECAgent(nn.Module):
 
         predictions = []
 
-        print("representations.shape", representations.shape)
-
         for batch_index, (representation, action) in enumerate(zip(representations, actions)):
-
-            print("representation.shape", representation.shape)
-            
+            representation = representation.unsqueeze(0) # To match neighbor_index.search() expected shape
 
             lookup_result = self.lookup_to_dnd(
                 action=action,
