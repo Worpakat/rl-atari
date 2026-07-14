@@ -16,7 +16,7 @@
     "checkpoint_period": 2,
     "evaluation_period": 2,                   
     "evaluation_episodes": 1,                  
-    "record_video": true,                         
+    "record_video": false,                         
 
 
     "gamma": 0.99, 

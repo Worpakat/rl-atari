@@ -137,8 +137,9 @@ class Evaluator:
 
             episode_reward += reward
             episode_length += 1
+            self.global_step += 1
 
-            print(f"Episode: {self.episode}, Step: {self.global_step}, Reward: {reward}")
+            print(f"Episode: {self.episode}, Step: {self.global_step}, Action: {action}, Reward: {reward}")
 
         observation, _ = self.environment.reset()
 
