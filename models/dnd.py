@@ -178,11 +178,11 @@ class DND:
         pending_size = len(self._pending_keys)
 
         pending_keys = torch.stack(self._pending_keys).squeeze(dim=1)
-        pending_values = torch.stack(self._pending_values).squeeze(dim=1)
+        pending_values = torch.stack(self._pending_values)
 
         pending_auxiliary = None
         if self.use_auxiliary:
-            pending_auxiliary = torch.stack(self._pending_auxiliary).squeeze(dim=1)
+            pending_auxiliary = torch.stack(self._pending_auxiliary)
 
         if self.memory_size < self.max_memory:
 
@@ -197,8 +197,8 @@ class DND:
 
             print("append_indices", append_indices)
             print("append_count", append_count)
-            print("keys", self.keys)
             print("keys shape", self.keys.shape)
+            print("values shape", self.values.shape)
             print("keys[append_indices]", self.keys[append_indices].shape)
             print("pending_keys[:append_count]", pending_keys[:append_count].shape)
 
