@@ -199,8 +199,8 @@ class DND:
             print("append_count", append_count)
             print("keys", self.keys)
             print("keys shape", self.keys.shape)
-            print("keys[append_indices]", self.keys[append_indices])
-            print("pending_keys[:append_count]", pending_keys[:append_count])
+            print("keys[append_indices]", self.keys[append_indices].shape)
+            print("pending_keys[:append_count]", pending_keys[:append_count].shape)
 
             self.generations[append_indices] += 1
 
