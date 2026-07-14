@@ -33,13 +33,13 @@
 
     "conv_channels": 4,                       
     "conv_block": 4,                            
-    "conv_dim": 256,                           
-    "hidden_dim": 256,                          
+    "conv_dim": 64,                           
+    "hidden_dim": 64,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 64,                          
+    "latent_dim": 32,                          
     "adapter": true,                            
-    "representation_dim": 16,                  
+    "representation_dim": 8,                  
 
 
     "encoder_learning_rate": 0.001,            

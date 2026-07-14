@@ -238,8 +238,13 @@ class SequentialEncoder(nn.Module):
 
         representation = posterior_latents
 
+        print("Representation shape before", representation.shape)
+
         if self.flatten_output:
             representation = representation.flatten(start_dim=1)
+
+            print("Representation shape after", representation.shape)
+
 
         representation = self.adapter(representation)
 
