@@ -192,6 +192,7 @@ class NECAgent(nn.Module):
 
         # Discounted returns beginning from every timestep.
         discounted_returns = torch.from_numpy(discount(rewards.numpy(), gamma)).to(torch.float32)
+        # !! Dtype is converted to float64 in discount(). We need to convert it back.
 
         q_targets = torch.empty_like(discounted_returns)
 

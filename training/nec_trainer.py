@@ -233,7 +233,7 @@ class NECTrainer:
 
             # Environment interaction.
             observation, reward, terminated, truncated, _ = self.environment.step(action)
-            self.total_reward += reward
+            self.episode_reward += reward
 
             observation = preprocess_frame(observation)
             self.sequence_buffer.append(observation)
@@ -435,6 +435,8 @@ class NECTrainer:
                 kl_loss=logs["kl_loss"],
             )
         
+        self.episode_reward = 0
+
         if self._should_checkpoint(): # Saving logs and checkpoint simultaneously.
             self.logger.save(
                 start_step=self.checkpoint_start,

@@ -195,10 +195,6 @@ class DND:
                 device=self.keys.device,
             )
 
-
-            print("values shape", self.values.dtype)
-            print("pending_values", pending_values.dtype)
-
             self.generations[append_indices] += 1
 
             self.keys[append_indices] = pending_keys[:append_count]
