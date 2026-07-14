@@ -184,7 +184,8 @@ class NECTrainer:
                     update_request = self.agent.create_memory_update_request(
                         transition=transition,
                         q_target=q_target,
-                        lookup_result=None
+                        lookup_result=None,
+                        update_or_insert="update",
                     )
                     updates_to_be_applied.append(update_request)
 
@@ -196,6 +197,7 @@ class NECTrainer:
                         q_target=q_target,
                         lookup_result=None,
                         warmup=True,
+                        update_or_insert="insert",
                         exploration_update=False
                     )
                     updates_to_be_applied.extend(update_request)

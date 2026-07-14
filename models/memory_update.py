@@ -136,6 +136,10 @@ class MemoryUpdateStrategy(ABC):
             update_assigns = [request for request in updates if not request.is_change]
 
             if update_changes:
+                
+                i_list = [request.index for request in update_changes]
+                print("There is a None:", None in i_list)
+                print("Index of None:", i_list.index(None))
 
                 indices = torch.tensor(
                     [request.index for request in update_changes],
