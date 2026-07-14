@@ -196,10 +196,8 @@ class DND:
             )
 
 
-            print("values shape", self.values.shape)
-            print("pending_values", pending_values.shape)
-            print("values[append_indices]", self.values[append_indices].shape)
-            print("pending_values[:append_count]", pending_values[:append_count].shape)
+            print("values shape", self.values.dtype)
+            print("pending_values", pending_values.dtype)
 
             self.generations[append_indices] += 1
 
