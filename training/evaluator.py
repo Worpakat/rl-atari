@@ -138,6 +138,8 @@ class Evaluator:
             episode_reward += reward
             episode_length += 1
 
+            print(f"Episode: {self.episode}, Step: {self.global_step}, Reward: {reward}")
+
         observation, _ = self.environment.reset()
 
         observation = preprocess_frame(observation)
