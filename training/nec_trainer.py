@@ -70,7 +70,7 @@ class NECTrainer:
 
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
-        self.transition_queue = TransitionQueue(capacity=config.trajectory_length)
+        self.transition_queue = TransitionQueue(capacity=config.transition_queue_size)
         self.replay_memory = ReplayMemory(capacity=config.replay_capacity)
 
         # Training progress
