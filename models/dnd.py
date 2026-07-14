@@ -377,9 +377,6 @@ class DND:
         has been structurally modified.
         """
 
-        if not self.trainable_keys:
-            return
-
         if (self.key_optimizer is None or self.optimizer_stale):
             
             self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
