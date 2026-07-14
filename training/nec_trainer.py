@@ -405,9 +405,6 @@ class NECTrainer:
 
             self.optimization_step += 1
 
-            print(f"Episode {self.episode} optimization is finished:")
-            print(losses)
-
         return losses
 
     
@@ -430,9 +427,9 @@ class NECTrainer:
                 environment_step=self.global_step,
                 episode=self.episode,
                 total_reward=self.episode_reward,
-                total_loss=l["total_loss"],
-                td_loss=l["td_loss"],
-                kl_loss=logs["kl_loss"],
+                total_loss=l["total_loss"].item(),
+                td_loss=l["td_loss"].item(),
+                kl_loss=l["kl_loss"].item(),
             )
         
         self.episode_reward = 0
@@ -444,6 +441,8 @@ class NECTrainer:
                 step_name="opt_step",
                 clear=True
             )
+        print(f"Episode {self.episode}, optimization step {self.optimization_step}, is fnished.")
+        print(self.logger.last())
 
     def _checkpoint_step(self, logs: dict):
         """
