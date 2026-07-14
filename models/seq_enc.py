@@ -133,15 +133,21 @@ class Adapter(nn.Module):
     latent_dim: Latent dimension
     representation_dim: Final representation dimension, key dimension.
     """
-    def __init__(self, latent_dim: int, representation_dim: int):
+    def __init__(
+            self, 
+            latent_dim: int,
+            sequence_length: int, 
+            representation_dim: int):
         super().__init__()
 
+        in_features = sequence_length * latent_dim
+
         self.linear = nn.Sequential(
-            LinearBlock(in_features=latent_dim, 
-                        out_features=int(latent_dim/2),
+            LinearBlock(in_features=in_features, 
+                        out_features=int(in_features/2),
                         use_norm=False),
 
-            LinearBlock(in_features=int(latent_dim/2), 
+            LinearBlock(in_features=int(in_features/2), 
                         out_features=representation_dim,
                         use_norm=False),
         )
