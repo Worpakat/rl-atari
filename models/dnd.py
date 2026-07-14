@@ -195,12 +195,11 @@ class DND:
                 device=self.keys.device,
             )
 
-            print("append_indices", append_indices)
-            print("append_count", append_count)
-            print("keys shape", self.keys.shape)
+
             print("values shape", self.values.shape)
-            print("keys[append_indices]", self.keys[append_indices].shape)
-            print("pending_keys[:append_count]", pending_keys[:append_count].shape)
+            print("pending_values", pending_values.shape)
+            print("values[append_indices]", self.values[append_indices].shape)
+            print("pending_values[:append_count]", pending_values[:append_count].shape)
 
             self.generations[append_indices] += 1
 
