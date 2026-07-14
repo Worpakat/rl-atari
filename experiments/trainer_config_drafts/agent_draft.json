@@ -5,16 +5,16 @@
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
     
-    "warmup_steps": 1000,                       
-    "max_episodes": 10,           
+    "warmup_steps": 50,                       
+    "max_episodes": 4,           
     "batch_size": 32,                           
     "replay_memory_size": 10000,              
-    "transition_queue_size": 100,        
+    "transition_queue_size": 50,        
     "cache_representations": true,      
 
     "checkpoint_start": 0,
-    "checkpoint_period": 5,
-    "evaluation_period": 5,                   
+    "checkpoint_period": 2,
+    "evaluation_period": 2,                   
     "evaluation_episodes": 1,                  
     "record_video": true,                         
 
