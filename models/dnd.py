@@ -347,7 +347,7 @@ class DND:
         if len(self) == 0:
             raise RuntimeError("Cannot update an empty DND.")
 
-        if (values is None and keys is None and auxiliary is None):
+        if (values is None and changes is None and keys is None and auxiliary is None):
             raise ValueError(
                 "At least one of values, keys or auxiliary must be provided."
             )
