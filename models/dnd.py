@@ -240,8 +240,11 @@ class DND:
         if self.use_auxiliary:
             self._pending_auxiliary.clear()
 
-        self._stale_index = True
+        # Rebuild the neighbor index
+        self.build_index()
+        self._stale_index = False
         self.optimizer_stale = True
+        
         
     def contains(self, key: torch.Tensor,) -> bool:
         """
