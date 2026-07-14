@@ -468,7 +468,7 @@ class NECTrainer:
 
         self.checkpoint_manager.save(
             checkpoint,
-            filename=f"step_{self.optimization_step}"
+            filename=f"ep_{self.episode}_step_{self.optimization_step}"
         )
 
         self.checkpoint_start = self.optimization_step
