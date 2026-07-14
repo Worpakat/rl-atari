@@ -178,7 +178,7 @@ class DND:
         pending_size = len(self._pending_keys)
 
         pending_keys = torch.stack(self._pending_keys).squeeze(dim=1)
-        pending_values = torch.stack(self._pending_values).squeeze(dim=1)
+        pending_values = torch.stack(self._pending_values).squeeze()
 
         pending_auxiliary = None
         if self.use_auxiliary:
