@@ -5,18 +5,18 @@
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
     
-    "warmup_steps": 50,                       
-    "max_episodes": 4,           
+    "warmup_steps": 5000,                       
+    "max_episodes": 50,           
     "batch_size": 32,                           
-    "replay_memory_size": 10000,              
-    "transition_queue_size": 50,        
+    "replay_memory_size": 100000,              
+    "transition_queue_size": 5000,        
     "cache_representations": true,      
 
     "checkpoint_start": 0,
-    "checkpoint_period": 2,
-    "evaluation_period": 2,                   
+    "checkpoint_period": 25,
+    "evaluation_period": 25,                   
     "evaluation_episodes": 1,                  
-    "record_video": false,                         
+    "record_video": true,                         
 
 
     "gamma": 0.99, 
@@ -34,12 +34,12 @@
     "conv_channels": 4,                       
     "conv_block": 4,                            
     "conv_dim": 64,                           
-    "hidden_dim": 64,                          
+    "hidden_dim": 128,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 32,                          
+    "latent_dim": 128,                          
     "adapter": true,                            
-    "representation_dim": 32,                  
+    "representation_dim": 64,                  
 
 
     "encoder_learning_rate": 0.001,            
@@ -48,7 +48,7 @@
     "key_updates": true, 
 
 
-    "dnd_max_memory": 100,                   
+    "dnd_max_memory": 50000,                   
     "dnd_num_neighbors": 50,                    
 
     "dnd_duplicate_threshold": 0.01,            
