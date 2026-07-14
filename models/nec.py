@@ -165,10 +165,8 @@ class NECAgent(nn.Module):
             return (random.randrange(len(self.dnds)), True)
 
         # Exploitation.
-        results = self.lookup(
-            key=encoder_output.representation,
-            auxiliary=encoder_output.auxiliary,
-        )
+        results = self.lookup(key=encoder_output.representation)
+        
         q_values = torch.stack([result.q_value for result in results])
         
         return (int(torch.argmax(q_values).item()), False)
