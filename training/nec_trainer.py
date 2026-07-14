@@ -118,8 +118,11 @@ class NECTrainer:
         while not self._warmup_finished():
 
             self._setup()
-
+            
+            counter = 0
+            
             while True:
+                counter += 1
 
                 action = self.environment.action_space.sample()
 
@@ -158,6 +161,7 @@ class NECTrainer:
                 self.global_step += 1
 
                 if terminated or truncated or self.transition_queue.is_full():
+                    print(f"Transition Queue has taken {counter} transitions; Transition Queue size: {len(self.transition_queue)}")
                     break
 
             q_targets = self.agent.compute_q_targets(
