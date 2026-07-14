@@ -5,16 +5,16 @@
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
     
-    "warmup_steps": 3000,                       
-    "max_episodes": 50,           
+    "warmup_steps": 1000,                       
+    "max_episodes": 10,           
     "batch_size": 32,                           
     "replay_memory_size": 50000,              
-    "transition_queue_size": 2500,        
+    "transition_queue_size": 1000,        
     "cache_representations": true,      
 
     "checkpoint_start": 0,
-    "checkpoint_period": 25,
-    "evaluation_period": 25,                   
+    "checkpoint_period": 5,
+    "evaluation_period": 5,                   
     "evaluation_episodes": 1,                  
     "record_video": true,                         
 
@@ -44,7 +44,7 @@
 
     "encoder_learning_rate": 0.001,            
     "kl_loss_weight": 0.2,                
-    "network_optimization_period": 4,
+    "network_optimization_period": 10,
     "key_updates": true, 
 
 
