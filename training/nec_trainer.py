@@ -8,6 +8,7 @@ import gymnasium as gym
 import ale_py
 
 from training.evaluator import Evaluator
+from utils.action_wrapper import RestrictedActionWrapper
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 from models.nec import NECAgent
@@ -60,6 +61,12 @@ class NECTrainer:
         self.episode_reward = 0
 
         self.environment = gym.make(config.environment_name, render_mode=None)
+        
+        if self.config.action_mapping: # In case of mapping is changed.
+            self.environment = RestrictedActionWrapper(
+                self.environment,
+                action_mapping=self.config.action_mapping,
+            )
 
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
@@ -393,6 +400,9 @@ class NECTrainer:
             losses.append(loss)
 
             self.optimization_step += 1
+
+            print(f"Episode {self.episode} optimization is finished:")
+            print(losses)
 
         return losses
 

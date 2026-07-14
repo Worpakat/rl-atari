@@ -9,6 +9,7 @@ import ale_py
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 
+from utils.action_wrapper import RestrictedActionWrapper
 from utils.metrics_logger import MetricsLogger
 from utils.misc import ensure_directory, preprocess_frame
 from utils.data_buffers import FrameSequenceBuffer
@@ -68,17 +69,21 @@ class Evaluator:
 
         self.environment = gym.make(self.config.environment_name, render_mode=render_mode)
 
-        if record_video:
+        if self.config.record_video:
             self.environment = RecordVideo(
                 self.environment,
                 video_folder=self.videos_dir,
                 name_prefix=f"evaluation_{video_file_custom}",
                 episode_trigger=lambda _: True,
             )
+        
+        if self.config.action_mapping: # In case of mapping is changed.
+            self.environment = RestrictedActionWrapper(
+                self.environment,
+                action_mapping=self.config.action_mapping,
+            )
 
-        self.environment = RecordEpisodeStatistics(
-            self.environment,
-        )
+        self.environment = RecordEpisodeStatistics(self.environment)
 
         observation, _ = self.environment.reset()
 
@@ -146,6 +151,29 @@ class Evaluator:
             "episode_length": episode_length,
         }
 
+    def _summarize(self) -> dict:
+        """
+        Computes aggregate evaluation metrics.
+        """
+
+        rewards = np.asarray(self.environment.return_queue, dtype=np.float32)
+        lengths = np.asarray(self.environment.length_queue, dtype=np.float32)
+
+        summary = {
+            "mean_reward": float(rewards.mean()),
+            "std_reward": float(rewards.std()),
+            "max_reward": float(rewards.max()),
+            "min_reward": float(rewards.min()),
+            "mean_episode_length": float(lengths.mean()),
+            "std_episode_length": float(lengths.std()),
+            "num_episodes": len(rewards),
+        }
+
+        self.summary_logger.log(
+            environment_step=self.global_step, 
+            **summary)
+
+        return summary
 
     def evaluate(
         self,
@@ -204,26 +232,4 @@ class Evaluator:
             self.agent.train()
 
 
-    def _summarize(self) -> dict:
-        """
-        Computes aggregate evaluation metrics.
-        """
-
-        rewards = np.asarray(self.environment.return_queue, dtype=np.float32)
-        lengths = np.asarray(self.environment.length_queue, dtype=np.float32)
-
-        summary = {
-            "mean_reward": float(rewards.mean()),
-            "std_reward": float(rewards.std()),
-            "max_reward": float(rewards.max()),
-            "min_reward": float(rewards.min()),
-            "mean_episode_length": float(lengths.mean()),
-            "std_episode_length": float(lengths.std()),
-            "num_episodes": len(rewards),
-        }
-
-        self.summary_logger.log(
-            environment_step=self.global_step, 
-            **summary)
-
-        return summary
+    

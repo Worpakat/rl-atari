@@ -3,9 +3,11 @@
     // Environment
     // -----------------------------
 
-    "environment_name": "CartPole-v1",          // Gymnasium environment name
-    "experiment_dir": "experiments/test",       // Output directory
-
+    "experiment_dir": "experiments/agent/test", // Gymnasium environment name
+    "environment_name": "ALE/Riverraid-v5",     // Output directory
+    "num_actions": 6,                           // Action count
+    "action_mapping": [0, 1, 2, 3, 4, 5],       // Action mapping
+    
     // -----------------------------
     // Training
     // -----------------------------
@@ -68,8 +70,6 @@
     // -----------------------------
     // DND
     // -----------------------------
-
-    "num_actions": 2,                           // Action count
 
     "dnd_max_memory": 500000,                   // Maximum DND entries
     "dnd_num_neighbors": 50,                    // KNN lookup count
