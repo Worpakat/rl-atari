@@ -12,6 +12,7 @@
     "transition_queue_size": 100,        
     "cache_representations": true,      
 
+    "checkpoint_start": 0,
     "checkpoint_period": 5,
     "evaluation_period": 5,                   
     "evaluation_episodes": 1,                  

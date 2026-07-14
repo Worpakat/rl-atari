@@ -23,6 +23,7 @@
     // Evaluation
     // -----------------------------
 
+    "checkpoint_start": 0,                     // Starting optimization step after checkpoint
     "checkpoint_period": 10,                   // Episodes between checkpoints
     "evaluation_period": 10,                   // Episodes between evaluations
     "evaluation_episodes": 3,                  // Number of evaluation episodes
