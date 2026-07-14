@@ -219,7 +219,10 @@ class SequentialEncoder(nn.Module):
         )
 
         if adapter:
-            self.adapter = Adapter(latent_dim=latent_dim, representation_dim=representation_dim)
+            self.adapter = Adapter(
+                latent_dim=latent_dim, 
+                sequence_length=sequence_length,
+                representation_dim=representation_dim)
         else:
             self.adapter = nn.Identity()
 
