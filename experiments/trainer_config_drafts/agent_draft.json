@@ -48,7 +48,7 @@
     "key_updates": true, 
 
 
-    "dnd_max_memory": 5000,                   
+    "dnd_max_memory": 100,                   
     "dnd_num_neighbors": 50,                    
 
     "dnd_duplicate_threshold": 0.01,            
