@@ -85,8 +85,6 @@ class FaissIndex(NeighborIndex):
 
         k = min(k, len(self.keys))
 
-        print("query shape", query.shape)
-
         _, indices = self.index.search(
             query.detach().cpu().numpy(),
             k,
