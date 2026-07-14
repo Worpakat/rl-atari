@@ -153,7 +153,6 @@ class Adapter(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        print("Adapter input shape", x.shape)
         return self.linear(x)
 
 

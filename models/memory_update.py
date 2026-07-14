@@ -52,10 +52,10 @@ class MemoryUpdateRequest:
     action: int
     key: torch.Tensor
     is_change: bool 
-    index: int | None 
     update_value: torch.Tensor
+    index: int | None = None
 
-    generation: int | None
+    generation: int | None = None
     auxiliary: torch.Tensor | None = None
 
 @dataclass(slots=True)

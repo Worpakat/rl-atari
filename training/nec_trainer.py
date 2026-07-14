@@ -157,7 +157,7 @@ class NECTrainer:
 
                 self.global_step += 1
 
-                if terminated or truncated:
+                if terminated or truncated or self.transition_queue.is_full():
                     break
 
             q_targets = self.agent.compute_q_targets(
