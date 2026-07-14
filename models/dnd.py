@@ -227,7 +227,7 @@ class DND:
             self.generations[write_indices] += 1
 
             self.keys[write_indices] = pending_keys
-            self.values[write_indices] = pending_values
+            self.values[write_indices] = pending_values.unsqueeze(dim=1)
 
             if self.use_auxiliary:
                 self.auxiliary[write_indices] = pending_auxiliary
