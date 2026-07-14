@@ -204,7 +204,7 @@ class DND:
             self.generations[append_indices] += 1
 
             self.keys[append_indices] = pending_keys[:append_count]
-            self.values[append_indices] = pending_values[:append_count]
+            self.values[append_indices] = pending_values[:append_count].unsqueeze(dim=1)
 
             if self.use_auxiliary:
                 self.auxiliary[append_indices] = pending_auxiliary[:append_count]
