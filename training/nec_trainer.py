@@ -456,12 +456,12 @@ class NECTrainer:
                 "environment_step": self.global_step,
                 "episode": self.episode,
             },
-            "metrics": {
-                "total_loss": logs["total_loss"],
-                "reconstruction_loss": logs["reconstruction_loss"],
-                "content_kl_loss": logs["content_kl_loss"],
-                "dynamics_kl_loss": logs["dynamics_kl_loss"],
-            },
+            # "metrics": {
+            #     "total_loss": logs["total_loss"],
+            #     "reconstruction_loss": logs["reconstruction_loss"],
+            #     "content_kl_loss": logs["content_kl_loss"],
+            #     "dynamics_kl_loss": logs["dynamics_kl_loss"],
+            # },
             "replay_memory": self.replay_memory.state_dict(),
             "config": self.config.to_dict(),
         }
