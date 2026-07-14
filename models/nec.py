@@ -288,7 +288,6 @@ class NECAgent(nn.Module):
                                             lookup_result=lookup_result,
                                             exploration_update=exploration_update,)
                         
-
     def apply_memory_updates(
         self,
         update_requests: list[MemoryUpdateRequest],
@@ -332,7 +331,12 @@ class NECAgent(nn.Module):
 
         predictions = []
 
+        print("representations.shape", representations.shape)
+
         for batch_index, (representation, action) in enumerate(zip(representations, actions)):
+
+            print("representation.shape", representation.shape)
+            
 
             lookup_result = self.lookup_to_dnd(
                 action=action,
