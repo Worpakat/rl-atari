@@ -431,6 +431,9 @@ class NECTrainer:
                 kl_loss=l["kl_loss"].item(),
             )
         
+        print(f"Episode {self.episode}, optimization step {self.optimization_step}, is fnished.")
+        print(self.logger.last())
+        
         self.episode_reward = 0
 
         if self._should_checkpoint(): # Saving logs and checkpoint simultaneously.
@@ -440,8 +443,6 @@ class NECTrainer:
                 step_name="opt_step",
                 clear=True
             )
-        print(f"Episode {self.episode}, optimization step {self.optimization_step}, is fnished.")
-        print(self.logger.last())
 
     def _checkpoint_step(self, logs: dict):
         """

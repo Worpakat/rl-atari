@@ -123,7 +123,7 @@ class Evaluator:
             with torch.inference_mode():
                 encoder_output = self.agent.encode(frames=frames, random_sampling=False)
 
-                action = self.agent.choose_action(
+                action, _ = self.agent.choose_action(
                     encoder_output=encoder_output,
                     exploration=False,
                 )
