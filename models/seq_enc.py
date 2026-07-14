@@ -135,6 +135,7 @@ class Adapter(nn.Module):
     """
     def __init__(self, latent_dim: int, representation_dim: int):
         super().__init__()
+
         self.linear = nn.Sequential(
             LinearBlock(in_features=latent_dim, 
                         out_features=int(latent_dim/2),
@@ -146,6 +147,7 @@ class Adapter(nn.Module):
         )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        print("Adapter input shape", x.shape)
         return self.linear(x)
 
 
