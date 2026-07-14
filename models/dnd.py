@@ -389,6 +389,6 @@ class DND:
         return {
             "keys": self.keys,
             "values": self.values,
-            "auxiliary": self.auxiliary,
+            "auxiliary": self.auxiliary if self.use_auxiliary else None,
         }
     
