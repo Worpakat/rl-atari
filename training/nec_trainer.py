@@ -423,7 +423,7 @@ class NECTrainer:
         for l in logs:
             self.logger.log(
                 optimization_step=l['optimization_step'],
-                environment_step=self.global_step,
+                global_step=self.global_step,
                 episode=self.episode,
                 total_reward=self.episode_reward,
                 total_loss=l["total_loss"].item(),
