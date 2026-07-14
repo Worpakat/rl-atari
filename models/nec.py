@@ -219,7 +219,7 @@ class NECAgent(nn.Module):
                     random_sampling=False, # We use 'posterior_mean's as representations for stability
                 ).representation.detach().cpu()
             
-            lookup_results = self.lookup(representation=bootstrap_transition.representation)
+            lookup_results = self.lookup(key=bootstrap_transition.representation)
 
             bootstrap_value = torch.stack(
                 [result.value for result in lookup_results]
