@@ -48,8 +48,8 @@ class Evaluator:
         )
         
         # Metric Loggers
-        self.episode_logger = MetricsLogger(self.experiment_dir)
-        self.summary_logger = MetricsLogger(self.experiment_dir)
+        self.episode_logger = MetricsLogger(experiment_dir)
+        self.summary_logger = MetricsLogger(experiment_dir)
         
         self.global_step = 0
         self.episode = 0
