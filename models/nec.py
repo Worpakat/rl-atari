@@ -191,7 +191,7 @@ class NECAgent(nn.Module):
         )
 
         # Discounted returns beginning from every timestep.
-        discounted_returns = torch.from_numpy(discount(rewards.numpy(), gamma))
+        discounted_returns = torch.from_numpy(discount(rewards.numpy(), gamma), dtype=torch.float32)
 
         q_targets = torch.empty_like(discounted_returns)
 
