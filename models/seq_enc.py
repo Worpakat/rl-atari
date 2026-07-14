@@ -137,10 +137,10 @@ class Adapter(nn.Module):
         super().__init__()
         self.linear = nn.Sequential(
             LinearBlock(in_features=latent_dim, 
-                        out_features=latent_dim/2,
+                        out_features=int(latent_dim/2),
                         use_norm=False),
 
-            LinearBlock(in_features=latent_dim/2, 
+            LinearBlock(in_features=int(latent_dim/2), 
                         out_features=representation_dim,
                         use_norm=False),
         )
