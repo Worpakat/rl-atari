@@ -53,6 +53,7 @@ class Evaluator:
         
         self.global_step = 0
         self.episode = 0
+        self.evaluation_episodes = self.config.evaluation_episodes
 
     def _setup(
         self,
@@ -95,11 +96,11 @@ class Evaluator:
             self.sequence_buffer.append(observation)
 
 
-    def _finished(self, episode: int, num_episodes: int) -> bool:
+    def _finished(self, episode: int) -> bool:
         """
         Returns whether evaluation has finished.
         """
-        return episode >= num_episodes
+        return episode >= self.evaluation_episodes
 
 
     def _evaluation_episode(self) -> dict:
@@ -196,8 +197,9 @@ class Evaluator:
         try:
             episode = 0
 
-            while not self._finished(episode, num_episodes):
-
+            while not self._finished(episode):
+                
+                print(f"Evaluating episode {episode} ...")
                 logs = self._evaluation_episode()
 
                 self.episode_logger.log(

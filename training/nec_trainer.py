@@ -505,7 +505,6 @@ class NECTrainer:
                 if self._should_evaluate():
                     print("Evaluating...")
                     evaluation_summary = self.evaluator.evaluate(
-                        num_episodes=self.config.evaluation_episodes,
                         render_mode='rgb_array',
                         record_video=self.config.record_video,
                         log_file_custom=f"ep_{self.episode}",
