@@ -25,6 +25,9 @@ class NECAgent(nn.Module):
         encoder: NECEncoder,
         dnds: list[DND],
         update_strategy: MemoryUpdateStrategy,
+        epsilon_start: float,
+        epsilon_end: float,
+        epsilon_decay: float
     ):
         super().__init__()
 
@@ -35,6 +38,12 @@ class NECAgent(nn.Module):
         self.original_update_strategy = OriginalNECUpdateStrategy(self.update_strategy.learning_rate)
         # ! This one used for 'warmup' phase update and inserts.
 
+        self.epsilon_end = epsilon_end
+        self.epsilon_decay = epsilon_decay
+
+        # Buffer used due to save as model state. 
+        self.register_buffer("current_epsilon", torch.tensor(epsilon_start, dtype=torch.float32)),
+    
     
     def encode(
         self,
@@ -120,10 +129,18 @@ class NECAgent(nn.Module):
             for dnd in self.dnds
         ]
     
+
+    def decay_epsilon(self) -> float:
+        """
+        Decays current epsilon value by a given factor.
+        """
+        if self.current_epsilon > self.epsilon_end:
+            self.current_epsilon = self.current_epsilon * self.epsilon_decay
+
+
     def choose_action(
         self,
         encoder_output: EncoderOutput,
-        epsilon: float = 0.0,
         exploration: bool = True
     ) -> int:
         """
@@ -144,7 +161,7 @@ class NECAgent(nn.Module):
         """
 
         # Exploration.
-        if exploration and random.random() < epsilon:
+        if exploration and random.random() < self.current_epsilon.item():
             return (random.randrange(len(self.dnds)), True)
 
         # Exploitation.

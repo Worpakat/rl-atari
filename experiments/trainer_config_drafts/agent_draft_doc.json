@@ -34,7 +34,7 @@
     "n_step": 10,                               // N-step Q-learning
     "epsilon_start": 1.0,                       // Initial epsilon
     "epsilon_end": 0.05,                        // Final epsilon
-    "epsilon_decay": 100000,                    // Linear/exponential decay parameter
+    "epsilon_decay": 0.99,                      // Linear decay parameter
 
     // -----------------------------
     // Encoder
@@ -45,21 +45,22 @@
     "input_height": 84,                         // Input height
     "input_width": 84,                          // Input width
 
-    "content_dim": 256,                         // Representation dimension
     "conv_channels": 256,                       // CNN channels
     "conv_block": 4,                            // Number of convolution blocks
     "conv_dim": 2048,                           // Flattened CNN output
     "hidden_dim": 512,                          // LSTM hidden dimension
     "lstm_layers": 1,                           // Number of LSTM layers
     "flatten_output": true,                     // Flatten encoder output
+    "latent_dim": 256,                          // LSTM Representation dimension
+    "adapter": true,                            // Use linear adapter
+    "representation_dim": 64,                  // Final representation size. Used only if linear adapter is used.
 
-    "representation_dim": 256,                  // Final representation size
 
     // -----------------------------
     // Optimization
     // -----------------------------
 
-    "encoder_learning_rate": 0.0001,            // Adam learning rate
+    "encoder_learning_rate": 0.001,            // Adam learning rate
     "kl_loss_weight": 0.2,                     // KL loss weight
     "key_updates": true,                        // Update DND keys
     "network_optimization_period": 4,           // Transitions between network updates

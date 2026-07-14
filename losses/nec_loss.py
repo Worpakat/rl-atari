@@ -28,10 +28,7 @@ def compute_network_loss(
     )
 
     # Total loss
-    total_loss = (
-        (1 - kl_loss_weight) * td_loss
-        + kl_loss_weight * kl_loss
-    )
+    total_loss = td_loss + kl_loss_weight * kl_loss
 
     return {
         "total_loss": total_loss,

@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 
-from models.dsae import (reparameterize,
+from models.dsae import (LinearBlock, reparameterize,
                          ConvBlock,
                          FrameEncoder,
                          DynamicsPrior)
@@ -11,7 +11,6 @@ from models.dsae import (reparameterize,
 @dataclass
 class EncoderOutput:
     representation: torch.Tensor
-    posterior_latents: torch.Tensor | None = None
     posterior_mean: torch.Tensor | None = None
     posterior_logvar: torch.Tensor | None = None
     prior_mean: torch.Tensor | None = None
@@ -116,7 +115,7 @@ class SequencePrior(nn.Module):
         self,
         batch_size: int,
         device: torch.device,
-        random_sampling: bool = True,
+        random_sampling: bool = False,
     ) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
 
         return self.prior(
@@ -125,6 +124,31 @@ class SequencePrior(nn.Module):
             random_sampling=random_sampling,
         )
     
+
+class Adapter(nn.Module):
+    """
+    Optional linear adapter layer to transform the flattened sequential encoder output 
+    to a suitable representation size. To use as DND keys.
+
+    latent_dim: Latent dimension
+    representation_dim: Final representation dimension, key dimension.
+    """
+    def __init__(self, latent_dim: int, representation_dim: int):
+        super().__init__()
+        self.linear = nn.Sequential(
+            LinearBlock(in_features=latent_dim, 
+                        out_features=latent_dim/2,
+                        use_norm=False),
+
+            LinearBlock(in_features=latent_dim/2, 
+                        out_features=representation_dim,
+                        use_norm=False),
+        )
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+        return self.linear(x)
+
+
 class SequentialEncoder(nn.Module):
     """
     Sequential latent encoder used by the Sequential NEC architecture.
@@ -156,6 +180,8 @@ class SequentialEncoder(nn.Module):
         hidden_dim: int = 512,
         lstm_layers: int = 1,
         flatten_output: bool = False,
+        adapter: bool = False,
+        representation_dim: int | None = None,
     ):
         super().__init__()
 
@@ -184,6 +210,11 @@ class SequentialEncoder(nn.Module):
             hidden_dim=hidden_dim,
         )
 
+        if adapter:
+            self.adapter = Adapter(latent_dim=latent_dim, representation_dim=representation_dim)
+        else:
+            self.adapter = nn.Identity()
+
     def forward(self, frames: torch.Tensor, random_sampling: bool = True) -> EncoderOutput:
         """
         Encodes a frame sequence into posterior and prior latent
@@ -195,22 +226,25 @@ class SequentialEncoder(nn.Module):
         posterior_mean, posterior_logvar, posterior_latents = (
             self.sequence_encoder(
                 frame_features,
-                random_sampling=True,
+                random_sampling=random_sampling,
             )
         )
 
         prior_mean, prior_logvar, _ = self.sequence_prior(
             batch_size=frames.size(0),
             device=frames.device,
-            random_sampling=True,
+            random_sampling=random_sampling,
         )
 
+        representation = posterior_latents
+
         if self.flatten_output:
-            posterior_latents = posterior_latents.flatten(start_dim=1)
+            representation = representation.flatten(start_dim=1)
+
+        representation = self.adapter(representation)
 
         return EncoderOutput(
-            representation=posterior_latents if random_sampling else posterior_mean,
-            posterior_latents=posterior_latents,
+            representation=representation,
             posterior_mean=posterior_mean,
             posterior_logvar=posterior_logvar,
             prior_mean=prior_mean,

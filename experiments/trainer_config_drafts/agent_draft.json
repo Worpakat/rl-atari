@@ -20,15 +20,16 @@
     "input_height": 176,                         
     "input_width": 160,                          
 
-    "content_dim": 256,                         
     "conv_channels": 256,                       
     "conv_block": 4,                            
     "conv_dim": 2048,                           
     "hidden_dim": 512,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
+    "latent_dim": 256,                          
+    "adapter": true,                            
+    "representation_dim": 64,                  
 
-    "representation_dim": 256,                  
 
     "encoder_learning_rate": 0.001,            
     "kl_loss_weight": 0.2,                
@@ -37,10 +38,10 @@
 
 
     "gamma": 0.99, 
-    "n_step": 10,                            
-    "epsilon_start": 1.0,                       
+    "n_step": 10,       
+    "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 100000,                    
+    "epsilon_decay": 0.09,                    
 
     "num_actions": 2,                           
 

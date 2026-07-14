@@ -218,7 +218,7 @@ class NECTrainer:
             )
 
             # Select action.
-            action, is_exploration = self.agent.choose_action(encoder_output, self.config.epsilon)
+            action, is_exploration = self.agent.choose_action(encoder_output)
 
             # Environment interaction.
             observation, reward, terminated, truncated, _ = self.environment.step(action)
@@ -258,6 +258,9 @@ class NECTrainer:
                     self.sequence_buffer.append(observation)
                 
                 break
+        
+        # Decay epsilon after each episode.
+        self.agent.decay_epsilon()
 
     def _memory_optimization_step(self):
         """

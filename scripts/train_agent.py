@@ -28,13 +28,15 @@ def train(config: TrainingConfig):
             input_channels = config.input_channels,
             input_height = config.input_height,
             input_width = config.input_width,
-            latent_dim = config.content_dim,
+            latent_dim = config.latent_dim,
             conv_channels = config.conv_channels,
             conv_block = config.conv_block,
             conv_dim = config.conv_dim,
             hidden_dim = config.hidden_dim,
             lstm_layers = config.lstm_layers,
             flatten_output = config.flatten_output,
+            adapter = config.adapter
+            representation_dim = config.representation_dim
         )
     )
 
@@ -90,6 +92,9 @@ def train(config: TrainingConfig):
         encoder = nec_encoder,
         dnds = dnds,
         update_strategy = update_strategy,
+        epsilon_start = config.epsilon_start,
+        epsilon_end = config.epsilon_end,
+        epsilon_decay = config.epsilon_decay
     ).to(device)
 
     # Initialize NEC Encoder Optimizer
