@@ -157,7 +157,11 @@ class NECTrainer:
                 state = convert_and_norm_sequence(raw_state)
                 
                 encoder_output = self.agent.encode(
-                    torch.from_numpy(state).unsqueeze(0).to(self.device),
+                    frames=(
+                        torch.from_numpy(state)
+                        .unsqueeze(0)
+                        .unsqueeze(2)
+                        .to(self.device)),
                     random_sampling=False,
                 )
 
@@ -245,7 +249,11 @@ class NECTrainer:
             state = convert_and_norm_sequence(raw_state)
 
             encoder_output = self.agent.encode(
-                frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
+                frames=(
+                    torch.from_numpy(state)
+                    .unsqueeze(0)
+                    .unsqueeze(2)
+                    .to(self.device)),
                 random_sampling=False,
             )
 
@@ -321,7 +329,11 @@ class NECTrainer:
                 state = convert_and_norm_sequence(transition.state)
 
                 encoder_output = self.agent.encode(
-                    frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
+                    frames=(
+                        torch.from_numpy(state)
+                        .unsqueeze(0)
+                        .unsqueeze(2)
+                        .to(self.device)),
                     random_sampling=False,
                 )
                 transition.representation = encoder_output.representation

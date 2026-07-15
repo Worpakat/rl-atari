@@ -179,7 +179,8 @@ class ReplayMemory(BaseBuffer):
             convert_and_norm_sequence(
                 np.stack([transition.state for transition in batch])
                 )
-            )
+            ).unsqueeze(2) # To Grayscale
+        
         actions = [transition.action for transition in batch]
         q_targets = torch.stack([transition.q_target for transition in batch])
         

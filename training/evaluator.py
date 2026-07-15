@@ -87,7 +87,7 @@ class Evaluator:
         
         if self.config.grayscale:
             environment = GrayscaleObservation(environment)
-            
+
         return environment
 
     def _setup(
@@ -136,7 +136,11 @@ class Evaluator:
             state = self.sequence_buffer.get_sequence() # Retrieve preprocessed
         
             encoder_output = self.agent.encode(
-                frames=torch.from_numpy(state).unsqueeze(0).to(self.device), 
+                frames=(
+                        torch.from_numpy(state)
+                        .unsqueeze(0)
+                        .unsqueeze(2)
+                        .to(self.device)),
                 random_sampling=False)
 
             action, _ = self.agent.choose_action(
