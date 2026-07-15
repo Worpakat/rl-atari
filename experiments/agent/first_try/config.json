@@ -9,12 +9,12 @@
 
     "reward_strategy": "scale",                 
     "reward_parameters": {                      
-        "transport": 0.0,   
+        "transport": -15.0,   
         "scale": 0.01
     },
     
     "warmup_steps": 1000,                       
-    "max_episodes": 50,           
+    "max_episodes": 100,           
     "batch_size": 32,                           
     "replay_memory_size": 50000,              
     "transition_queue_size": 1000,        
@@ -22,9 +22,9 @@
 
     "checkpoint_start": 0,
     "checkpoint_period": 10,
-    "save_replay_memory": true,
+    "save_replay_memory": false,
     "evaluation_period": 10,                   
-    "evaluation_episodes": 1,                  
+    "evaluation_episodes": 2,                  
     "record_video": true,                         
 
 
@@ -32,7 +32,7 @@
     "n_step": 100,       
     "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 0.95,                    
+    "epsilon_decay": 0.97,                    
 
 
     "sequence_length": 4,                       
@@ -51,18 +51,18 @@
     "representation_dim": 64,                  
 
 
-    "encoder_learning_rate": 0.0002,            
+    "encoder_learning_rate": 0.00001,            
     "kl_loss_weight": 0.2,                
     "network_optimization_period": 10,
     "key_updates": true, 
 
 
     "dnd_max_memory": 20000,                   
-    "dnd_num_neighbors": 50,                    
+    "dnd_num_neighbors": 100,                    
 
-    "dnd_duplicate_threshold": 0.01,            
+    "dnd_duplicate_threshold": 0.001,            
 
-    "dnd_learning_rate": 0.0002,                
+    "dnd_learning_rate": 0.00001,                
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
