@@ -1,11 +1,11 @@
 import gymnasium as gym
-from gymnasium.wrappers import GrayscaleObservation
+from gymnasium.wrappers import GrayscaleObservation, RecordEpisodeStatistics
 import ale_py
 import json
 
 env = gym.make("ALE/Riverraid-v5", render_mode="human")
 env = GrayscaleObservation(env)
-
+env = RecordEpisodeStatistics(env)
 
 obs, info = env.reset()
 

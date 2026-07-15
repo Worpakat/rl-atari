@@ -51,7 +51,7 @@
     "representation_dim": 64,                  
 
 
-    "encoder_learning_rate": 0.001,            
+    "encoder_learning_rate": 0.0002,            
     "kl_loss_weight": 0.2,                
     "network_optimization_period": 10,
     "key_updates": true, 
@@ -62,8 +62,8 @@
 
     "dnd_duplicate_threshold": 0.01,            
 
-    "dnd_learning_rate": 0.001,                
-    "dnd_q_learning_rate": 0.1,   
+    "dnd_learning_rate": 0.0002,                
+    "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
     "dnd_neighbor_shrink": 0.5,                 

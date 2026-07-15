@@ -65,8 +65,6 @@ class Evaluator:
         """
         environment = gym.make(self.config.environment_name, render_mode=render_mode)
 
-        environment = RecordEpisodeStatistics(environment)
-
         environment = RewardWrapper(environment, strategy='identity')
         # ! For benchmarking, we need to use the original rewards.
 
@@ -76,7 +74,6 @@ class Evaluator:
                 action_mapping=self.config.action_mapping,
             )
 
-        
         if self.config.record_video:
             environment = RecordVideo(
                 environment,
@@ -87,6 +84,9 @@ class Evaluator:
         
         if self.config.grayscale:
             environment = GrayscaleObservation(environment)
+        
+        # Keep this wrapper at the end.
+        environment = RecordEpisodeStatistics(environment)
 
         return environment
 
