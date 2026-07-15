@@ -177,12 +177,12 @@ class DND:
 
         pending_size = len(self._pending_keys)
 
-        pending_keys = torch.stack(self._pending_keys).squeeze(dim=1)
-        pending_values = torch.stack(self._pending_values)
+        pending_keys = torch.stack(self._pending_keys).squeeze(dim=1).to(self.device)
+        pending_values = torch.stack(self._pending_values).to(self.device)
 
         pending_auxiliary = None
         if self.use_auxiliary:
-            pending_auxiliary = torch.stack(self._pending_auxiliary)
+            pending_auxiliary = torch.stack(self._pending_auxiliary).to(self.device)
 
         if self.memory_size < self.max_memory:
 
