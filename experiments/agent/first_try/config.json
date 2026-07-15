@@ -15,7 +15,7 @@
     
     "warmup_steps": 1000,                       
     "max_episodes": 100,           
-    "batch_size": 32,                           
+    "batch_size": 64,                           
     "replay_memory_size": 50000,              
     "transition_queue_size": 1000,        
     "cache_representations": true,      
@@ -42,13 +42,13 @@
 
     "conv_channels": 4,                       
     "conv_block": 4,                            
-    "conv_dim": 64,                           
+    "conv_dim": 32,                           
     "hidden_dim": 128,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 128,                          
+    "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 64,                  
+    "representation_dim": 32,                  
 
 
     "encoder_learning_rate": 0.00001,            
