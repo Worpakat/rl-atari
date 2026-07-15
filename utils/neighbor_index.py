@@ -112,7 +112,7 @@ class FaissIndex(NeighborIndex):
 
 
         distance = torch.norm(
-            self.keys[index] - query
+            self.keys[index] - query.to(self.keys.device)
         )
 
 
