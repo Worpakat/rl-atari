@@ -227,11 +227,11 @@ class NECAgent(nn.Module):
 
         return q_targets
 
-    def contains(self ,key: torch.Tensor, action: int) -> bool:
+    def get_memory_index(self ,key: torch.Tensor, action: int) -> int | None:
         """
         Returns whether the given key already exists in committed memory.
         """
-        return self.dnds[action].contains(key)
+        return self.dnds[action].get_index(key)
 
     def create_memory_update_request(
         self,
@@ -239,13 +239,30 @@ class NECAgent(nn.Module):
         q_target: torch.Tensor,
         lookup_result: LookupResult|None,
         update_or_insert: str = 'insert',
+        index: int|None = None,
         warmup: bool = False,
         exploration_update: bool = False,
         ) -> MemoryUpdateRequest | list[MemoryUpdateRequest]:
         """
         Makes self.update_strategy calculate update values for given transition and returns 
         MemoryUpdateRequest or list of MemoryUpdateRequest objects.
+
+        update_or_insert:
+            'insert' or 'update'
+
+        index:
+            Index of the primary memory entry to update. ``None`` if a
+            new entry should be inserted. 'update' only.
+
+        warmup:
+            Whether the agent is in warmup phase.
+
+        exploration_update:
+            Whether the agent is allowed to update values during insertion for 
+            update strategy option 1 and 2 when action is chosen by exploration.
+            'insert' only.
         """
+
         
         if lookup_result is None: ### !!! CARRY THIS PART to UPDATE STRATEGY CLASS TOO !!! ###
             dnd = self.dnds[transition.action]
@@ -260,8 +277,9 @@ class NECAgent(nn.Module):
 
             #-----------------------------------------------------------------
             
+            #__Original_Bellman_Update
+            
             # No insert required, update given keys value with target by original bellman equation.
-            index = dnd.get_index(transition.representation)
             current_value = dnd.get_value(index)
             
             update_value = self.update_strategy.calculate_bellman_update_change(current_value, q_target)
@@ -284,7 +302,8 @@ class NECAgent(nn.Module):
                                             transition=transition,
                                             q_target=q_target,
                                             lookup_result=lookup_result,
-                                            exploration_update=exploration_update,)
+                                            exploration_update=exploration_update,
+                                            )
                         
     def apply_memory_updates(
         self,

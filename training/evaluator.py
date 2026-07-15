@@ -9,7 +9,7 @@ import ale_py
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 
-from utils.action_wrapper import RestrictedActionWrapper
+from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
 from utils.metrics_logger import MetricsLogger
 from utils.misc import ensure_directory, preprocess_frame
 from utils.data_buffers import FrameSequenceBuffer
@@ -55,36 +55,49 @@ class Evaluator:
         self.episode = 0
         self.evaluation_episodes = self.config.evaluation_episodes
 
+    def _init_environment(
+            self,
+            render_mode: str | None = None,
+            video_file_custom : str | None = None
+    ):
+        """
+        Creates the training environment.
+        """
+        environment = gym.make(self.config.environment_name, render_mode=render_mode)
+
+        if self.config.action_mapping: # In case of mapping is changed.
+            environment = RestrictedActionWrapper(
+                environment,
+                action_mapping=self.config.action_mapping,
+            )
+
+        environment = RewardWrapper(environment, strategy='identity')
+        # ! For benchmarking, we need to use the original rewards.
+
+        if self.config.record_video:
+            environment = RecordVideo(
+                environment,
+                video_folder=self.videos_dir,
+                name_prefix=f"evaluation_{video_file_custom}",
+                episode_trigger=lambda _: True,
+            )
+
+        environment = RecordEpisodeStatistics(environment)
+
+        return environment
+
     def _setup(
         self,
         render_mode: str | None = None,
-        record_video: bool = False,
         video_file_custom : str | None = None
     ):
         """
         Creates the evaluation environment.
         """
-
         if render_mode is None:
-            render_mode = "rgb_array" if record_video else None
+            render_mode = "rgb_array" if self.config.record_video else None
 
-        self.environment = gym.make(self.config.environment_name, render_mode=render_mode)
-
-        if self.config.record_video:
-            self.environment = RecordVideo(
-                self.environment,
-                video_folder=self.videos_dir,
-                name_prefix=f"evaluation_{video_file_custom}",
-                episode_trigger=lambda _: True,
-            )
-        
-        if self.config.action_mapping: # In case of mapping is changed.
-            self.environment = RestrictedActionWrapper(
-                self.environment,
-                action_mapping=self.config.action_mapping,
-            )
-
-        self.environment = RecordEpisodeStatistics(self.environment)
+        self.environment = self._init_environment(render_mode, video_file_custom)
 
         observation, _ = self.environment.reset()
 
@@ -107,6 +120,7 @@ class Evaluator:
         """
         Runs one complete evaluation episode.
         """
+        
         episode_reward = 0.0
         episode_length = 0
 
@@ -182,7 +196,6 @@ class Evaluator:
         self,
         render_mode: str | None = None,
         log_file_custom: str | None = None,
-        record_video: bool = False,
         video_file_custom : str | None = None
     ) -> dict:
         """
@@ -191,7 +204,6 @@ class Evaluator:
 
         self._setup(
             render_mode=render_mode,
-            record_video=record_video,
             video_file_custom=video_file_custom
         )
 

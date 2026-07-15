@@ -4,6 +4,11 @@
     "num_actions": 6,                           
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
+    "reward_strategy": "scale",                 
+    "reward_parameters": {                      
+        "transport": 0.0,   
+        "scale": 0.01
+    },
     
     "warmup_steps": 1000,                       
     "max_episodes": 10,           

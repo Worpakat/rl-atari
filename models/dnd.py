@@ -118,7 +118,7 @@ class DND:
         """
         return self.memory_size
     
-    def get_index(self, key: torch.Tensor) -> int:
+    def get_index(self, key: torch.Tensor) -> int | None:
         """
         Returns the index of the given key in the searchable memory.s
         """

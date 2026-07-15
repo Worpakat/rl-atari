@@ -8,7 +8,7 @@ import gymnasium as gym
 import ale_py
 
 from training.evaluator import Evaluator
-from utils.action_wrapper import RestrictedActionWrapper
+from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 from models.nec import NECAgent
@@ -60,14 +60,8 @@ class NECTrainer:
                 )
         self.episode_reward = 0
 
-        self.environment = gym.make(config.environment_name, render_mode=None)
-        
-        if self.config.action_mapping: # In case of mapping is changed.
-            self.environment = RestrictedActionWrapper(
-                self.environment,
-                action_mapping=self.config.action_mapping,
-            )
-
+        self.environment = self._init_environment()
+    
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue = TransitionQueue(capacity=config.transition_queue_size)
@@ -80,11 +74,27 @@ class NECTrainer:
         self.checkpoint_start = config.checkpoint_start
     
     
+    def _init_environment(self):
+        """
+        Creates the training environment.
+        """
+        environment = gym.make(self.config.environment_name, render_mode=None)
+
+        if self.config.action_mapping: # In case of mapping is changed.
+            environment = RestrictedActionWrapper(
+                environment,
+                action_mapping=self.config.action_mapping,
+            )
+        environment = RewardWrapper(environment,
+                                    strategy=self.config.reward_strategy,
+                                    parameters=self.config.reward_parameters)
+
+        return environment
+
     def _setup(self):
         """
         Initializes the environment and training buffers.
         """
-
         observation, _ = self.environment.reset()
 
         observation = preprocess_frame(observation)
@@ -112,7 +122,6 @@ class NECTrainer:
         Populates the replay memory and DNDs using a random policy before
         reinforcement learning begins.
         """
-
         print("Starting warmup...")
 
         while not self._warmup_finished():
@@ -176,9 +185,9 @@ class NECTrainer:
             for transition, q_target in zip(self.transition_queue, q_targets):
 
                 # Determine whether the state already exists in memory.
-                contains = self.agent.contains(transition.representation, transition.action)
+                index = self.agent.get_memory_index(transition.representation, transition.action)
 
-                if contains: # State exists in memory.
+                if index: # State exists in memory.
 
                     # Update memory with original Bellman update
                     update_request = self.agent.create_memory_update_request(
@@ -186,6 +195,8 @@ class NECTrainer:
                         q_target=q_target,
                         lookup_result=None,
                         update_or_insert="update",
+                        index=index,
+                        warmup=True,
                     )
                     updates_to_be_applied.append(update_request)
 
@@ -306,15 +317,18 @@ class NECTrainer:
                 
 
             # Determine whether the state already exists in memory.
-            contains = self.agent.contains(transition.representation, transition.action)
+            index = self.agent.get_memory_index(transition.representation, transition.action)
 
-            if contains: # State exists in memory.
+            if index: # State exists in memory.
 
                 # Update memory with original Bellman update
                 update_request = self.agent.create_memory_update_request(
                     transition=transition,
                     q_target=q_target,
-                    lookup_result=None
+                    lookup_result=None,
+                    update_or_insert="update",
+                    index=index,
+                    warmup=False,
                 )
                 updates_to_be_applied.append(update_request)
 
@@ -508,7 +522,6 @@ class NECTrainer:
                     print("Evaluating...")
                     evaluation_summary = self.evaluator.evaluate(
                         render_mode='rgb_array',
-                        record_video=self.config.record_video,
                         log_file_custom=f"ep_{self.episode}",
                         video_file_custom=f"ep_{self.episode}"
                     )

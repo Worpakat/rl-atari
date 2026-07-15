@@ -8,6 +8,14 @@
     "num_actions": 6,                           // Action count
     "action_mapping": [0, 1, 2, 3, 4, 5],       // Action mapping
     
+    "reward_strategy": "scale",                 // Reward strategy. "identity", "scale", "clip", "tanh", "log"
+    "reward_parameters": {                      // Reward parameters
+        "transport": 0.0,   // Move before actual modification. Strat: all except 'identity'
+        "scale": 0.01,       // Reward scaling factor. Strat: 'scale', 'tanh', 'log'
+        "maximum": 1.0,     // Maximum reward value. Strat: 'clip'
+        "minimum": -1.0     // Minimum reward value. Strat: 'clip'
+    }
+    
     // -----------------------------
     // Training
     // -----------------------------
