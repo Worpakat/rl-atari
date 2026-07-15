@@ -415,7 +415,7 @@ class NECTrainer:
                 self.agent.step_key_optimizers()
 
             self.optimization_step += 1
-            
+
             # Store loss to be logged.
             loss['optimization_step'] = self.optimization_step
             losses.append(loss)
@@ -466,7 +466,7 @@ class NECTrainer:
         Saves a training checkpoint periodically.
         """
         
-        print("Checkpoint check 0")
+        print("Checkpoint check: Saving checkpoint...")
         
         checkpoint = {
             "model": self.agent.state_dict(),
@@ -483,10 +483,22 @@ class NECTrainer:
             #     "dynamics_kl_loss": logs["dynamics_kl_loss"],
             # },
             "replay_memory": self.replay_memory.state_dict(),
-            "config": self.config.to_dict(),
+            # "config": self.config.to_dict(),
         }
         
-        print("Checkpoint check 1")
+        print(f"Replay memory length: {len(self.replay_memory)}")
+        print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()}")
+
+        dnd_sizes = []
+        for i, dnd in enumerate(self.agent.dnds):
+            dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
+
+        print(f"DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
+
+        print("---------------------------------------")
+        print("AGENT STATE DICTIONARY:")
+        print(self.agent.state_dict())
+
 
         self.checkpoint_manager.save(
             checkpoint,
@@ -494,7 +506,7 @@ class NECTrainer:
             colab_execution=self.config.colab_execution
         )
 
-        print("Checkpoint check 2")
+        print("Checkpoint check: Checkpoint saved.")
 
         self.checkpoint_start = self.optimization_step
 

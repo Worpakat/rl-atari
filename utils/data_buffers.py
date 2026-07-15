@@ -169,6 +169,10 @@ class ReplayMemory(BaseBuffer):
         
         return states, actions, q_targets
 
+    def get_states_total_size(self) -> int:
+        """Returns the total size of the states in MB."""
+        return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
+
 class TransitionQueue(BaseBuffer):
 
     def __getitem__(
