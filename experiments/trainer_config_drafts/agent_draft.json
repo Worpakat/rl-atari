@@ -1,4 +1,6 @@
 {
+    "colab_execution": true,
+
     "experiment_dir": "experiments/agent/test",
     "environment_name": "ALE/Riverraid-v5",    
     "num_actions": 6,                           

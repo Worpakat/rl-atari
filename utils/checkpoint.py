@@ -29,7 +29,7 @@ class CheckpointManager:
     def __init__(self, experiment_dir: str | Path):
         self.checkpoints_dir = ensure_directory(Path(experiment_dir) / "checkpoints")
 
-    def save(self, checkpoint: dict, filename: str) -> Path:
+    def save(self, checkpoint: dict, filename: str, colab_execution: bool) -> Path:
         """
         Saves a checkpoint dictionary.
 
@@ -50,7 +50,13 @@ class CheckpointManager:
         if not filename.endswith(".pt"):
             filename += ".pt"
 
-        filepath = self.checkpoints_dir / filename
+        if colab_execution: # Save to colab session local storage
+            local_checkpoint_dir = Path("/content/checkpoints")
+            local_checkpoint_dir.mkdir(exist_ok=True)
+            filepath = local_checkpoint_dir / filename
+
+        else: # Save to experiment's checkpoints directory
+            filepath = self.checkpoints_dir / filename
 
         torch.save(checkpoint, filepath)
 

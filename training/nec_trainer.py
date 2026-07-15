@@ -489,7 +489,8 @@ class NECTrainer:
 
         self.checkpoint_manager.save(
             checkpoint,
-            filename=f"ep_{self.episode}_step_{self.optimization_step}"
+            filename=f"ep_{self.episode}_step_{self.optimization_step}",
+            colab_execution=self.config.colab_execution
         )
 
         print("Checkpoint check 2")
