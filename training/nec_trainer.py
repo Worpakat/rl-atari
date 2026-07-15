@@ -61,9 +61,11 @@ class NECTrainer:
                     self.experiment_dir, 
                     self.device)
                 )
-        self.episode_reward = 0
+        
 
+        self.episode_reward = 0
         self.environment = self._init_environment()
+        self.death_penalty = self.config.death_penalty
     
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
@@ -111,6 +113,7 @@ class NECTrainer:
 
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
+
   
     def _finished(self) -> bool:
         """
@@ -124,34 +127,35 @@ class NECTrainer:
         """
         return self.global_step >= self.config.warmup_steps
 
-    def warmup(self):
+    def warmup(self):     
         """
         Populates the replay memory and DNDs using a random policy before
         reinforcement learning begins.
         """
         print("Starting warmup...")
-
+        
+        setup_flag = True # Used to whether to reset the environment or not.
+        # Reset the environment if episode is over. Do not reset if episode is not over but only death occurred.
+        
         while not self._warmup_finished():
-
-            self._setup()
+            
+            if setup_flag:
+                info = self._setup()
+                setup_flag = False
             
             counter = 0
-            
+            current_lives = self.environment.unwrapped.ale.lives()
+
             while True:
                 counter += 1
 
                 action = self.environment.action_space.sample()
 
-                observation, reward, terminated, truncated, _ = (
-                    self.environment.step(action)
-                )
+                observation, reward, terminated, truncated, info = self.environment.step(action)
 
                 observation = cut_and_transpose_frame(observation)
 
                 self.sequence_buffer.append(observation)
-
-                if not self.sequence_buffer.is_ready():
-                    continue
 
                 raw_state = self.sequence_buffer.get_raw_sequence()
                 state = convert_and_norm_sequence(raw_state)
@@ -164,6 +168,10 @@ class NECTrainer:
                         .to(self.device)),
                     random_sampling=False,
                 )
+
+                # Check for death, if so, apply given death penalty.
+                if self.death_penalty and info["lives"] < current_lives: 
+                    reward = self.death_penalty
 
                 self.transition_queue.append(
                     Transition(
@@ -181,9 +189,23 @@ class NECTrainer:
 
                 self.global_step += 1
 
-                if terminated or truncated or self.transition_queue.is_full():
+                if terminated or truncated: # Episode is over.
                     print(f"Transition Queue has taken {counter} transitions; Transition Queue size: {len(self.transition_queue)}")
+                    setup_flag = True # Reset the environment
                     break
+
+                if (self.death_penalty and info["lives"] < current_lives)  or self.transition_queue.is_full():
+                    print (f"Remaining lives: {info['lives']}")
+                    print(f"Transition Queue has taken {counter} transitions; Transition Queue size: {len(self.transition_queue)}")
+                    # Do not reset the environment, since the episode is not over
+
+                    # ! BUT: Fill sequence buffer with last state.
+                    self.sequence_buffer.clear()
+                    for _ in range(self.config.sequence_length):
+                        self.sequence_buffer.append(observation)
+                    
+                    break 
+                    ## ! We break anyway, to not connect death previous and after episodes while calculating Q-targets.
 
             q_targets = self.agent.compute_q_targets(
                 transition_queue=self.transition_queue,
@@ -231,6 +253,9 @@ class NECTrainer:
 
             self.agent.apply_memory_updates(updates_to_be_applied)
 
+            # Clear transition queue in case of warmup and episode is not over.
+            self.transition_queue.clear()
+
 
         print("Warmup completed.")
 
@@ -261,11 +286,16 @@ class NECTrainer:
             action, is_exploration = self.agent.choose_action(encoder_output)
 
             # Environment interaction.
-            observation, reward, terminated, truncated, _ = self.environment.step(action)
-            self.episode_reward += reward
+            observation, reward, terminated, truncated, info = self.environment.step(action)
 
             observation = cut_and_transpose_frame(observation)
             self.sequence_buffer.append(observation)
+            
+            # # Check for death, if so, apply given death penalty.
+            # if self.death_penalty and info["lives"] < current_lives: 
+            #     reward = self.death_penalty
+            
+            self.episode_reward += reward
             
             # Store transition.
             self.transition_queue.append(
