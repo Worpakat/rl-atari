@@ -155,9 +155,6 @@ class NECTrainer:
 
                 raw_state = self.sequence_buffer.get_raw_sequence()
                 state = convert_and_norm_sequence(raw_state)
-                
-                frames = torch.from_numpy(state).unsqueeze(0).unsqueeze(2).to(self.device)
-                print(f"Frames shape: {frames.shape}")
 
                 encoder_output = self.agent.encode(
                     frames=(
