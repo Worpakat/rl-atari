@@ -3,6 +3,7 @@
 
     "experiment_dir": "experiments/agent/test",
     "environment_name": "ALE/Riverraid-v5",    
+    "grayscale": true,
     "num_actions": 6,                           
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
@@ -21,6 +22,7 @@
 
     "checkpoint_start": 0,
     "checkpoint_period": 2,
+    "save_replay_memory": true,
     "evaluation_period": 5,                   
     "evaluation_episodes": 1,                  
     "record_video": true,                         
@@ -34,7 +36,7 @@
 
 
     "sequence_length": 4,                       
-    "input_channels": 3,                        
+    "input_channels": 1,                        
     "input_height": 176,                         
     "input_width": 160,                          
 

@@ -4,14 +4,14 @@ import numpy as np
 import torch
 
 import gymnasium as gym
-from gymnasium.wrappers import RecordEpisodeStatistics, RecordVideo
+from gymnasium.wrappers import GrayscaleObservation, RecordEpisodeStatistics, RecordVideo
 import ale_py
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 
 from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
 from utils.metrics_logger import MetricsLogger
-from utils.misc import ensure_directory, preprocess_frame
+from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence
 from utils.data_buffers import FrameSequenceBuffer
 from utils.training_config import TrainingConfig
 
@@ -65,15 +65,18 @@ class Evaluator:
         """
         environment = gym.make(self.config.environment_name, render_mode=render_mode)
 
+        environment = RecordEpisodeStatistics(environment)
+
+        environment = RewardWrapper(environment, strategy='identity')
+        # ! For benchmarking, we need to use the original rewards.
+
         if self.config.action_mapping: # In case of mapping is changed.
             environment = RestrictedActionWrapper(
                 environment,
                 action_mapping=self.config.action_mapping,
             )
 
-        environment = RewardWrapper(environment, strategy='identity')
-        # ! For benchmarking, we need to use the original rewards.
-
+        
         if self.config.record_video:
             environment = RecordVideo(
                 environment,
@@ -81,9 +84,10 @@ class Evaluator:
                 name_prefix=f"evaluation_{video_file_custom}",
                 episode_trigger=lambda _: True,
             )
-
-        environment = RecordEpisodeStatistics(environment)
-
+        
+        if self.config.grayscale:
+            environment = GrayscaleObservation(environment)
+            
         return environment
 
     def _setup(
@@ -101,7 +105,7 @@ class Evaluator:
 
         observation, _ = self.environment.reset()
 
-        observation = preprocess_frame(observation)
+        observation = cut_and_transpose_frame(observation)
 
         self.sequence_buffer.clear()
 
@@ -129,24 +133,20 @@ class Evaluator:
 
         while not (terminated or truncated):
 
-            frames = torch.from_numpy(
-                self.sequence_buffer.get_sequence()
-            ).unsqueeze(0).to(self.device)
+            state = self.sequence_buffer.get_sequence() # Retrieve preprocessed
+        
+            encoder_output = self.agent.encode(
+                frames=torch.from_numpy(state).unsqueeze(0).to(self.device), 
+                random_sampling=False)
 
-            self.agent.eval()
-
-            with torch.inference_mode():
-                encoder_output = self.agent.encode(frames=frames, random_sampling=False)
-
-                action, _ = self.agent.choose_action(
-                    encoder_output=encoder_output,
-                    exploration=False,
-                )
+            action, _ = self.agent.choose_action(
+                encoder_output=encoder_output,
+                exploration=False,
+            )
 
             observation, reward, terminated, truncated, _ = self.environment.step(action)
 
-            observation = preprocess_frame(observation)
-
+            observation = cut_and_transpose_frame(observation)
             self.sequence_buffer.append(observation)
 
             episode_reward += reward
@@ -156,7 +156,7 @@ class Evaluator:
 
         observation, _ = self.environment.reset()
 
-        observation = preprocess_frame(observation)
+        observation = convert_and_norm_sequence(observation)
 
         self.sequence_buffer.clear()
 
@@ -210,20 +210,24 @@ class Evaluator:
         try:
             episode = 0
 
-            while not self._finished(episode):
-                
-                print(f"Evaluating episode {episode} ...")
-                logs = self._evaluation_episode()
+            self.agent.eval() # Set agent to evaluation mode
+            with torch.inference_mode():
 
-                self.episode_logger.log(
-                    environment_step=self.global_step,
-                    episode=episode,
-                    **logs,
-                )
+                while not self._finished(episode):
+                    
+                    print(f"Evaluating episode {episode} ...")
+                    logs = self._evaluation_episode()
 
-                episode += 1
+                    self.episode_logger.log(
+                        environment_step=self.global_step,
+                        episode=episode,
+                        **logs,
+                    )
+
+                    episode += 1
 
 
+            # Summaries of each evaluation episodes
             summary = self._summarize()
 
             # Save metrics

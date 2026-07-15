@@ -7,9 +7,12 @@ import torch
 import gymnasium as gym
 import ale_py
 
-from training.evaluator import Evaluator
 from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
+from gymnasium.wrappers import GrayscaleObservation
 gym.register_envs(ale_py) # Explicitly register the Atari games to gym
+
+
+from training.evaluator import Evaluator
 
 from models.nec import NECAgent
 
@@ -22,7 +25,7 @@ from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
 from utils.checkpoint import CheckpointManager
 
-from utils.misc import ensure_directory, preprocess_frame
+from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence
 
 from losses.nec_loss import compute_network_loss
 
@@ -80,14 +83,18 @@ class NECTrainer:
         """
         environment = gym.make(self.config.environment_name, render_mode=None)
 
+        environment = RewardWrapper(environment,
+                                    strategy=self.config.reward_strategy,
+                                    parameters=self.config.reward_parameters)
+
         if self.config.action_mapping: # In case of mapping is changed.
             environment = RestrictedActionWrapper(
                 environment,
                 action_mapping=self.config.action_mapping,
             )
-        environment = RewardWrapper(environment,
-                                    strategy=self.config.reward_strategy,
-                                    parameters=self.config.reward_parameters)
+
+        if self.config.grayscale:
+            environment = GrayscaleObservation(environment)
 
         return environment
 
@@ -97,7 +104,7 @@ class NECTrainer:
         """
         observation, _ = self.environment.reset()
 
-        observation = preprocess_frame(observation)
+        observation = cut_and_transpose_frame(observation)
 
         self.sequence_buffer.clear()
         self.transition_queue.clear()
@@ -139,14 +146,15 @@ class NECTrainer:
                     self.environment.step(action)
                 )
 
-                observation = preprocess_frame(observation)
+                observation = cut_and_transpose_frame(observation)
 
                 self.sequence_buffer.append(observation)
 
                 if not self.sequence_buffer.is_ready():
                     continue
 
-                state = self.sequence_buffer.get_sequence()
+                raw_state = self.sequence_buffer.get_raw_sequence()
+                state = convert_and_norm_sequence(raw_state)
                 
                 encoder_output = self.agent.encode(
                     torch.from_numpy(state).unsqueeze(0).to(self.device),
@@ -155,7 +163,7 @@ class NECTrainer:
 
                 self.transition_queue.append(
                     Transition(
-                        state=state,
+                        state=raw_state,
                         action=action,
                         reward=reward,
                         representation = (
@@ -233,7 +241,8 @@ class NECTrainer:
         while not (terminated or truncated) and not self.transition_queue.is_full():
 
             # Encode current state.
-            state = self.sequence_buffer.get_sequence()
+            raw_state = self.sequence_buffer.get_raw_sequence()
+            state = convert_and_norm_sequence(raw_state)
 
             encoder_output = self.agent.encode(
                 frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
@@ -247,13 +256,13 @@ class NECTrainer:
             observation, reward, terminated, truncated, _ = self.environment.step(action)
             self.episode_reward += reward
 
-            observation = preprocess_frame(observation)
+            observation = cut_and_transpose_frame(observation)
             self.sequence_buffer.append(observation)
             
             # Store transition.
             self.transition_queue.append(
                 Transition(
-                    state=state,
+                    state=raw_state,
                     action=action,
                     reward=reward,
                     representation = (
@@ -273,7 +282,7 @@ class NECTrainer:
 
                 observation, _ = self.environment.reset()
 
-                observation = preprocess_frame(observation)
+                observation = convert_and_norm_sequence(observation)
 
                 self.sequence_buffer.clear()
 
@@ -309,8 +318,10 @@ class NECTrainer:
 
             # If representation stored in the transition is `None`, compute it.
             if representation is None: 
+                state = convert_and_norm_sequence(transition.state)
+
                 encoder_output = self.agent.encode(
-                    frames=torch.from_numpy(transition.state).unsqueeze(0).to(self.device),
+                    frames=torch.from_numpy(state).unsqueeze(0).to(self.device),
                     random_sampling=False,
                 )
                 transition.representation = encoder_output.representation
@@ -466,9 +477,9 @@ class NECTrainer:
         Saves a training checkpoint periodically.
         """
         
-        print("Checkpoint check: Saving checkpoint...")
+        print("Saving model...")
         
-        checkpoint = {
+        model_checkpoint = {
             "model": self.agent.state_dict(),
             "optimizer": self.encoder_optimizer.state_dict(),
             "training_state": {
@@ -482,30 +493,46 @@ class NECTrainer:
             #     "content_kl_loss": logs["content_kl_loss"],
             #     "dynamics_kl_loss": logs["dynamics_kl_loss"],
             # },
-            "replay_memory": self.replay_memory.state_dict(),
-            # "config": self.config.to_dict(),
         }
-        
-        print(f"Replay memory length: {len(self.replay_memory)}")
-        print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()}")
-
+    
         dnd_sizes = []
         for i, dnd in enumerate(self.agent.dnds):
             dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
 
         print(f"DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
 
-        print("---------------------------------------")
-        print("AGENT STATE DICTIONARY:")
-        print(self.agent.state_dict())
-
+        # print("---------------------------------------")
+        # print("AGENT STATE DICTIONARY:")
+        # print(self.agent.state_dict())
 
         self.checkpoint_manager.save(
-            checkpoint,
-            filename=f"ep_{self.episode}_step_{self.optimization_step}",
+            model_checkpoint,
+            filename=f"model_ep_{self.episode}_step_{self.optimization_step}",
             colab_execution=self.config.colab_execution
         )
 
+        if self.config.save_replay_memory:
+            print(f"Replay memory length: {len(self.replay_memory)}")
+            print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()}")
+
+            print("Saving replay memory...")
+
+            replay_memory_checkpoint = {
+                "replay_memory": self.replay_memory.state_dict(),
+                "training_state": {
+                    "optimization_step": self.optimization_step,
+                    "environment_step": self.global_step,
+                    "episode": self.episode,
+                }
+            }
+      
+            self.checkpoint_manager.save(
+                replay_memory_checkpoint,
+                filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
+                colab_execution=self.config.colab_execution
+            )
+
+        
         print("Checkpoint check: Checkpoint saved.")
 
         self.checkpoint_start = self.optimization_step

@@ -7,6 +7,8 @@ import random
 import numpy as np
 import torch
 
+from utils.misc import convert_and_norm_sequence
+
 
 
 class FrameSequenceBuffer:
@@ -32,17 +34,27 @@ class FrameSequenceBuffer:
     def is_ready(self) -> bool:
         return len(self._buffer) == self.sequence_length
 
-    def get_sequence(self) -> np.ndarray:
+    def get_raw_sequence(self) -> np.ndarray:
         """
         Returns
         -------
         np.ndarray
-            Numpy array of shape (sequence_length, C, H, W).
+            Numpy array of shape (sequence_length, H, W) or (sequence_length, C, H, W).
         """
         if not self.is_ready():
             raise RuntimeError("Frame sequence is not yet complete.")
-
+        
         return np.stack(tuple(self._buffer), axis=0)
+    
+
+    def get_sequence(self) -> torch.Tensor:
+        """
+        Returns
+        -------
+        np.ndarray
+            Preprocessed numpy array of shape (sequence_length, C, H, W).
+        """
+        return convert_and_norm_sequence(self.get_raw_sequence())
 
 
 
@@ -163,7 +175,11 @@ class ReplayMemory(BaseBuffer):
         Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
         """
 
-        states = torch.from_numpy(np.stack([transition.state for transition in batch]))
+        states = torch.from_numpy(
+            convert_and_norm_sequence(
+                np.stack([transition.state for transition in batch])
+                )
+            )
         actions = [transition.action for transition in batch]
         q_targets = torch.stack([transition.q_target for transition in batch])
         

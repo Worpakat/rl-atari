@@ -5,6 +5,7 @@
 
     "experiment_dir": "experiments/agent/test", // Gymnasium environment name
     "environment_name": "ALE/Riverraid-v5",     // Output directory
+    "grayscale": true,                          // Grayscale observation
     "num_actions": 6,                           // Action count
     "action_mapping": [0, 1, 2, 3, 4, 5],       // Action mapping
     
@@ -33,6 +34,7 @@
 
     "checkpoint_start": 0,                     // Starting optimization step after checkpoint
     "checkpoint_period": 10,                   // Episodes between checkpoints
+    "save_replay_memory": true,                // Whether save replay memory during checkpoint
     "evaluation_period": 10,                   // Episodes between evaluations
     "evaluation_episodes": 3,                  // Number of evaluation episodes
     "record_video": true,                      // Record video during evaluation
