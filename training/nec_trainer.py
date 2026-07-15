@@ -406,7 +406,7 @@ class NECTrainer:
 
             # Sample a mini-batch.
             batch = self.replay_memory.sample(self.config.batch_size)
-            states, actions, q_targets = self.replay_memory.extract_batch(batch)
+            states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
             # Encode state sequences.
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability

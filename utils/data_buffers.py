@@ -170,19 +170,24 @@ class ReplayMemory(BaseBuffer):
                 q_target=q_target,
             )
         )
-    def extract_batch(self, batch: list[ReplayMemoryUnit]) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+    def extract_batch(
+            self, 
+            batch: list[ReplayMemoryUnit],
+            device: torch.device = torch.device("cpu"),
+            ) -> tuple[torch.Tensor, list[int], torch.Tensor]:
         """
         Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
         """
 
-        states = torch.from_numpy(
-            convert_and_norm_sequence(
-                np.stack([transition.state for transition in batch])
-                )
-            ).unsqueeze(2) # To Grayscale
+        states = (
+            torch.from_numpy(
+            convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
+            ).unsqueeze(2)
+            .to(device)
+            ) # For Grayscale
         
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch])
+        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
         
         return states, actions, q_targets
 
