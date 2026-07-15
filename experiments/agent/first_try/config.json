@@ -9,7 +9,7 @@
 
     "reward_strategy": "scale",                 
     "reward_parameters": {                      
-        "transport": -15.0,   
+        "transport": -10.0,   
         "scale": 0.01
     },
     
