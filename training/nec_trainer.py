@@ -465,6 +465,8 @@ class NECTrainer:
         Saves a training checkpoint periodically.
         """
         
+        print("Checkpoint check 0")
+        
         checkpoint = {
             "model": self.agent.state_dict(),
             "optimizer": self.encoder_optimizer.state_dict(),
@@ -482,11 +484,15 @@ class NECTrainer:
             "replay_memory": self.replay_memory.state_dict(),
             "config": self.config.to_dict(),
         }
+        
+        print("Checkpoint check 1")
 
         self.checkpoint_manager.save(
             checkpoint,
             filename=f"ep_{self.episode}_step_{self.optimization_step}"
         )
+
+        print("Checkpoint check 2")
 
         self.checkpoint_start = self.optimization_step
 
