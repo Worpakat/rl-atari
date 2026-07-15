@@ -160,7 +160,7 @@ class Evaluator:
 
         observation, _ = self.environment.reset()
 
-        observation = convert_and_norm_sequence(observation)
+        observation = cut_and_transpose_frame(observation)
 
         self.sequence_buffer.clear()
 
