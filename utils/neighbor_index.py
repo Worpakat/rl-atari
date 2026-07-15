@@ -108,14 +108,9 @@ class FaissIndex(NeighborIndex):
 
         index = int(indices[0, 0])
 
-        print(f"query device: {query.device}, keys device: {self.keys.device}")
-
-
         distance = torch.norm(
             self.keys[index] - query.to(self.keys.device)
         )
-
-
 
         if distance <= self.duplicate_threshold:
             return index
