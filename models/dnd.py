@@ -245,22 +245,6 @@ class DND:
         self._stale_index = False
         self.optimizer_stale = True
         
-        
-    def contains(self, key: torch.Tensor,) -> bool:
-        """
-        Returns whether the given key already exists in committed memory.
-        
-        !NOTE: If this functions cause any bottleneck later, its functionality will be replaced with hash-map.
-        """
-
-        if self.keys is None:
-            return False
-
-        key = key.reshape(1, -1)
-
-        return torch.any(
-            torch.all(self.keys == key, dim=1)
-            ).item()
     
     def build_index(self):
         """
@@ -291,6 +275,8 @@ class DND:
         if self._stale_index:
             self.build_index()
             self._stale_index = False
+
+        key = key.to(self.device)
 
         neighbor_indices = self.neighbor_index.search(key, self.num_neighbors)
         
