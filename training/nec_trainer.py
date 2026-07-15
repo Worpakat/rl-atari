@@ -414,11 +414,12 @@ class NECTrainer:
             if self.config.key_updates:
                 self.agent.step_key_optimizers()
 
+            self.optimization_step += 1
+            
             # Store loss to be logged.
             loss['optimization_step'] = self.optimization_step
             losses.append(loss)
 
-            self.optimization_step += 1
 
         return losses
 
