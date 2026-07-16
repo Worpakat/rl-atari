@@ -17,7 +17,7 @@
     "warmup_steps": 1000,                       
     "max_episodes": 100,           
     "batch_size": 64,                           
-    "replay_memory_size": 25000,              
+    "replay_memory_size": 5000,              
     "cache_representations": true,      
 
     "transition_queue_size": 1250,                  
@@ -59,7 +59,7 @@
 
 
     "encoder_learning_rate": 0.00001,            
-    "kl_loss_weight": 0.2,                
+    "kl_loss_weight": 2.0,                
     "network_optimization_period": 10,
     "key_updates": true, 
 
