@@ -706,7 +706,6 @@ class NECTrainer:
 
                     self._optuna_step(evaluation_summary)
 
-                self._update_episode_step()
 
             return self.logger.last()
 
