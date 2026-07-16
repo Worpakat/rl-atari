@@ -626,6 +626,10 @@ class NECTrainer:
         
         print(f"Episode {self.episode}, optimization step {self.optimization_step}, is fnished.")
         print(self.logger.last())
+        print()
+
+        # 'episode_reward' is logged, reset.
+        self.episode_reward = 0
 
         if self._should_checkpoint(): # Saving logs and checkpoint simultaneously.
             self.logger.save(
