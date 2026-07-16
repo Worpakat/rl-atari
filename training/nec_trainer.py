@@ -218,6 +218,10 @@ class NECTrainer:
                     # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
                     self.transition_delay_buffer.discard_all()
 
+                    if truncated or terminated:
+                        print("End of episode")
+
+
                     self.sequence_buffer.clear()
 
                     for _ in range(self.config.sequence_length):
