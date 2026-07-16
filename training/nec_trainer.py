@@ -403,6 +403,28 @@ class NECTrainer:
 
             self.current_lives = info["lives"]
 
+            # Capacity reached, end transition gathering.
+            if self.transition_queue_manager.is_full():                
+                
+                # Reset environment.
+                observation, info = self.environment.reset()
+                self.current_lives = info["lives"] 
+
+                observation = cut_and_transpose_frame(observation)
+                self.sequence_buffer.clear()
+
+                for _ in range(self.config.sequence_length):
+                    self.sequence_buffer.append(observation)
+                
+                # ?! Why we check this before than that if episode is ended?:
+                # * Capacity could be full and episode could be ended because 
+                # "terminated" or "truncated" flags or proceeds before the appended transitions 
+                # due to delayed appends. 
+                # In that case if we don't break here, following conditions are met and
+                # some of remaining transitions are tried to append to full transition queue.
+                # Eventually exception is raised.
+                break
+
             # Episode finished.
             if terminated or truncated:
                 # Discard terminal animation frames.
@@ -420,10 +442,16 @@ class NECTrainer:
                 
                 self.transition_queue_manager.end_trajectory()
 
-                break
+                # Reset environment.
+                observation, info = self.environment.reset()
+                self.current_lives = info["lives"] 
 
-            # Gathering complete.
-            if self.transition_queue_manager.is_full():
+                observation = cut_and_transpose_frame(observation)
+                self.sequence_buffer.clear()
+
+                for _ in range(self.config.sequence_length):
+                    self.sequence_buffer.append(observation)
+
                 break
 
         # Decay epsilon
