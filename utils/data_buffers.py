@@ -213,3 +213,93 @@ class TransitionQueue(BaseBuffer):
     ) -> None:
 
         self._memory.append(transition)
+
+
+
+
+class TransitionQueueManager:
+    """
+    Manages multiple transition queues.
+
+    Each TransitionQueue represents one uninterrupted trajectory
+    (e.g. between two deaths).
+
+    The manager keeps track of the total number of stored transitions
+    across all queues so that optimization can be triggered efficiently.
+    """
+
+    def __init__(self, capacity: int) -> None:
+
+        self.capacity = capacity
+
+        self._queues: deque[TransitionQueue] = deque()
+        self._current_queue = TransitionQueue(self.capacity)
+
+        self._total_size = 0
+
+    @property
+    def total_size(self) -> int:
+        """
+        Total number of stored transitions.
+        """
+        return self._total_size
+
+    def is_full(self) -> bool:
+        """
+        Returns whether the manager reached its total capacity.
+        """
+        return self._total_size >= self.capacity
+
+    def append(self, transition: Transition) -> None:
+        """
+        Appends a transition to the current trajectory.
+        """
+
+        self._current_queue.append(transition)
+        self._total_size += 1
+
+    def end_trajectory(self) -> None:
+        """
+        Finishes the current trajectory and starts a new one.
+
+        Empty trajectories are ignored.
+        """
+
+        if len(self._current_queue) == 0:
+            return
+
+        self._queues.append(self._current_queue)
+
+        self._current_queue = TransitionQueue(self.capacity)
+
+    def trajectories(self) -> list[TransitionQueue]:
+        """
+        Returns all completed trajectories.
+
+        If the current trajectory is non-empty, it is also included.
+        """
+
+        trajectories = list(self._queues)
+
+        if len(self._current_queue) > 0:
+            trajectories.append(self._current_queue)
+
+        return trajectories
+
+    def clear(self) -> None:
+        """
+        Removes all stored trajectories.
+        """
+        self._queues.clear()
+        self._current_queue.clear()
+        self._total_size = 0
+
+    def __len__(self) -> int:
+        return self._total_size
+
+    def __iter__(self):
+        """
+        Iterates over all trajectories.
+        """
+
+        yield from self.trajectories()

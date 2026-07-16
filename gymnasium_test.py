@@ -11,6 +11,9 @@ obs, info = env.reset()
 current_lives = env.unwrapped.ale.lives()
 print(f"Current lives: {current_lives}")
 
+obs_list = []
+
+
 for _ in range(1000):
     action = env.action_space.sample()
     obs, reward, terminated, truncated, info = env.step(action)
@@ -19,15 +22,20 @@ for _ in range(1000):
         current_lives = info["lives"]
         print(f"Current lives: {current_lives}")
 
+    # if current_lives == 1 or current_lives == 0:
+    #     if terminated or truncated:
+    #         print("Episode finished")
+    #     obs_list.append(obs)
+
     if terminated or truncated:
         obs, info = env.reset()
 
 env.close()
 
+obs_list = obs_list[-30:]
+obs_list = [obs.tolist() for obs in obs_list]
 
-# obs_list = last_obs.tolist()    
-
-# # Save obs as json
-# with open("frame_sample.json", "w") as f:
-#     json.dump(obs_list, f)
+# Save obs as json
+with open("episode_end_frames.json", "w") as f:
+    json.dump(obs_list, f)
 
