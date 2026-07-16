@@ -205,7 +205,10 @@ class NECTrainer:
                 self.global_step += 1
 
                 # Finish trajectory on death.
-                if death:
+                if death and not (terminated or truncated): 
+                    # ! Each episode end transition also a death transition.
+                    # We don't handle episode end transition here.
+
                     # Retrieve actual termination transition. (Actual transition that death is occurred.)
                     terminal_transition = self.transition_delay_buffer.pop_oldest()
 
@@ -217,10 +220,6 @@ class NECTrainer:
                     
                     # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
                     self.transition_delay_buffer.discard_all()
-
-                    if truncated or terminated:
-                        print("End of episode")
-
 
                     self.sequence_buffer.clear()
 
@@ -382,7 +381,10 @@ class NECTrainer:
             self.global_step += 1
 
             # Finish current trajectory if a life was lost.
-            if death:
+            if death and not (terminated or truncated): 
+                # ! Each episode end transition also a death transition.
+                # We don't handle episode end transition here.
+
                 # Retrieve actual termination transition. (Actual transition that death is occurred.)
                 terminal_transition = self.transition_delay_buffer.pop_oldest()
 
