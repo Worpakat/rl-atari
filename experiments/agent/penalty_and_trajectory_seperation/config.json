@@ -7,15 +7,15 @@
     "num_actions": 6,                           
     "action_mapping": [0, 1, 2, 3, 4, 5],    
 
-    "reward_strategy": "scale",                 
+    "reward_strategy": "tanh",                 
     "reward_parameters": {                      
         "transport": -10.0,   
         "scale": 0.01
     },
-    "death_penalty": -5, 
+    "death_penalty": -1.0, 
     
     "warmup_steps": 1000,                       
-    "max_episodes": 2000,           
+    "max_episodes": 100,           
     "batch_size": 64,                           
     "replay_memory_size": 25000,              
     "cache_representations": true,      
@@ -63,7 +63,7 @@
     "network_optimization_period": 10,
     "key_updates": true, 
 
-    
+
     "dnd_max_memory": 50000,                   
     "dnd_num_neighbors": 50,                    
 

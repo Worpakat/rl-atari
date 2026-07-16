@@ -201,7 +201,6 @@ class NECTrainer:
                 if released_transition is not None:
                     self.transition_queue_manager.append(released_transition)
 
-
                 self.global_step += 1
 
                 # Finish trajectory on death.
