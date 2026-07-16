@@ -17,8 +17,14 @@
     "max_episodes": 50,           
     "batch_size": 32,                           
     "replay_memory_size": 50000,              
-    "transition_queue_size": 1000,        
     "cache_representations": true,      
+
+    "transition_queue_size": 100,              
+    "transition_buffer" : {                    
+        "transition_delay": 20,                
+        "terminal_static_frames": 15
+    },
+
 
     "checkpoint_start": 0,
     "checkpoint_period": 10,

@@ -14,7 +14,9 @@ print(f"Current lives: {current_lives}")
 obs_list = []
 
 
-for _ in range(1000):
+for i in range(70):
+    if i == 0: print("START!")
+
     action = env.action_space.sample()
     obs, reward, terminated, truncated, info = env.step(action)
 
@@ -32,10 +34,10 @@ for _ in range(1000):
 
 env.close()
 
-obs_list = obs_list[-30:]
-obs_list = [obs.tolist() for obs in obs_list]
+# obs_list = obs_list[-30:]
+# obs_list = [obs.tolist() for obs in obs_list]
 
-# Save obs as json
-with open("episode_end_frames.json", "w") as f:
-    json.dump(obs_list, f)
+# # Save obs as json
+# with open("episode_end_frames.json", "w") as f:
+#     json.dump(obs_list, f)
 

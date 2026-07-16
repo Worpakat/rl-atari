@@ -16,10 +16,15 @@ from training.evaluator import Evaluator
 
 from models.nec import NECAgent
 
-from utils.data_buffers import (FrameSequenceBuffer, 
-                                TransitionQueue, 
-                                ReplayMemory,
-                                Transition, TransitionQueueManager)
+from utils.data_buffers import (FrameSequenceBuffer, ReplayMemory)
+                                
+
+from utils.transition_classes import (
+    Transition,
+    TransitionDelayBuffer,
+    TransitionQueue,        
+    TransitionQueueManager,
+)
 
 from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
@@ -71,6 +76,7 @@ class NECTrainer:
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue_manager = TransitionQueueManager(capacity=config.transition_queue_size)
+        self.transition_delay_buffer = TransitionDelayBuffer(delay=self.config.transition_delay)
         self.replay_memory = ReplayMemory(capacity=config.replay_memory_size)
 
         # Training progress
@@ -114,6 +120,7 @@ class NECTrainer:
 
         self.sequence_buffer.clear()
         self.transition_queue_manager.clear()
+        self.transition_delay_buffer.clear()
 
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
@@ -176,26 +183,40 @@ class NECTrainer:
                 if death:
                     reward = self.death_penalty
 
-                self.transition_queue_manager.append(
-                    Transition(
-                        state=raw_state,
-                        action=action,
-                        reward=reward,
-                        representation=(
-                            encoder_output.representation.detach().cpu()
-                            if self.config.cache_representations
-                            else None
-                        ),
-                        is_exploration_action=True,
-                    )
+                # Store transition.
+                transition = Transition(
+                    state=raw_state,
+                    action=action,
+                    reward=reward,
+                    representation=(
+                        encoder_output.representation.detach().cpu()
+                        if self.config.cache_representations
+                        else None
+                    ),
+                    is_exploration_action=True,
                 )
+
+                released_transition = self.transition_delay_buffer.append(transition)
+
+                if released_transition is not None:
+                    self.transition_queue_manager.append(released_transition)
+
 
                 self.global_step += 1
 
                 # Finish trajectory on death.
                 if death:
+                    # Retrieve actual termination transition. (Actual transition that death is occurred.)
+                    terminal_transition = self.transition_delay_buffer.pop_oldest()
 
+                    terminal_transition.reward = self.death_penalty
+                    
+                    self.transition_queue_manager.append(terminal_transition)
+                    
                     self.transition_queue_manager.end_trajectory()
+                    
+                    # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
+                    self.transition_delay_buffer.discard_all()
 
                     self.sequence_buffer.clear()
 
@@ -206,6 +227,19 @@ class NECTrainer:
 
                 # Episode finished.
                 if terminated or truncated:
+                    # Discard terminal animation frames.
+                    self.transition_delay_buffer.discard_newest(self.config.terminal_animation_frames)
+
+                    # Release remaining transitions.
+                    while len(self.transition_delay_buffer) > 0:
+                        self.transition_queue_manager.append(
+                            self.transition_delay_buffer.pop_oldest()
+                        )
+
+                    if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
+                        last_transition = self.transition_queue_manager.get_last_transition()
+                        last_transition.reward = self.death_penalty
+                    
                     self.transition_queue_manager.end_trajectory()
 
                     break
@@ -261,6 +295,7 @@ class NECTrainer:
 
             # Clear transition queue in case of warmup and episode is not over.
             self.transition_queue_manager.clear()
+            self.transition_delay_buffer.clear()
 
             # Warmup stopping condition.
             if self._warmup_finished():
@@ -323,43 +358,61 @@ class NECTrainer:
             self.episode_reward += reward
 
             # Store transition.
-            self.transition_queue_manager.append(
-                Transition(
-                    state=raw_state,
-                    action=action,
-                    reward=reward,
-                    representation=(
-                        encoder_output.representation.detach().cpu()
-                        if self.config.cache_representations
-                        else None
-                    ),
-                    is_exploration_action=is_exploration,
-                )
+            transition = Transition(
+                state=raw_state,
+                action=action,
+                reward=reward,
+                representation=(
+                    encoder_output.representation.detach().cpu()
+                    if self.config.cache_representations
+                    else None
+                ),
+                is_exploration_action=is_exploration,
             )
+
+            released_transition = self.transition_delay_buffer.append(transition)
+
+            if released_transition is not None:
+                self.transition_queue_manager.append(released_transition)
 
             self.global_step += 1
 
             # Finish current trajectory if a life was lost.
             if death:
-                self.transition_queue_manager.end_trajectory()
+                # Retrieve actual termination transition. (Actual transition that death is occurred.)
+                terminal_transition = self.transition_delay_buffer.pop_oldest()
 
-            self.current_lives = info["lives"]
-
-            # Episode finished.
-            if terminated or truncated:
+                terminal_transition.reward = self.death_penalty
 
                 self.transition_queue_manager.end_trajectory()
-
-                observation, info = self.environment.reset()
-
-                observation = cut_and_transpose_frame(observation)
+                
+                # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
+                self.transition_delay_buffer.discard_all()
 
                 self.sequence_buffer.clear()
 
                 for _ in range(self.config.sequence_length):
                     self.sequence_buffer.append(observation)
 
-                self.current_lives = info["lives"]
+
+            self.current_lives = info["lives"]
+
+            # Episode finished.
+            if terminated or truncated:
+                # Discard terminal animation frames.
+                self.transition_delay_buffer.discard_newest(self.config.terminal_animation_frames)
+
+                # Release remaining transitions.
+                while len(self.transition_delay_buffer) > 0:
+                    self.transition_queue_manager.append(
+                        self.transition_delay_buffer.pop_oldest()
+                    )
+
+                if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
+                    last_transition = self.transition_queue_manager.get_last_transition()
+                    last_transition.reward = self.death_penalty
+                
+                self.transition_queue_manager.end_trajectory()
 
                 break
 
@@ -470,6 +523,7 @@ class NECTrainer:
         
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
+        self.transition_delay_buffer.clear()
 
         for _ in range(steps):
 

@@ -25,8 +25,16 @@
     "max_episodes": 1000000,                    // Total training episodes
     "batch_size": 32,                           // Replay mini-batch size
     "replay_memory_size": 100000,              // Replay buffer capacity
-    "transition_queue_size": 100,              // N-step trajectory length
     "cache_representations": true,             // Wheter store representations in transition queue
+
+    // Transition queue
+    "transition_queue_size": 100,              // N-step trajectory length
+
+    "transition_buffer" : {                     // TransitionDelayBuffer parameters
+    "transition_delay": 20,                     // Transition queue delay
+    "terminal_static_frames": 15,            // Episode end static transitions
+    },
+
 
     // -----------------------------
     // Evaluation
