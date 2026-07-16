@@ -125,7 +125,6 @@ class NECTrainer:
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
 
-  
     def _finished(self) -> bool:
         """
         Returns whether training has finished.
@@ -137,7 +136,6 @@ class NECTrainer:
         Returns whether warmup has finished.
         """
         return self.global_step >= self.config.warmup_steps
-
 
     def warmup(self):
         """
@@ -317,7 +315,6 @@ class NECTrainer:
 
         print("Warmup complete.")
 
-    
     def _environment_step(self):
         """
         Executes environment interactions until either
@@ -457,7 +454,6 @@ class NECTrainer:
         self.agent.decay_epsilon()
         
         self.episode += 1
-
 
     def _memory_optimization_step(self):
         """
@@ -611,8 +607,7 @@ class NECTrainer:
     
     def _should_evaluate(self):
         return self.episode % self.config.evaluation_period == 0
-    
-    
+      
     def _logging_step(self, logs: dict | None):
         """
         Records training metrics.
@@ -639,7 +634,6 @@ class NECTrainer:
                 step_name="opt_step",
                 clear=True
             )
-        
 
     def _checkpoint_step(self, logs: dict):
         """
@@ -696,8 +690,6 @@ class NECTrainer:
 
         self.checkpoint_start = self.optimization_step
         
-
-
     def _optuna_step(self, logs):
         ...
 
