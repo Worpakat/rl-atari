@@ -428,6 +428,8 @@ class NECTrainer:
 
         # Decay epsilon
         self.agent.decay_epsilon()
+        
+        self.episode += 1
 
 
     def _memory_optimization_step(self):
@@ -666,7 +668,7 @@ class NECTrainer:
         print("Checkpoint check: Checkpoint saved.")
 
         self.checkpoint_start = self.optimization_step
-        self.episode += 1
+        
 
 
     def _optuna_step(self, logs):
