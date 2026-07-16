@@ -4,8 +4,8 @@ from abc import ABC, abstractmethod
 import torch
 import torch.nn as nn
 
-from models.dnd import LookupResult, DND, MemoryEntry
-from utils.data_buffers import Transition
+from models.dnd import LookupResult, DND
+from utils.transition_classes import Transition
 
 @dataclass(slots=True)
 class MemoryUpdateRequest:

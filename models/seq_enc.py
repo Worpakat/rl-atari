@@ -3,10 +3,12 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 
-from models.dsae import (LinearBlock, reparameterize,
-                         ConvBlock,
-                         FrameEncoder,
-                         DynamicsPrior)
+from models.dsae import (
+    reparameterize,
+    LinearBlock, 
+    FrameEncoder,
+    DynamicsPrior
+    )
 
 @dataclass
 class EncoderOutput:
