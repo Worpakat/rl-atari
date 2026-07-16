@@ -228,7 +228,7 @@ class NECTrainer:
                 # Episode finished.
                 if terminated or truncated:
                     # Discard terminal animation frames.
-                    self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_animation_frames"])
+                    self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_static_frames"])
 
                     # Release remaining transitions.
                     while len(self.transition_delay_buffer) > 0:
@@ -400,7 +400,7 @@ class NECTrainer:
             # Episode finished.
             if terminated or truncated:
                 # Discard terminal animation frames.
-                self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_animation_frames"])
+                self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_static_frames"])
 
                 # Release remaining transitions.
                 while len(self.transition_delay_buffer) > 0:
