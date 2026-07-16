@@ -76,7 +76,7 @@ class NECTrainer:
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue_manager = TransitionQueueManager(capacity=config.transition_queue_size)
-        self.transition_delay_buffer = TransitionDelayBuffer(delay=self.config.transition_delay)
+        self.transition_delay_buffer = TransitionDelayBuffer(delay=self.config.transition_buffer["transition_delay"])
         self.replay_memory = ReplayMemory(capacity=config.replay_memory_size)
 
         # Training progress
@@ -228,7 +228,7 @@ class NECTrainer:
                 # Episode finished.
                 if terminated or truncated:
                     # Discard terminal animation frames.
-                    self.transition_delay_buffer.discard_newest(self.config.terminal_animation_frames)
+                    self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_animation_frames"])
 
                     # Release remaining transitions.
                     while len(self.transition_delay_buffer) > 0:
@@ -400,7 +400,7 @@ class NECTrainer:
             # Episode finished.
             if terminated or truncated:
                 # Discard terminal animation frames.
-                self.transition_delay_buffer.discard_newest(self.config.terminal_animation_frames)
+                self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_animation_frames"])
 
                 # Release remaining transitions.
                 while len(self.transition_delay_buffer) > 0:
