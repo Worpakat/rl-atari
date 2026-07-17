@@ -446,7 +446,7 @@ class NECTrainer:
 
 
                     # FOR TEST PURPOSEs
-                    death_transitions[f"global_{self.global_step}"] = terminal_transition
+                    death_transitions[f"global_{self.global_step}"] = last_transition
 
 
                 
