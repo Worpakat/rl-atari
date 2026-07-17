@@ -18,20 +18,21 @@ def compute_network_loss(
     # TD loss
     td_loss = F.mse_loss(predicted_q_values, q_targets.unsqueeze(1), reduction=reduction)
 
-    # Temporal KL loss
-    kl_loss = dynamics_kl_loss(
-        encoder_output.posterior_mean,
-        encoder_output.posterior_logvar,
-        encoder_output.prior_mean,
-        encoder_output.prior_logvar,
-        reduction=reduction,
-    )
+    # # Temporal KL loss
+    # kl_loss = dynamics_kl_loss(
+    #     encoder_output.posterior_mean,
+    #     encoder_output.posterior_logvar,
+    #     encoder_output.prior_mean,
+    #     encoder_output.prior_logvar,
+    #     reduction=reduction,
+    # )
 
     # Total loss
-    total_loss = td_loss + kl_loss_weight * kl_loss
+    # total_loss = td_loss + kl_loss_weight * kl_loss
+    total_loss = td_loss 
 
     return {
         "total_loss": total_loss,
         "td_loss": td_loss,
-        "kl_loss": kl_loss,
+        "kl_loss": 0,
     }
