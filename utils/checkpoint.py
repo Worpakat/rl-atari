@@ -71,8 +71,11 @@ class CheckpointManager:
         dict
             Loaded checkpoint dictionary.
         """
-        filepath = self.checkpoints_dir / filename
+        if not filename.endswith(".pt"):
+            filename += ".pt"
         
+        filepath = self.checkpoints_dir / filename
+
         return torch.load(filepath, map_location=map_location)
 
     def latest(self) -> Path | None:
