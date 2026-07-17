@@ -580,6 +580,7 @@ class NECTrainer:
                 predicted_q_values=predicted_q_values,
                 q_targets=q_targets,
                 encoder_output=encoder_output
+                kl_loss_weight=self.config.kl_loss_weight,
             )
 
             # Optimize encoder.
