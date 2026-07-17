@@ -38,12 +38,12 @@ def discount(x, gamma):
 
 
 ##----------------TEST_FUNCTIONS------------------------
-def print_and_save_death_transitions(transitions: list[Transition]):
+def print_and_save_death_transitions(transitions: dict[str: Transition]):
     
-    for i, transition in enumerate(transitions):
-        print(transition.reward)
+    for k, transition in enumerate(transitions):
+        print(f"Transition {k}: state: {transition.state}, action: {transition.action}, reward: {transition.reward}")
         
-        with open(f"death_transition_{i}.json", "w") as f:
+        with open(f"death_transition_{k}.json", "w") as f:
             json.dump(transition.state.tolist(), f)
 
 
