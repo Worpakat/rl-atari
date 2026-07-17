@@ -323,8 +323,6 @@ class NECTrainer:
         - the transition queue manager reaches capacity.
         """
 
-        death_transitions = {}
-
         while True:
 
             # Encode current state.
@@ -390,9 +388,6 @@ class NECTrainer:
 
                 self.transition_queue_manager.append(terminal_transition)
 
-                # FOR TEST PURPOSEs
-                death_transitions[f"global_{self.global_step}"] = terminal_transition
-
                 self.transition_queue_manager.end_trajectory()
                 
                 # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
@@ -442,13 +437,6 @@ class NECTrainer:
                 if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
                     last_transition = self.transition_queue_manager.get_last_transition()
                     last_transition.reward = self.death_penalty
-    
-
-
-                    # FOR TEST PURPOSEs
-                    death_transitions[f"global_{self.global_step}"] = last_transition
-
-
                 
                 self.transition_queue_manager.end_trajectory()
 
@@ -468,9 +456,6 @@ class NECTrainer:
         self.agent.decay_epsilon()
         
         self.episode += 1
-
-        print_and_save_death_transitions(death_transitions)
-
 
 
     def _memory_optimization_step(self):
