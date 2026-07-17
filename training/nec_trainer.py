@@ -656,11 +656,13 @@ class NECTrainer:
             }
         }
     
+        dnd_lengths = []
         dnd_sizes = []
         for i, dnd in enumerate(self.agent.dnds):
+            dnd_lengths.append(len(dnd.keys))
             dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
 
-        # print(f"DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
+        print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
 
         self.checkpoint_manager.save(
             model_checkpoint,
