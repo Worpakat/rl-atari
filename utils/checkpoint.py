@@ -62,7 +62,7 @@ class CheckpointManager:
 
         return filepath
 
-    def load(self, checkpoint_path: str | Path, map_location=None) -> dict:
+    def load(self, filename: str | Path, map_location=None) -> dict:
         """
         Loads a checkpoint.
 
@@ -71,8 +71,9 @@ class CheckpointManager:
         dict
             Loaded checkpoint dictionary.
         """
-
-        return torch.load(checkpoint_path, map_location=map_location)
+        filepath = self.checkpoints_dir / filename
+        
+        return torch.load(filepath, map_location=map_location)
 
     def latest(self) -> Path | None:
         """
