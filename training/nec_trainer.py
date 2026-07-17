@@ -16,10 +16,10 @@ from training.evaluator import Evaluator
 
 from models.nec import NECAgent
 
-from utils.data_buffers import (FrameSequenceBuffer, ReplayMemory)
+from models.data_buffers import (FrameSequenceBuffer, ReplayMemory)
                                 
 
-from utils.transition_classes import (
+from models.transition_classes import (
     Transition,
     TransitionDelayBuffer,
     TransitionQueue,        
@@ -30,7 +30,7 @@ from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
 from utils.checkpoint import CheckpointManager
 
-from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence
+from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence, print_and_save_death_transitions
 
 from losses.nec_loss import compute_network_loss
 
@@ -323,6 +323,8 @@ class NECTrainer:
         - the transition queue manager reaches capacity.
         """
 
+        death_transitions = []
+
         while True:
 
             # Encode current state.
@@ -388,6 +390,9 @@ class NECTrainer:
 
                 self.transition_queue_manager.append(terminal_transition)
 
+                # FOR TEST PURPOSEs
+                death_transitions.append(terminal_transition)
+
                 self.transition_queue_manager.end_trajectory()
                 
                 # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
@@ -437,6 +442,10 @@ class NECTrainer:
                 if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
                     last_transition = self.transition_queue_manager.get_last_transition()
                     last_transition.reward = self.death_penalty
+
+                    # FOR TEST PURPOSEs
+                    death_transitions.append(last_transition)
+
                 
                 self.transition_queue_manager.end_trajectory()
 
@@ -456,6 +465,10 @@ class NECTrainer:
         self.agent.decay_epsilon()
         
         self.episode += 1
+
+        print_and_save_death_transitions(death_transitions)
+
+
 
     def _memory_optimization_step(self):
         """

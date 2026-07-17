@@ -1,8 +1,12 @@
 from pathlib import Path
+import json
 
 import numpy as np
 import torch
 import scipy.signal as signal
+
+from models.transition_classes import Transition
+
 
 def cut_and_transpose_frame(frame: np.ndarray) -> np.ndarray:
     """
@@ -98,9 +102,6 @@ def preprocess_frame(
 
 
 
-
-
-
 def ensure_directory(path: str | Path) -> Path:
     """
     Creates a directory if it does not already exist.
@@ -128,3 +129,17 @@ def discount(x, gamma):
   out[i] = in[i] + gamma * in[i+1] + gamma^2 * in[i+2] + ...
   """
   return signal.lfilter([1], [1, -gamma], x[::-1], axis=0)[::-1].copy()
+
+
+##----------------TEST_FUNCTIONS------------------------
+def print_and_save_death_transitions(transitions: list[Transition]):
+    
+    for i, transition in enumerate(transitions):
+        print(transition.reward)
+        
+        with open(f"death_transition_{i}.json", "w") as f:
+            json.dump(transition.state.tolist(), f)
+
+
+    
+

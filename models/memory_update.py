@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 
 from models.dnd import LookupResult, DND
-from utils.transition_classes import Transition
+from models.transition_classes import Transition
 
 @dataclass(slots=True)
 class MemoryUpdateRequest:

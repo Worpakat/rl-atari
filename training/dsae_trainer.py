@@ -11,8 +11,8 @@ from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
 from utils.reconstruction_recorder import ReconstructionRecorder
 from utils.checkpoint import CheckpointManager
-from utils.data_buffers import FrameSequenceBuffer
-from utils.data_buffers import SequenceReplayBuffer
+from models.data_buffers import FrameSequenceBuffer
+from models.data_buffers import SequenceReplayBuffer
 from utils.misc import ensure_directory, preprocess_frame
 
 from losses.dsae import reconstruction_loss, content_kl_loss, dynamics_kl_loss

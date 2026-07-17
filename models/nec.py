@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 
 from utils.misc import discount
-from utils.transition_classes import Transition, TransitionQueue
+from models.transition_classes import Transition, TransitionQueue
 from models.dnd import DND, LookupResult
 from models.seq_enc import NECEncoder, EncoderOutput
 from models.memory_update import (MemoryUpdateRequest,

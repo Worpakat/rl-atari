@@ -15,7 +15,9 @@
         "scale": 0.01,       // Reward scaling factor. Strat: 'scale', 'tanh', 'log'
         "maximum": 1.0,     // Maximum reward value. Strat: 'clip'
         "minimum": -1.0     // Minimum reward value. Strat: 'clip'
-    }
+    },
+    "death_penalty": -1.0,  // Penalty for death
+
     
     // -----------------------------
     // Training

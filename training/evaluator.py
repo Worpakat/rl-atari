@@ -12,7 +12,7 @@ gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
 from utils.metrics_logger import MetricsLogger
 from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence
-from utils.data_buffers import FrameSequenceBuffer
+from models.data_buffers import FrameSequenceBuffer
 from utils.training_config import TrainingConfig
 
 from models.nec import NECAgent
@@ -133,7 +133,7 @@ class Evaluator:
 
         while not (terminated or truncated):
 
-            state = self.sequence_buffer.get_sequence() # Retrieve preprocessed
+            state = self.sequence_buffer.get_sequence() # Retrieve preprocessed frame sequence.
         
             encoder_output = self.agent.encode(
                 frames=(

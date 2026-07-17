@@ -4,14 +4,16 @@
     "experiment_dir": "experiments/agent/test",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
-    "num_actions": 6,                           
-    "action_mapping": [0, 1, 2, 3, 4, 5],    
+    "num_actions": 5,                           
+    "action_mapping": [1, 2, 3, 4, 5],    
 
-    "reward_strategy": "scale",                 
+    "reward_strategy": "tanh",                 
     "reward_parameters": {                      
         "transport": 0.0,   
         "scale": 0.01
     },
+    "death_penalty": -1.0, 
+
     
     "warmup_steps": 1000,                       
     "max_episodes": 50,           

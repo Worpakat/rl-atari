@@ -4,7 +4,7 @@ from collections import deque
 import numpy as np
 import torch
 
-from utils.data_buffers import BaseBuffer
+from models.data_buffers import BaseBuffer
 
 
 @dataclass(slots=True)
