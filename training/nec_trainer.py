@@ -386,6 +386,8 @@ class NECTrainer:
 
                 terminal_transition.reward = self.death_penalty
 
+                self.transition_queue_manager.append(terminal_transition)
+
                 self.transition_queue_manager.end_trajectory()
                 
                 # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
