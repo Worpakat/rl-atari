@@ -21,18 +21,18 @@ from models.data_buffers import (FrameSequenceBuffer, ReplayMemory)
 
 from models.transition_classes import (
     Transition,
-    TransitionDelayBuffer,
-    TransitionQueue,        
+    TransitionDelayBuffer, 
     TransitionQueueManager,
 )
+
+from losses.nec_loss import compute_network_loss
 
 from utils.training_config import TrainingConfig
 from utils.metrics_logger import MetricsLogger
 from utils.checkpoint import CheckpointManager
 
-from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence, print_and_save_death_transitions
-
-from losses.nec_loss import compute_network_loss
+from utils.misc import ensure_directory, print_and_save_death_transitions
+from utils.frame_processing import cut_and_transpose_frame, convert_and_norm_sequence
 
 
 class NECTrainer:

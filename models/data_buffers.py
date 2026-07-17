@@ -7,7 +7,7 @@ import random
 import numpy as np
 import torch
 
-from utils.misc import convert_and_norm_sequence
+from utils.frame_processing import convert_and_norm_sequence
 
 
 

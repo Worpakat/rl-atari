@@ -11,7 +11,8 @@ gym.register_envs(ale_py) # Explicitly register the Atari games to gym
 
 from utils.gym_wrappers import RestrictedActionWrapper, RewardWrapper
 from utils.metrics_logger import MetricsLogger
-from utils.misc import cut_and_transpose_frame, ensure_directory, convert_and_norm_sequence
+from utils.misc import ensure_directory
+from utils.frame_processing import cut_and_transpose_frame, convert_and_norm_sequence
 from models.data_buffers import FrameSequenceBuffer
 from utils.training_config import TrainingConfig
 
