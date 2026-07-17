@@ -59,7 +59,7 @@
 
 
     "encoder_learning_rate": 1e-6,            
-    "kl_loss_weight": 2.0,                
+    "kl_loss_weight": 1.0,                
     "network_optimization_period": 10,
     "key_updates": true, 
 
