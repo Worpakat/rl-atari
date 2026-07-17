@@ -35,7 +35,7 @@ class TransitionQueue(BaseBuffer):
         self._memory.append(transition)
     
     def get_last(self) -> Transition:
-        return self._memory.pop()
+        return self._memory[-1] 
 
 
 class TransitionQueueManager:

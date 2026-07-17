@@ -13,11 +13,17 @@ print(f"Current lives: {current_lives}")
 
 obs_list = []
 
+counter = 0
+action = 1
 
-for i in range(70):
+for i in range(1000):
     if i == 0: print("START!")
 
-    action = env.action_space.sample()
+    # action = env.action_space.sample()
+    counter += 1
+    if counter > 30:
+        action = 0
+
     obs, reward, terminated, truncated, info = env.step(action)
 
     if current_lives != info["lives"]:
