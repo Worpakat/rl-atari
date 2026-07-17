@@ -9,7 +9,7 @@
 
     "reward_strategy": "tanh",                 
     "reward_parameters": {                      
-        "transport": -5.0,   
+        "transport": 0.0,   
         "scale": 0.01
     },
     "death_penalty": -1.0, 
