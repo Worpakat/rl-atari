@@ -79,7 +79,7 @@ class DND(nn.Module):
             (self.max_memory, self.representation_dim),
             dtype=torch.float,
             device=self.device,
-            # requires_grad=True # Manually making trainable
+            requires_grad=True # Manually making trainable
         )
         self.values = torch.empty(
             (self.max_memory, self.value_dim),

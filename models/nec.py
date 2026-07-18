@@ -217,13 +217,14 @@ class NECAgent(nn.Module):
                     random_sampling=False, # We use 'posterior_mean's as representations for stability
                 ).representation.detach().cpu()
             
-            lookup_results = self.lookup(key=bootstrap_transition.representation)
+            with torch.no_grad():
+                lookup_results = self.lookup(key=bootstrap_transition.representation)
 
-            bootstrap_value = torch.stack(
-                [result.value for result in lookup_results]
-            ).max()
+                bootstrap_value = torch.stack(
+                    [result.value for result in lookup_results]
+                ).max()
 
-            q_targets[transition_index] = (discounted_reward + (gamma ** n_step) * bootstrap_value)
+                q_targets[transition_index] = (discounted_reward + (gamma ** n_step) * bootstrap_value)
 
         return q_targets
 
