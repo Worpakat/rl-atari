@@ -383,6 +383,14 @@ class NECAgent(nn.Module):
                 dnd.key_optimizer.step()
                 dnd.build_index()
     
+    def state_dict(self, *args, destination=None, prefix="", keep_vars=False):
+        return {
+            "encoder": self.encoder.state_dict(),
+            "current_epsilon": self.current_epsilon,
+            "dnds": [dnd.state_dict() for dnd in self.dnds],
+        }
+    
+
     def load_checkpoint_state(self, model_state: dict):
         """
         Loads the model state from a checkpoint.
