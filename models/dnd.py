@@ -89,7 +89,7 @@ class DND(nn.Module):
         )
         self.generations = torch.zeros(
             self.max_memory,
-            dtype=torch.long,
+            dtype=torch.float,
             device=self.device,
         )
 
