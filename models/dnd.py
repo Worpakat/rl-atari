@@ -408,7 +408,8 @@ class DND(nn.Module):
         print(f" Keys require grad: {self.keys.requires_grad}")
         print(f" Values require grad: {self.values.requires_grad}")
         print(f" Generations require grad: {self.generations.requires_grad}")
-        print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
+        if self.use_auxiliary:
+            print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
 
         self.write_index = state["write_index"]
         self.memory_size = state["memory_size"]
