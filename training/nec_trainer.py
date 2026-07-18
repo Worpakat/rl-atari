@@ -575,6 +575,12 @@ class NECTrainer:
                 track_key_updates=self.config.key_updates,
             )
 
+            print(self.keys.requires_grad)
+            print(self.keys.grad is None)
+
+            if self.keys.grad is not None:
+                print(self.keys.grad.norm())
+
             # Compute optimization loss.
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
@@ -588,6 +594,10 @@ class NECTrainer:
             self.agent.zero_key_gradients()
 
             loss['total_loss'].backward()
+
+            # For sanity check
+            self.agent.check_key_gradients()
+
 
             self.encoder_optimizer.step()
 

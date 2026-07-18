@@ -79,11 +79,13 @@ class DND(nn.Module):
             (self.max_memory, self.representation_dim),
             dtype=torch.float,
             device=self.device,
+            
         )
         self.values = torch.empty(
             (self.max_memory, self.value_dim),
             dtype=torch.float,
             device=self.device,
+            
         )
         self.generations = torch.zeros(
             self.max_memory,
@@ -395,10 +397,15 @@ class DND(nn.Module):
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
 
+        self.keys.requires_grad = True
+        self.values.requires_grad = True
+        self.generations.requires_grad = True
+        self.auxiliary.requires_grad = True
+
         print(f" Keys require grad: {self.keys.requires_grad}")
         print(f" Values require grad: {self.values.requires_grad}")
         print(f" Generations require grad: {self.generations.requires_grad}")
-        # print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
+        print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
 
         self.write_index = state["write_index"]
         self.memory_size = state["memory_size"]

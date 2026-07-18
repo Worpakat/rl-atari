@@ -372,6 +372,20 @@ class NECAgent(nn.Module):
             if dnd.key_optimizer is not None:
                 dnd.key_optimizer.zero_grad()
 
+    
+    def check_key_gradients(self) -> None:
+        """
+        Checks the gradients of all trainable DND key optimizers.
+        """
+
+        for dnd in self.dnds:
+            print(dnd.keys.requires_grad)
+            print(dnd.keys.grad is None)
+
+            if dnd.keys.grad is not None:
+                print(dnd.keys.grad.norm())
+
+
     def step_key_optimizers(self) -> None:
         """
         Updates all trainable DND keys.
