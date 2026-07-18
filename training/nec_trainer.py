@@ -590,7 +590,7 @@ class NECTrainer:
             loss['total_loss'].backward()
 
             # For sanity check
-            self.agent.check_dnd_key_gradients()
+            # self.agent.check_dnd_key_gradients()
 
             self.encoder_optimizer.step()
 
@@ -796,7 +796,8 @@ class NECTrainer:
                     replay_checkpoint["replay_memory"]
                 )
             except:
-                print("Replay memory checkpoint not found. \n Continuing with fresh replay memory...")
+                print("Replay memory checkpoint not found." \
+                      "Continuing with fresh replay memory...")
 
         print(
             f"Checkpoint restored "
