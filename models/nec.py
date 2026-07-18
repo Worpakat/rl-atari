@@ -373,7 +373,7 @@ class NECAgent(nn.Module):
                 dnd.key_optimizer.zero_grad()
 
     
-    def check_key_gradients(self) -> None:
+    def check_dnd_key_gradients(self) -> None:
         """
         Checks the gradients of all trainable DND key optimizers.
         """
@@ -394,7 +394,7 @@ class NECAgent(nn.Module):
         for dnd in self.dnds:
 
             if dnd.key_optimizer is not None:
-                
+
                 dnd.key_optimizer.step()
                 dnd.build_index()
     
