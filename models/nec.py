@@ -394,7 +394,14 @@ class NECAgent(nn.Module):
         for dnd in self.dnds:
 
             if dnd.key_optimizer is not None:
+
+                before = dnd.keys.detach().clone()
+
                 dnd.key_optimizer.step()
+
+                print("Key Optimization changed keys: ", torch.allclose(before, dnd.keys)) # Safety check for if optimizer is working
+
+
                 dnd.build_index()
     
     def state_dict(self):

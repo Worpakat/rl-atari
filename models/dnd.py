@@ -79,7 +79,7 @@ class DND(nn.Module):
             (self.max_memory, self.representation_dim),
             dtype=torch.float,
             device=self.device,
-            requires_grad=True
+            requires_grad=True # Manually making trainable
         )
         self.values = torch.empty(
             (self.max_memory, self.value_dim),
@@ -129,22 +129,22 @@ class DND(nn.Module):
     def get_value(self, index: int) -> torch.Tensor:
         return self.values[index]
 
-    def clear(self):
-        """
-        Removes all committed and pending memory entries.
-        """
+    # def clear(self):
+    #     """
+    #     Removes all committed and pending memory entries.
+    #     """
 
-        self.keys = None
-        self._pending_keys.clear()
+    #     self.keys = None
+    #     self._pending_keys.clear()
 
-        self.values = None
-        self._pending_values.clear()
+    #     self.values = None
+    #     self._pending_values.clear()
         
-        if self.use_auxiliary:
-            self.auxiliary = None
-            self._pending_auxiliary.clear()
+    #     if self.use_auxiliary:
+    #         self.auxiliary = None
+    #         self._pending_auxiliary.clear()
         
-        self._stale_index = True
+    #     self._stale_index = True
 
     def insert(self, 
                key: list[torch.Tensor], 
@@ -348,7 +348,9 @@ class DND(nn.Module):
             )
 
         if keys is not None:
-            self.keys[indices] = keys
+            with torch.no_grad(): # Since keys are trainable.
+                self.keys[indices] = keys
+            
             self._stale_index = True
 
         if values is not None:
@@ -401,10 +403,7 @@ class DND(nn.Module):
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
 
-        self.keys.requires_grad = True
-        self.values.requires_grad = True
-        self.generations.requires_grad = True
-        self.auxiliary.requires_grad = True
+        self.keys.requires_grad = True # To make sure, we are assigning manually
 
         print(f" Keys require grad: {self.keys.requires_grad}")
         print(f" Values require grad: {self.values.requires_grad}")
