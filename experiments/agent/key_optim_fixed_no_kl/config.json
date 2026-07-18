@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/no_kl_loss",
+    "experiment_dir": "experiments/agent/key_optim_fixed_no_kl",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
