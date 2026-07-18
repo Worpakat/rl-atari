@@ -800,6 +800,7 @@ class NECTrainer:
             f"(episode={self.episode}, "
             f"optimization_step={self.optimization_step}, "
             f"environment_step={self.global_step})"
+            f"epsilon={self.agent.current_epsilon}"
         )
 
 
