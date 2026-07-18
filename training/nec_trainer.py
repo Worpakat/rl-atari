@@ -663,13 +663,13 @@ class NECTrainer:
             }
         }
     
-        dnd_lengths = []
-        dnd_sizes = []
-        for i, dnd in enumerate(self.agent.dnds):
-            dnd_lengths.append(len(dnd.keys))
-            dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
+        # dnd_lengths = []
+        # dnd_sizes = []
+        # for i, dnd in enumerate(self.agent.dnds):
+        #     dnd_lengths.append(len(dnd.keys))
+        #     dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
 
-        print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
+        # print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
 
         self.checkpoint_manager.save(
             model_checkpoint,
@@ -732,11 +732,13 @@ class NECTrainer:
 
                 if self._should_evaluate():
                     print("Evaluating...")
+                    
                     evaluation_summary = self.evaluator.evaluate(
                         render_mode='rgb_array',
                         log_file_custom=f"ep_{self.episode}",
                         video_file_custom=f"ep_{self.episode}"
                     )
+                    print(evaluation_summary)
 
                     self._optuna_step(evaluation_summary)
 
