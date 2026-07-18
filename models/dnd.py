@@ -199,7 +199,9 @@ class DND(nn.Module):
 
             self.generations[append_indices] += 1
 
-            self.keys[append_indices] = pending_keys[:append_count]
+            with torch.no_grad(): # Since keys are trainable.
+                self.keys[append_indices].copy_(pending_keys[:append_count])    
+
             self.values[append_indices] = pending_values[:append_count].unsqueeze(dim=1)
 
             if self.use_auxiliary:
@@ -228,7 +230,9 @@ class DND(nn.Module):
 
             self.generations[write_indices] += 1
 
-            self.keys[write_indices] = pending_keys
+            with torch.no_grad(): # Since keys are trainable.
+                self.keys[write_indices].copy_(pending_keys)
+            
             self.values[write_indices] = pending_values.unsqueeze(dim=1)
 
             if self.use_auxiliary:
