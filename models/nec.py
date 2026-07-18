@@ -383,7 +383,10 @@ class NECAgent(nn.Module):
                 dnd.key_optimizer.step()
                 dnd.build_index()
     
-    def state_dict(self, *args, destination=None, prefix="", keep_vars=False):
+    def state_dict(self):
+        """
+        Returns the state dictionary of the NEC.
+        """
         return {
             "encoder": self.encoder.state_dict(),
             "current_epsilon": self.current_epsilon,
