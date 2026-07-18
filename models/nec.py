@@ -217,7 +217,11 @@ class NECAgent(nn.Module):
                     random_sampling=False, # We use 'posterior_mean's as representations for stability
                 ).representation.detach().cpu()
             
+            
             with torch.no_grad():
+                # ! We don't want to gather key gradients here during lookup.
+                # It should be done only _network_optimization_step().  
+        
                 lookup_results = self.lookup(key=bootstrap_transition.representation)
 
                 bootstrap_value = torch.stack(

@@ -515,15 +515,19 @@ class NECTrainer:
 
                 else: # State does not exist in memory. 
 
-                    # Lookup action-specific DND.
-                    lookup_result = self.agent.lookup_to_dnd(
-                        action=transition.action,
-                        key=transition.representation,
-                        auxiliary=None,  # Placeholder for future optional auxiliary.
-                        return_indices=lookup_requirements.return_indices,
-                        return_similarities=lookup_requirements.return_similarities,
-                        return_neighbors=lookup_requirements.return_neighbors,
-                    )
+                    with torch.no_grad(): 
+                        # ! We don't want to gather key gradients here during lookup.
+                        # It should be done only _network_optimization_step().
+
+                        # Lookup action-specific DND.
+                        lookup_result = self.agent.lookup_to_dnd(
+                            action=transition.action,
+                            key=transition.representation,
+                            auxiliary=None,  # Placeholder for future optional auxiliary.
+                            return_indices=lookup_requirements.return_indices,
+                            return_similarities=lookup_requirements.return_similarities,
+                            return_neighbors=lookup_requirements.return_neighbors,
+                        )
 
                     # Create memory update request.
                     update_request = self.agent.create_memory_update_request(
