@@ -40,7 +40,7 @@ class LookupResult:
     neighbor_auxiliary: torch.Tensor | None = None
 
 
-class DND:
+class DND(nn.Module):
     """
     Differentiable Neural Dictionary.
 
@@ -378,6 +378,17 @@ class DND:
         return {
             "keys": self.keys,
             "values": self.values,
+            "generations": self.generations,
             "auxiliary": self.auxiliary if self.use_auxiliary else None,
         }
     
+    def load_state_dict(self, state: dict):
+        """
+        Loads the state dictionary of the DND.
+        """
+        self.keys = state["keys"].to(self.device)
+        self.values = state["values"].to(self.device)
+        # self.generations = state["generations"].to(self.device)
+        
+        if self.use_auxiliary:
+            self.auxiliary = state["auxiliary"].to(self.device)

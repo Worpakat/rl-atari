@@ -760,11 +760,9 @@ class NECTrainer:
             map_location=self.device,
         )
 
-        self.agent.load_state_dict(model_checkpoint["model"])
+        self.agent.load_checkpoint_state(model_checkpoint["model"])
 
-        self.encoder_optimizer.load_state_dict(
-            model_checkpoint["optimizer"]
-        )
+        self.encoder_optimizer.load_state_dict(model_checkpoint["optimizer"])
 
         training_state = model_checkpoint["training_state"]
 

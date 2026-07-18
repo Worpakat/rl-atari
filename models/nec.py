@@ -31,8 +31,8 @@ class NECAgent(nn.Module):
     ):
         super().__init__()
 
-        self.encoder = encoder # This is an 'nn.Module', hence registered automatically.
-        self.dnds = nn.ModuleList(dnds) # Registering DNDs. Important for saving and loading.
+        self.encoder = encoder 
+        self.dnds = dnds
 
         self.update_strategy = update_strategy
         self.original_update_strategy = OriginalNECUpdateStrategy(self.update_strategy.learning_rate)
@@ -383,5 +383,18 @@ class NECAgent(nn.Module):
                 dnd.key_optimizer.step()
                 dnd.build_index()
     
+    def load_checkpoint_state(self, model_state: dict):
+        """
+        Loads the model state from a checkpoint.
+        """
+        # Encoder
+        self.encoder.load_state_dict(model_state["encoder"])
 
+        # Epsilon buffer
+        if "current_epsilon" in model_state:
+            self.current_epsilon.copy_(model_state["current_epsilon"])
+
+        # DND memories
+        for dnd, dnd_state in zip(self.dnds, model_state["dnds"]):
+            dnd.load_state_dict(dnd_state)
 
