@@ -27,6 +27,11 @@
     },
 
 
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_60_step_3916.pt",                  
+    "load_replay_memory": false,                 
+
+
     "checkpoint_start": 0,
     "checkpoint_period": 10,
     "save_replay_memory": false,

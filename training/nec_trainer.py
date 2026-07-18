@@ -745,6 +745,63 @@ class NECTrainer:
             self.environment.close()
 
 
+    def load_checkpoint(self):
+        """
+        Restores a previous training checkpoint.
+        """
+
+        print("Loading checkpoint...")
+
+        # -------------------------------------------------
+        # Model checkpoint
+        # -------------------------------------------------
+        model_checkpoint = self.checkpoint_manager.load(
+            self.config.resume_checkpoint,
+            map_location=self.device,
+        )
+
+        self.agent.load_state_dict(model_checkpoint["model"])
+
+        self.encoder_optimizer.load_state_dict(
+            model_checkpoint["optimizer"]
+        )
+
+        training_state = model_checkpoint["training_state"]
+
+        self.optimization_step = training_state["optimization_step"]
+        self.global_step = training_state["environment_step"]
+        self.episode = training_state["episode"]
+
+        self.checkpoint_start = self.optimization_step
+
+        # -------------------------------------------------
+        # Replay memory (optional)
+        # -------------------------------------------------
+        if self.config.load_replay_memory:
+            try:
+                replay_filename = (
+                    self.config.resume_checkpoint
+                    .replace("model_", "rep_memo_")
+                )
+
+                replay_checkpoint = self.checkpoint_manager.load(
+                    replay_filename,
+                    map_location="cpu",
+                )
+
+                self.replay_memory.load_state_dict(
+                    replay_checkpoint["replay_memory"]
+                )
+            except:
+                print("Replay memory checkpoint not found. \n Continuing with fresh replay memory...")
+
+        print(
+            f"Checkpoint restored "
+            f"(episode={self.episode}, "
+            f"optimization_step={self.optimization_step}, "
+            f"environment_step={self.global_step})"
+        )
+
 
 
 ###===================================================================

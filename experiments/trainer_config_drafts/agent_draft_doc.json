@@ -8,6 +8,11 @@
     "grayscale": true,                          // Grayscale observation
     "num_actions": 6,                           // Action count
     "action_mapping": [0, 1, 2, 3, 4, 5],       // Action mapping
+
+
+    // -----------------------------
+    // Reward
+    // -----------------------------
     
     "reward_strategy": "scale",                 // Reward strategy. "identity", "scale", "clip", "tanh", "log"
     "reward_parameters": {                      // Reward parameters
@@ -38,6 +43,16 @@
     },
 
 
+    // -----------------------------
+    // Resume Training
+    // -----------------------------
+    
+    "resume_training": false,                   // Resume training: Used for resuming a training session from a checkpoint
+    "resume_checkpoint": null,                  // Checkpoints filename. Implemented system loads the file in the 'experiment_dir/checkpoints'.
+    // ! NOTE: If "resume_training" is True, "warmup_steps" will be ignored.
+    "load_replay_memory": true,                   // Whether load replay memory from checkpoint. 
+
+    
     // -----------------------------
     // Evaluation
     // -----------------------------

@@ -105,12 +105,11 @@ class BaseBuffer(ABC):
             "memory": list(self._memory),
         }
 
-    def load_state_dict(
-        self,
-        state_dict: dict,
-    ) -> None:
-        self._memory.clear()
-        self._memory.extend(state_dict["memory"])
+    def load_state_dict(self, state_dict: dict) -> None:
+        self._memory = deque(
+            state_dict["memory"],
+            maxlen=self._memory.maxlen,
+        )
 
     @abstractmethod
     def append(self, *args, **kwargs):

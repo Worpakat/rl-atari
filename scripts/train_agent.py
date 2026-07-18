@@ -12,7 +12,7 @@ from utils.neighbor_index import FaissIndex
 from utils.training_config import TrainingConfig
 from models.nec import NECAgent
 
-def train(config: TrainingConfig):
+def create_model_and_trainer(config: TrainingConfig):
     """
     Runs one DSAE warm-up experiment.
     """
@@ -134,11 +134,14 @@ def main():
 
     config = TrainingConfig.load(args.config)
 
-    trainer = train(config)
+    trainer = create_model_and_trainer(config)
 
-    if config.warmup_steps > 0:
+    if config.resume_training:
+        trainer.load_checkpoint()
+
+    elif config.warmup_steps > 0:
         trainer.warmup()
-        
+
     trainer.train()
 
 

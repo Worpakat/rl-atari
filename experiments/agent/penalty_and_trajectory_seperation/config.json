@@ -27,6 +27,11 @@
     },
 
 
+    "resume_training": false,                   
+    "resume_checkpoint": null,                  
+    "load_replay_memory": false,                 
+
+
     "checkpoint_start": 0,
     "checkpoint_period": 10,
     "save_replay_memory": false,
