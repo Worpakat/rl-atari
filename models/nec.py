@@ -31,8 +31,8 @@ class NECAgent(nn.Module):
     ):
         super().__init__()
 
-        self.encoder = encoder
-        self.dnds = dnds
+        self.encoder = encoder # This is an 'nn.Module', hence registered automatically.
+        self.dnds = nn.ModuleList(dnds) # Registering DNDs. Important for saving and loading.
 
         self.update_strategy = update_strategy
         self.original_update_strategy = OriginalNECUpdateStrategy(self.update_strategy.learning_rate)
@@ -383,13 +383,5 @@ class NECAgent(nn.Module):
                 dnd.key_optimizer.step()
                 dnd.build_index()
     
-    def state_dict(self) -> dict:
-        """
-        Returns the state dictionary of the NEC agent.
-        """
-        return {
-            "encoder": self.encoder.state_dict(),
-            "dnds": [dnd.state_dict() for dnd in self.dnds],
-        }
 
 
