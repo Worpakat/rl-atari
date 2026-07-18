@@ -590,7 +590,13 @@ class NECTrainer:
             loss['total_loss'].backward()
 
             # For sanity check
-            self.agent.check_key_gradients()
+            # self.agent.check_key_gradients()
+
+            for name, param in self.agent.encoder.named_parameters():
+                if param.grad is None:
+                    print(name, "NO GRAD")
+                else:
+                    print(name, param.grad.norm().item())
 
 
             self.encoder_optimizer.step()
