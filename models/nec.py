@@ -391,8 +391,9 @@ class NECAgent(nn.Module):
         self.encoder.load_state_dict(model_state["encoder"])
 
         # Epsilon buffer
-        if "current_epsilon" in model_state:
-            self.current_epsilon.copy_(model_state["current_epsilon"])
+        self.current_epsilon.copy_(model_state["current_epsilon"])
+        
+        print(f"Current epsilon: {self.current_epsilon}")
 
         # DND memories
         for dnd, dnd_state in zip(self.dnds, model_state["dnds"]):

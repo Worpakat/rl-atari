@@ -376,10 +376,12 @@ class DND(nn.Module):
         Returns the state dictionary of the DND.
         """
         return {
-            "keys": self.keys,
-            "values": self.values,
-            "generations": self.generations,
-            "auxiliary": self.auxiliary if self.use_auxiliary else None,
+            "keys": self.keys.detach(),
+            "values": self.values.detach(),
+            "generations": self.generations.detach(),
+            "auxiliary": self.auxiliary.detach() if self.use_auxiliary else None,
+            "write_index": self.write_index,
+            "memory_size": self.memory_size
         }
     
     def load_state_dict(self, state: dict):
@@ -388,7 +390,17 @@ class DND(nn.Module):
         """
         self.keys = state["keys"].to(self.device)
         self.values = state["values"].to(self.device)
-        # self.generations = state["generations"].to(self.device)
+        self.generations = state["generations"].to(self.device)
         
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
+
+        print(f" Keys require grad: {self.keys.requires_grad}")
+        print(f" Values require grad: {self.values.requires_grad}")
+        print(f" Generations require grad: {self.generations.requires_grad}")
+        # print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
+
+        self.write_index = state["write_index"]
+        self.memory_size = state["memory_size"]
+        
+        self.build_index()
