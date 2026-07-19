@@ -16,7 +16,7 @@
     
     
     "warmup_steps": 3000,                       
-    "max_episodes": 100,           
+    "max_episodes": 60,           
     "batch_size": 64,                           
     "replay_memory_size": 10000,              
     "cache_representations": true,      
