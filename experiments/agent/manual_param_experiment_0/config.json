@@ -37,7 +37,7 @@
     "checkpoint_period": 10,
     "save_replay_memory": false,
     "evaluation_period": 10,                   
-    "evaluation_episodes": 10,                  
+    "evaluation_episodes": 2,                  
     "record_video": true,                         
 
 
