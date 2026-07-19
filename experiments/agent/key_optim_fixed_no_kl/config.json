@@ -29,7 +29,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_40_step_2501.pt",                  
+    "resume_checkpoint": "model_ep_130_step_14005.pt",                  
     "load_replay_memory": false,                 
 
 
