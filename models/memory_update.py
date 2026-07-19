@@ -122,7 +122,7 @@ class MemoryUpdateStrategy(ABC):
         requests_by_action: dict[int, list[MemoryUpdateRequest]] = {}
 
         for request in update_requests:
-            requests_by_action.get(request.action).append(request)
+            requests_by_action.setdefault(request.action, []).append(request)
 
         for action, requests in requests_by_action.items():
 

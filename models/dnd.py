@@ -398,9 +398,7 @@ class DND(nn.Module):
 
         if (self.key_optimizer is None or self.optimizer_stale):
 
-            print("Initializing key optimizer...") # For sanity check.
-
-            self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
+            self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate, momentum=0.99)
             self.optimizer_stale = False
 
 
@@ -408,39 +406,39 @@ class DND(nn.Module):
         """
         Resets RMSProp statistics for newly inserted keys.
         """
+        if self.key_optimizer is None:
+            return
 
         state = self.key_optimizer.state.get(self.keys)
-        
-        print("Resetting optimizer state...")
-
         
         if not state:
             return
 
         if "square_avg" in state:
-            print("Resetting optimizer square avg...")
             state["square_avg"][indices] = 0
 
         if "momentum_buffer" in state:
-            print("Resetting optimizer momentum buffer...")
             state["momentum_buffer"][indices] = 0
 
         if "grad_avg" in state:
-            print("Resetting optimizer grad avg...")
             state["grad_avg"][indices] = 0
 
     def state_dict(self) -> dict:
         """
         Returns the state dictionary of the DND.
         """
-        return {
+        state_dict = {
             "keys": self.keys.detach(),
             "values": self.values.detach(),
             "generations": self.generations.detach(),
             "auxiliary": self.auxiliary.detach() if self.use_auxiliary else None,
             "write_index": self.write_index,
-            "memory_size": self.memory_size
+            "memory_size": self.memory_size,
         }
+        if self.key_optimizer is not None:
+            state_dict["key_optimizer"] = self.key_optimizer.state_dict() 
+
+        return state_dict
     
     def load_state_dict(self, state: dict):
         """
@@ -453,13 +451,7 @@ class DND(nn.Module):
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
 
-        self.keys.requires_grad = True # To make sure, we are assigning manually
-
-        print(f" Keys require grad: {self.keys.requires_grad}")
-        print(f" Values require grad: {self.values.requires_grad}")
-        print(f" Generations require grad: {self.generations.requires_grad}")
-        if self.use_auxiliary:
-            print(f" Auxiliary require grad: {self.auxiliary.requires_grad}")
+        self.keys.requires_grad = True # To make sure it works properly, we are assigning manually
 
         self.write_index = state["write_index"]
         self.memory_size = state["memory_size"]
