@@ -119,6 +119,8 @@ class MemoryUpdateStrategy(ABC):
         that pending insertions cannot invalidate existing memory indices.
         """
 
+        insert_update_counts = [{"insert": 0, "update": 0} for _ in dnds]
+
         requests_by_action: dict[int, list[MemoryUpdateRequest]] = {}
 
         for request in update_requests:
@@ -166,6 +168,12 @@ class MemoryUpdateStrategy(ABC):
                 dnd.insert(keys, values)
 
                 dnd.commit()
+
+            insert_update_counts[action]["insert"] += len(inserts)
+            insert_update_counts[action]["update"] += len(updates)
+
+        return insert_update_counts
+
 
 class OriginalNECUpdateStrategy(MemoryUpdateStrategy):
     """

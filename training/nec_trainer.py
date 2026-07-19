@@ -564,7 +564,9 @@ class NECTrainer:
                 self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
 
         # Apply all memory updates simultaneously.
-        self.agent.apply_memory_updates(updates_to_be_applied)
+        insert_update_counts = self.agent.apply_memory_updates(updates_to_be_applied)
+        
+        return insert_update_counts
 
     def _network_optimization_step(self):
         """
@@ -639,12 +641,21 @@ class NECTrainer:
     def _should_evaluate(self):
         return self.episode % self.config.evaluation_period == 0
       
-    def _logging_step(self, logs: dict | None):
+    def _logging_step(self, losses: dict | None, insert_update_counts: dict | None):
         """
         Records training metrics.
         """
         # Multiple optimization steps
-        for l in logs:
+        if losses is None or insert_update_counts is None:
+            return
+        
+        total_inserts = 0
+        total_updates = 0
+        for action_counts in insert_update_counts:
+            total_inserts += action_counts["insert"]
+            total_updates += action_counts["update"] 
+        
+        for l in losses:
             self.logger.log(
                 optimization_step=l['optimization_step'],
                 global_step=self.global_step,
@@ -653,8 +664,11 @@ class NECTrainer:
                 total_loss=l["total_loss"].item(),
                 td_loss=l["td_loss"].item(),
                 kl_loss=l["kl_loss"].item(),
+                total_dnd_inserts=total_inserts,
+                total_dnd_updates=total_updates
             )
         
+
         print(f"Episode {self.episode}, optimization step {self.optimization_step}, is fnished.")
         print(self.logger.last())
         print()
@@ -670,7 +684,7 @@ class NECTrainer:
                 clear=True
             )
 
-    def _checkpoint_step(self, logs: dict):
+    def _checkpoint_step(self):
         """
         Saves a training checkpoint periodically.
         """
@@ -745,14 +759,14 @@ class NECTrainer:
                 
                 self._environment_step()
 
-                self._memory_optimization_step()
+                insert_update_counts = self._memory_optimization_step()
 
-                logs = self._network_optimization_step()
+                losses = self._network_optimization_step()
 
-                self._logging_step(logs)    
+                self._logging_step(losses, insert_update_counts)    
 
                 if self._should_checkpoint():
-                    self._checkpoint_step(logs)
+                    self._checkpoint_step()
 
                 if self._should_evaluate():
                     print("Evaluating...")
