@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/key_optim_fixed_no_kl",
+    "experiment_dir": "experiments/agent/manual_param_experiment_0",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -28,8 +28,8 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_130_step_14005.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_10_step_1228.pt",                  
     "load_replay_memory": false,                 
 
 
