@@ -162,15 +162,20 @@ class NECTrainer:
                 raw_state = self.sequence_buffer.get_raw_sequence()
                 state = convert_and_norm_sequence(raw_state)
 
-                encoder_output = self.agent.encode(
-                    frames=(
-                        torch.from_numpy(state)
-                        .unsqueeze(0)
-                        .unsqueeze(2)
-                        .to(self.device)
-                    ),
-                    random_sampling=False,
-                )
+                self.agent.encoder.eval() # ! Look at end of the file, why we use eval() here.
+                with torch.no_grad(): # We don't need gradients during warmup.
+                    
+                    encoder_output = self.agent.encode(
+                        frames=(
+                            torch.from_numpy(state)
+                            .unsqueeze(0)
+                            .unsqueeze(2)
+                            .to(self.device)
+                        ),
+                        random_sampling=False,
+                    )
+
+                self.agent.encoder.train()
 
                 # Detect life loss.
                 death = (
@@ -329,18 +334,26 @@ class NECTrainer:
             raw_state = self.sequence_buffer.get_raw_sequence()
             state = convert_and_norm_sequence(raw_state)
 
-            encoder_output = self.agent.encode(
-                frames=(
-                    torch.from_numpy(state)
-                    .unsqueeze(0)
-                    .unsqueeze(2)
-                    .to(self.device)
-                ),
-                random_sampling=False,
-            )
+            self.agent.encoder.eval() # ! Look at end of the file, why we use eval() here.
+            with torch.no_grad(): # We don't need gradients during warmup.
+                
+                encoder_output = self.agent.encode(
+                    frames=(
+                        torch.from_numpy(state)
+                        .unsqueeze(0)
+                        .unsqueeze(2)
+                        .to(self.device)
+                    ),
+                    random_sampling=False,
+                )
 
-            # Action selection.
-            action, is_exploration = self.agent.choose_action(encoder_output)
+
+                # Action selection.
+                action, is_exploration = self.agent.choose_action(encoder_output)
+                # This contains lookup, which means has to be in no_grad context.
+            
+            # Getting out of no_grad context.
+            self.agent.encoder.train() 
 
             # Environment interaction.
             observation, reward, terminated, truncated, info = self.environment.step(action)
@@ -414,7 +427,7 @@ class NECTrainer:
                 for _ in range(self.config.sequence_length):
                     self.sequence_buffer.append(observation)
                 
-                # ?! Why we check this before than that if episode is ended?:
+                # ?! Why we check 'transition_queue_manager.is_full()' before than that if episode is ended?:
                 # * Capacity could be full and episode could be ended because 
                 # "terminated" or "truncated" flags or proceeds before the appended transitions 
                 # due to delayed appends. 
@@ -484,16 +497,23 @@ class NECTrainer:
                 # If representation stored in the transition is `None`, compute it.
                 if representation is None: 
                     state = convert_and_norm_sequence(transition.state)
+    
+                    self.agent.encoder.eval() # ! Look at end of the file, why we use eval() here.
+                    with torch.no_grad(): 
+                        # Only purpose is getting the representation again.
+                        # As we do at _environment_step(). Hence, no gradients.
 
-                    encoder_output = self.agent.encode(
-                        frames=(
-                            torch.from_numpy(state)
-                            .unsqueeze(0)
-                            .unsqueeze(2)
-                            .to(self.device)),
-                        random_sampling=False,
-                    )
-                    transition.representation = encoder_output.representation
+                        encoder_output = self.agent.encode(
+                            frames=(
+                                torch.from_numpy(state)
+                                .unsqueeze(0)
+                                .unsqueeze(2)
+                                .to(self.device)),
+                            random_sampling=False,
+                        )
+                        transition.representation = encoder_output.representation
+
+                    self.agent.encoder.train()
                     
 
                 # Determine whether the state already exists in memory.
@@ -812,230 +832,32 @@ class NECTrainer:
         )
 
 
+## EXPLANATIONS
+
+# ------------------------------------------------------------------
+                    # self.agent.encoder.eval() 
+                    # with torch.no_grad(): 
+                    #     # Only purpose is getting the representation again.
+                    #     # As we do at _environment_step(). Hence, no gradients.
+
+                    #     encoder_output = self.agent.encode(
+                    #         frames=(
+                    #             torch.from_numpy(state)
+                    #             .unsqueeze(0)
+                    #             .unsqueeze(2)
+                    #             .to(self.device)),
+                    #         random_sampling=False,
+                    #     )
+                    #     transition.representation = encoder_output.representation
+
+                    # self.agent.encoder.train()
+
+## We get into model.eval() mode here due to prevent encoder to 
+# track batch norm mean and variance. Because we pass states one by one to encoder.
+# If we don't turn off batch norm parameters tracking, they would be very noisy.
+# ------------------------------------------------------------------
 
 ###===================================================================
 ###===================================================================
 
 ###===========================OLD_FUNCTIONS===========================
-
-    # def warmup(self):     
-    #     """
-    #     Populates the replay memory and DNDs using a random policy before
-    #     reinforcement learning begins.
-    #     """
-    #     print("Starting warmup...")
-        
-    #     setup_flag = True # Used to whether to reset the environment or not.
-    #     # Reset the environment if episode is over. Do not reset if episode is not over but only death occurred.
-        
-    #     while not self._warmup_finished():
-            
-    #         if setup_flag:
-    #             info = self._setup()
-    #             setup_flag = False
-            
-    #         counter = 0
-    #         self.current_lives = self.environment.unwrapped.ale.lives()
-
-    #         while True:
-    #             counter += 1
-
-    #             action = self.environment.action_space.sample()
-
-    #             observation, reward, terminated, truncated, info = self.environment.step(action)
-
-    #             observation = cut_and_transpose_frame(observation)
-
-    #             self.sequence_buffer.append(observation)
-
-    #             raw_state = self.sequence_buffer.get_raw_sequence()
-    #             state = convert_and_norm_sequence(raw_state)
-
-    #             encoder_output = self.agent.encode(
-    #                 frames=(
-    #                     torch.from_numpy(state)
-    #                     .unsqueeze(0)
-    #                     .unsqueeze(2)
-    #                     .to(self.device)),
-    #                 random_sampling=False,
-    #             )
-
-    #             # Check for death, if so, apply given death penalty.
-    #             death_flag = self.death_penalty and info["lives"] < self.current_lives
-    #             if death_flag: 
-    #                 reward = self.death_penalty
-
-    #             self.transition_queue.append(
-    #                 Transition(
-    #                     state=raw_state,
-    #                     action=action,
-    #                     reward=reward,
-    #                     representation = (
-    #                         encoder_output.representation.detach().cpu()
-    #                         if self.config.cache_representations
-    #                         else None
-    #                         ),
-    #                     is_exploration_action=True
-    #                 )
-    #             )
-
-    #             self.global_step += 1
-
-    #             ## !! REFACTOR this functions death episode ending conditioning and resetting. 
-    #             # Do it at least same as we do in _environment_step function.
-
-    #             if terminated or truncated: # Episode is over.
-    #                 print(f"Transition Queue has taken {counter} transitions; Transition Queue size: {len(self.transition_queue)}")
-    #                 setup_flag = True # Reset the environment
-    #                 break
-
-    #             if death_flag or self.transition_queue.is_full():
-    #                 print (f"Remaining lives: {info['lives']}")
-    #                 print(f"Transition Queue has taken {counter} transitions; Transition Queue size: {len(self.transition_queue)}")
-    #                 # Do not reset the environment, since the episode is not over
-
-    #                 # ! BUT: Fill sequence buffer with last state.
-    #                 self.sequence_buffer.clear()
-    #                 for _ in range(self.config.sequence_length):
-    #                     self.sequence_buffer.append(observation)
-                    
-    #                 break 
-    #                 ## ! We break anyway, to not connect death previous and after episodes while calculating Q-targets.
-
-    #         q_targets = self.agent.compute_q_targets(
-    #             transition_queue=self.transition_queue,
-    #             gamma=self.config.gamma,
-    #             n_step=self.config.n_step,
-    #             warmup=True,
-    #         )
-
-    #         updates_to_be_applied = []
-
-    #         for transition, q_target in zip(self.transition_queue, q_targets):
-
-    #             # Determine whether the state already exists in memory.
-    #             index = self.agent.get_memory_index(transition.representation, transition.action)
-
-    #             if index: # State exists in memory.
-
-    #                 # Update memory with original Bellman update
-    #                 update_request = self.agent.create_memory_update_request(
-    #                     transition=transition,
-    #                     q_target=q_target,
-    #                     lookup_result=None,
-    #                     update_or_insert="update",
-    #                     index=index,
-    #                     warmup=True,
-    #                 )
-    #                 updates_to_be_applied.append(update_request)
-
-    #             else: # State does not exist in memory. 
-
-    #                 # Create memory update request: Original NEC Q-target insert
-    #                 update_request = self.agent.create_memory_update_request(
-    #                     transition=transition,
-    #                     q_target=q_target,
-    #                     lookup_result=None,
-    #                     warmup=True,
-    #                     update_or_insert="insert",
-    #                     exploration_update=False
-    #                 )
-    #                 updates_to_be_applied.extend(update_request)
-
-    #             # Store transition for network optimization.
-    #             transition.representation = None
-    #             self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
-
-    #         self.agent.apply_memory_updates(updates_to_be_applied)
-
-    #         # Clear transition queue in case of warmup and episode is not over.
-    #         self.transition_queue.clear()
-
-
-    #     print("Warmup completed.")
-
-
-
-
-    # def _environment_step(self):
-    #         """
-    #         Executes one environment interaction and stores the resulting
-    #         transition in the trajectory buffer.
-    #         """
-
-    #         while True:
-
-    #             # Encode current state.
-    #             raw_state = self.sequence_buffer.get_raw_sequence()
-    #             state = convert_and_norm_sequence(raw_state)
-
-    #             encoder_output = self.agent.encode(
-    #                 frames=(
-    #                     torch.from_numpy(state)
-    #                     .unsqueeze(0)
-    #                     .unsqueeze(2)
-    #                     .to(self.device)),
-    #                 random_sampling=False,
-    #             )
-
-    #             # Select action.
-    #             action, is_exploration = self.agent.choose_action(encoder_output)
-
-    #             # Environment interaction.
-    #             observation, reward, terminated, truncated, info = self.environment.step(action)
-
-    #             observation = cut_and_transpose_frame(observation)
-    #             self.sequence_buffer.append(observation)
-                
-    #             # Check for death, if so, apply given death penalty.
-    #             death_flag = self.death_penalty and info["lives"] < self.current_lives
-    #             if death_flag: 
-    #                 reward = self.death_penalty
-                
-    #             self.episode_reward += reward
-                
-    #             # Store transition.
-    #             self.transition_queue.append(
-    #                 Transition(
-    #                     state=raw_state,
-    #                     action=action,
-    #                     reward=reward,
-    #                     representation = (
-    #                         encoder_output.representation.detach().cpu()
-    #                         if self.config.cache_representations
-    #                         else None
-    #                     ),
-    #                     is_exploration_action=is_exploration
-    #                 )
-    #             )
-
-    #             self.global_step += 1
-
-    #             if (
-    #                 terminated 
-    #                 or truncated 
-    #                 or self.transition_queue.is_full() 
-    #                 or death_flag
-    #             ):
-    #                 # Either episode ends or trajectory is full or death penalty is applied, in which case we stop.
-                    
-    #                 if terminated or truncated:
-    #                     # Episode is over, reset environment.
-    #                     self.episode_ended = True
-    #                     observation, info = self.environment.reset()
-
-    #                 self.current_lives = info["lives"] # We assign current lives in any case.
-    #                 # If episode is over, reset lives. 
-    #                 # If death penalty is applied, update lives.
-
-    #                 observation = cut_and_transpose_frame(observation)
-
-    #                 self.sequence_buffer.clear()
-
-    #                 for _ in range(self.config.sequence_length):
-    #                     self.sequence_buffer.append(observation)
-                    
-    #                 break
-            
-    #         # Decay epsilon after each episode.
-    #         self.agent.decay_epsilon()

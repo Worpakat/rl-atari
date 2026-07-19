@@ -111,7 +111,6 @@ class DND(nn.Module):
 
         self.key_optimizer: torch.optim.Optimizer | None = None
         self.optimizer_stale = True 
-        # This is becomes True when new keys inserted, which is in the 'commit()'.
         # If it is False, unnecessary optimizer initializations are avoided during key update.
 
     def __len__(self) -> int:
@@ -200,7 +199,10 @@ class DND(nn.Module):
             self.generations[append_indices] += 1
 
             with torch.no_grad(): # Since keys are trainable.
-                self.keys[append_indices].copy_(pending_keys[:append_count])    
+                self.keys[append_indices].copy_(pending_keys[:append_count])  
+
+            # ! Keys are changed, we need to reset optimizer states of changed indices.
+            self.reset_optimizer_state(append_indices)  
 
             self.values[append_indices] = pending_values[:append_count].unsqueeze(dim=1)
 
@@ -233,6 +235,9 @@ class DND(nn.Module):
             with torch.no_grad(): # Since keys are trainable.
                 self.keys[write_indices].copy_(pending_keys)
             
+            # ! Keys are changed, we need to reset optimizer states of changed indices.
+            self.reset_optimizer_state(append_indices)  
+            
             self.values[write_indices] = pending_values.unsqueeze(dim=1)
 
             if self.use_auxiliary:
@@ -249,7 +254,7 @@ class DND(nn.Module):
         # Rebuild the neighbor index
         self.build_index()
         self._stale_index = False
-        self.optimizer_stale = True
+    
         
     
     def build_index(self):
@@ -337,6 +342,19 @@ class DND(nn.Module):
 
         Any of ``values``, ``changes``, ``keys`` or ``auxiliary`` may be omitted.
         Only the provided memory components are updated.
+
+        values: 
+            Used to overwrite existing values.
+        
+        changes:
+            Used to add to existing values.
+        
+        keys:
+            Used to overwrite existing keys.
+        
+        auxiliary:
+            Used to overwrite existing auxiliary memory.
+            
         """
 
         if len(self) == 0:
@@ -352,6 +370,10 @@ class DND(nn.Module):
                 self.keys[indices] = keys
             
             self._stale_index = True
+
+            # ! Keys are changed, we need to reset optimizer states of changed indices.
+            self.reset_optimizer_state(indices)
+
 
         if values is not None:
             self.values[indices] = values
@@ -375,9 +397,37 @@ class DND(nn.Module):
         """
 
         if (self.key_optimizer is None or self.optimizer_stale):
-            
+
+            print("Initializing key optimizer...") # For sanity check.
+
             self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
             self.optimizer_stale = False
+
+
+    def reset_optimizer_state(self, indices: torch.Tensor):
+        """
+        Resets RMSProp statistics for newly inserted keys.
+        """
+
+        state = self.key_optimizer.state.get(self.keys)
+        
+        print("Resetting optimizer state...")
+
+        
+        if not state:
+            return
+
+        if "square_avg" in state:
+            print("Resetting optimizer square avg...")
+            state["square_avg"][indices] = 0
+
+        if "momentum_buffer" in state:
+            print("Resetting optimizer momentum buffer...")
+            state["momentum_buffer"][indices] = 0
+
+        if "grad_avg" in state:
+            print("Resetting optimizer grad avg...")
+            state["grad_avg"][indices] = 0
 
     def state_dict(self) -> dict:
         """

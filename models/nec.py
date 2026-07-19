@@ -211,17 +211,18 @@ class NECAgent(nn.Module):
             # Bootstrap estimate.
             bootstrap_transition = transition_queue[transition_index + n_step]
             
-            if bootstrap_transition.representation is None:
-                bootstrap_transition.representation = self.encode(
-                    frames=torch.from_numpy(bootstrap_transition.state).unsqueeze(0).to(self.encoder.device),
-                    random_sampling=False, # We use 'posterior_mean's as representations for stability
-                ).representation.detach().cpu()
-            
-            
+            self.encoder.eval() # ! Look at end of the 'nec_trainer.py' file, why we use eval() here.
             with torch.no_grad():
                 # ! We don't want to gather key gradients here during lookup.
-                # It should be done only _network_optimization_step().  
-        
+                # It should be done only _network_optimization_step().      
+
+                if bootstrap_transition.representation is None:
+
+                    bootstrap_transition.representation = self.encode(
+                        frames=torch.from_numpy(bootstrap_transition.state).unsqueeze(0).to(self.encoder.device),
+                        random_sampling=False, # We use 'posterior_mean's as representations for stability
+                    ).representation.detach().cpu()
+                
                 lookup_results = self.lookup(key=bootstrap_transition.representation)
 
                 bootstrap_value = torch.stack(
@@ -229,6 +230,8 @@ class NECAgent(nn.Module):
                 ).max()
 
                 q_targets[transition_index] = (discounted_reward + (gamma ** n_step) * bootstrap_value)
+
+            self.encoder.train()
 
         return q_targets
 
@@ -381,6 +384,7 @@ class NECAgent(nn.Module):
     def check_dnd_key_gradients(self) -> None:
         """
         Checks the gradients of all trainable DND key optimizers.
+        Used for sanity check.
         """
 
         for dnd in self.dnds:
@@ -399,9 +403,9 @@ class NECAgent(nn.Module):
         for dnd in self.dnds:
 
             if dnd.key_optimizer is not None:
-
                 dnd.key_optimizer.step()
                 dnd.build_index()
+    
     
     def state_dict(self):
         """

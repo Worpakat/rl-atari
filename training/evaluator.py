@@ -215,8 +215,11 @@ class Evaluator:
         try:
             episode = 0
 
-            self.agent.eval() # Set agent to evaluation mode
+            self.agent.eval() 
             with torch.inference_mode():
+                # Set agent to evaluation mode and getting inference mode.
+                # We don't want to gather gradients, and its must for batch norm 
+                # and dropout layers if they are used.
 
                 while not self._finished(episode):
                     
