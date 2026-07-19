@@ -16,9 +16,9 @@
     
     
     "warmup_steps": 3000,                       
-    "max_episodes": 150,           
+    "max_episodes": 60,           
     "batch_size": 64,                           
-    "replay_memory_size": 30000,              
+    "replay_memory_size": 35000,              
     "cache_representations": true,      
 
     "transition_queue_size": 1500,                  
@@ -28,7 +28,7 @@
     },
 
 
-    "resume_training": true,                   
+    "resume_training": false,                   
     "resume_checkpoint": "model_ep_130_step_14005.pt",                  
     "load_replay_memory": false,                 
 
@@ -42,10 +42,10 @@
 
 
     "gamma": 0.99, 
-    "n_step": 50,       
+    "n_step": 30,       
     "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 0.99,                    
+    "epsilon_decay": 0.995,                    
 
 
     "sequence_length": 6,                       
@@ -73,7 +73,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 50,                    
 
-    "dnd_duplicate_threshold": 0.0001,            
+    "dnd_duplicate_threshold": 0.01,            
 
     "dnd_learning_rate": 5e-6,                
     "dnd_q_learning_rate": 0.01,   
