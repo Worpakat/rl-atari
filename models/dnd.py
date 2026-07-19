@@ -110,7 +110,8 @@ class DND(nn.Module):
         self._stale_index = True
 
         self.key_optimizer: torch.optim.Optimizer | None = None
-        self.optimizer_stale = True 
+        self._optimizer_stale = True 
+        # Used after key inserts to refresh the optimizer.
         # If it is False, unnecessary optimizer initializations are avoided during key update.
 
     def __len__(self) -> int:
@@ -201,9 +202,6 @@ class DND(nn.Module):
             with torch.no_grad(): # Since keys are trainable.
                 self.keys[append_indices].copy_(pending_keys[:append_count])  
 
-            # ! Keys are changed, we need to reset optimizer states of changed indices.
-            self.reset_optimizer_state(append_indices)  
-
             self.values[append_indices] = pending_values[:append_count].unsqueeze(dim=1)
 
             if self.use_auxiliary:
@@ -235,9 +233,6 @@ class DND(nn.Module):
             with torch.no_grad(): # Since keys are trainable.
                 self.keys[write_indices].copy_(pending_keys)
             
-            # ! Keys are changed, we need to reset optimizer states of changed indices.
-            self.reset_optimizer_state(append_indices)  
-            
             self.values[write_indices] = pending_values.unsqueeze(dim=1)
 
             if self.use_auxiliary:
@@ -254,6 +249,7 @@ class DND(nn.Module):
         # Rebuild the neighbor index
         self.build_index()
         self._stale_index = False
+        self._optimizer_stale = True
     
         
     
@@ -370,10 +366,8 @@ class DND(nn.Module):
                 self.keys[indices] = keys
             
             self._stale_index = True
-
-            # ! Keys are changed, we need to reset optimizer states of changed indices.
-            self.reset_optimizer_state(indices)
-
+            self._optimizer_stale = True
+            
 
         if values is not None:
             self.values[indices] = values
@@ -396,38 +390,17 @@ class DND(nn.Module):
         has been structurally modified.
         """
 
-        if (self.key_optimizer is None or self.optimizer_stale):
+        if (self.key_optimizer is None or self._optimizer_stale):
 
             self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate, momentum=0.99)
-            self.optimizer_stale = False
+            self._optimizer_stale = False # Optimizer is now up to date. Reset the flag.
 
-
-    def reset_optimizer_state(self, indices: torch.Tensor):
-        """
-        Resets RMSProp statistics for newly inserted keys.
-        """
-        if self.key_optimizer is None:
-            return
-
-        state = self.key_optimizer.state.get(self.keys)
-        
-        if not state:
-            return
-
-        if "square_avg" in state:
-            state["square_avg"][indices] = 0
-
-        if "momentum_buffer" in state:
-            state["momentum_buffer"][indices] = 0
-
-        if "grad_avg" in state:
-            state["grad_avg"][indices] = 0
 
     def state_dict(self) -> dict:
         """
         Returns the state dictionary of the DND.
         """
-        state_dict = {
+        return {
             "keys": self.keys.detach(),
             "values": self.values.detach(),
             "generations": self.generations.detach(),
@@ -435,10 +408,6 @@ class DND(nn.Module):
             "write_index": self.write_index,
             "memory_size": self.memory_size,
         }
-        if self.key_optimizer is not None:
-            state_dict["key_optimizer"] = self.key_optimizer.state_dict() 
-
-        return state_dict
     
     def load_state_dict(self, state: dict):
         """
