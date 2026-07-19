@@ -18,7 +18,7 @@
     "warmup_steps": 3000,                       
     "max_episodes": 60,           
     "batch_size": 64,                           
-    "replay_memory_size": 10000,              
+    "replay_memory_size": 30000,              
     "cache_representations": true,      
 
     "transition_queue_size": 1500,                  
@@ -28,8 +28,8 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_60_step_3916.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_40_step_2501.pt",                  
     "load_replay_memory": false,                 
 
 
@@ -66,7 +66,7 @@
 
     "encoder_learning_rate": 5e-6,            
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 10,
+    "network_optimization_period": 5,
     "key_updates": true, 
 
 
