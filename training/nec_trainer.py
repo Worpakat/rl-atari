@@ -715,6 +715,8 @@ class NECTrainer:
             colab_execution=self.config.colab_execution
         )
 
+        print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
+        
         if self.config.save_replay_memory:
             print(f"Replay memory length: {len(self.replay_memory)}")
             print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
