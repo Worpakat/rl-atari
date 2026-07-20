@@ -129,23 +129,6 @@ class DND(nn.Module):
     def get_value(self, index: int) -> torch.Tensor:
         return self.values[index]
 
-    # def clear(self):
-    #     """
-    #     Removes all committed and pending memory entries.
-    #     """
-
-    #     self.keys = None
-    #     self._pending_keys.clear()
-
-    #     self.values = None
-    #     self._pending_values.clear()
-        
-    #     if self.use_auxiliary:
-    #         self.auxiliary = None
-    #         self._pending_auxiliary.clear()
-        
-    #     self._stale_index = True
-
     def insert(self, 
                key: list[torch.Tensor], 
                value: list[torch.Tensor], 
