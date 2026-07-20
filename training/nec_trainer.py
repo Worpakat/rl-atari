@@ -605,14 +605,12 @@ class NECTrainer:
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
-
-            print("q_targets trainer: ", q_targets.shape)
-            print("predicted_q trainer: ", predicted_q_values.shape)
+            predicted_q_values = predicted_q_values.squeeze(1) # To match q_targets
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
 
-                td_errors = (predicted_q_values - q_targets).squeeze()
+                td_errors = predicted_q_values - q_targets
 
                 if self.config.prioritized_replay:
                     self.replay_memory.update_priorities(indices, td_errors)

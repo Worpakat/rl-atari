@@ -237,7 +237,7 @@ class ReplayMemory(BaseBuffer):
             ) # For Grayscale
         
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).unsqueeze(1).to(device)
+        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
         
         return states, actions, q_targets
     
