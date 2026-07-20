@@ -52,7 +52,7 @@
     "epsilon_decay": 0.995,                    
 
 
-    "sequence_length": 6,                       
+    "sequence_length": 8,                       
     "input_channels": 1,                        
     "input_height": 176,                         
     "input_width": 160,                          
@@ -65,7 +65,7 @@
     "flatten_output": true,                     
     "latent_dim": 128,                          
     "adapter": true,                            
-    "representation_dim": 64,                  
+    "representation_dim": 16,                  
 
 
     "encoder_learning_rate": 5e-6,            

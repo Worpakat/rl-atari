@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+import math
+
 import torch
 import torch.nn as nn
 
@@ -143,14 +145,16 @@ class Adapter(nn.Module):
         super().__init__()
 
         in_features = sequence_length * latent_dim
-        linear_blocks = in_features / (representation_dim * 4)
+        linear_blocks = math.log((in_features / representation_dim), base=4)
+
+        # MATH: ((latent * seq) / repr) = 4^(linear_blocks). 
+        # Which means, features will be reduced by 4 times at each block.
 
         self.linear = nn.Sequential()
 
         for _ in range(int(linear_blocks)):
             # Adding linear blocks dynamically
 
-            # Features are reduced by 4 times at each block
             self.linear.add_module( 
                 f"linear_block_{len(self.linear)}", 
                 LinearBlock(
