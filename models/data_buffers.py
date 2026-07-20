@@ -203,7 +203,7 @@ class ReplayMemory(BaseBuffer):
 
         priorities = np.asarray(
             [unit.priority for unit in self._memory],
-            dtype=np.float32,
+            dtype=np.float64,
         )
 
         probabilities = priorities / priorities.sum()
@@ -214,10 +214,7 @@ class ReplayMemory(BaseBuffer):
             replace=False,
             p=probabilities,
         )
-
-        # For sanity check
-        print("Sampled with probabilities:", probabilities[indices])
-
+        
         batch = [self._memory[i] for i in indices]
 
         return indices.tolist(), batch
@@ -240,7 +237,7 @@ class ReplayMemory(BaseBuffer):
             ) # For Grayscale
         
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
+        q_targets = torch.stack([transition.q_target for transition in batch]).unsqueeze(1).to(device)
         
         return states, actions, q_targets
     
@@ -253,17 +250,10 @@ class ReplayMemory(BaseBuffer):
 
         td_errors = td_errors.detach().abs().cpu().tolist()
 
-        print("TD errors:", td_errors)
-        print("TD errors shape:", td_errors.shape)
-
         for index, error in zip(indices, td_errors):
-            print("Error:", error)
-            print("Epsilon:", self.priority_epsilon)
-
             self._memory[index].priority = (error + self.priority_epsilon) ** self.priority_alpha 
 
-    
-    
+
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2

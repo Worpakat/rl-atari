@@ -16,7 +16,7 @@ def compute_network_loss(
     """
 
     # TD loss
-    td_loss = F.mse_loss(predicted_q_values, q_targets.unsqueeze(1), reduction=reduction)
+    td_loss = F.mse_loss(predicted_q_values, q_targets, reduction=reduction)
 
     # Temporal KL loss
     kl_loss = dynamics_kl_loss(
