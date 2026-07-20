@@ -605,7 +605,6 @@ class NECTrainer:
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
-            predicted_q_values = predicted_q_values.squeeze(1) # To match q_targets
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.

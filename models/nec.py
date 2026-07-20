@@ -371,7 +371,7 @@ class NECAgent(nn.Module):
 
             predictions.append(lookup_result.value) 
 
-        return torch.stack(predictions)
+        return torch.stack(predictions).squeeze(1) # To match with 'q_target' shape.
 
     def zero_key_gradients(self) -> None:
         """
