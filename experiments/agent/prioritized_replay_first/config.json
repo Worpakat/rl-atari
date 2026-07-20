@@ -20,7 +20,7 @@
     "batch_size": 64,                           
     "cache_representations": true,      
     
-    "replay_memory_size": 50000,              
+    "replay_memory_size": 30000,              
     "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
     "priority_epsilon": 1e-5,          
@@ -32,8 +32,8 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_60_step_7432.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_50_step_5995.pt",                  
     "load_replay_memory": false,                 
 
 
