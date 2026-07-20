@@ -16,11 +16,11 @@
     
     
     "warmup_steps": 3000,                       
-    "max_episodes": 60,           
+    "max_episodes": 150,           
     "batch_size": 64,                           
     "cache_representations": true,      
     
-    "replay_memory_size": 30000,              
+    "replay_memory_size": 40000,              
     "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
     "priority_epsilon": 1e-5,          
