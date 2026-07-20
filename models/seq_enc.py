@@ -143,16 +143,26 @@ class Adapter(nn.Module):
         super().__init__()
 
         in_features = sequence_length * latent_dim
+        linear_blocks = in_features / (representation_dim * 4)
 
-        self.linear = nn.Sequential(
-            LinearBlock(in_features=in_features, 
-                        out_features=int(in_features/2),
-                        use_norm=False),
+        self.linear = nn.Sequential()
 
-            LinearBlock(in_features=int(in_features/2), 
-                        out_features=representation_dim,
-                        use_norm=False),
-        )
+        for _ in range(int(linear_blocks)):
+            # Adding linear blocks dynamically
+
+            # Features are reduced by 4 times at each block
+            self.linear.add_module( 
+                f"linear_block_{len(self.linear)}", 
+                LinearBlock(
+                    in_features=in_features, 
+                    out_features=in_features / 4, 
+                    use_norm=False,
+                    activation= None
+                )
+            )
+            
+            in_features = in_features / 4
+
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         return self.linear(x)
