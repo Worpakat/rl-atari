@@ -20,7 +20,7 @@
     "batch_size": 64,                           
     "cache_representations": true,      
     
-    "replay_memory_size": 40000,              
+    "replay_memory_size": 38000,              
     "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
     "priority_epsilon": 1e-5,          
