@@ -254,6 +254,9 @@ class ReplayMemory(BaseBuffer):
         td_errors = td_errors.detach().abs().cpu().tolist()
 
         for index, error in zip(indices, td_errors):
+            print("Error:", error)
+            print("Epsilon:", self.priority_epsilon)
+
             self._memory[index].priority = (error + self.priority_epsilon) ** self.priority_alpha 
 
     
