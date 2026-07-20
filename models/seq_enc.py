@@ -154,13 +154,13 @@ class Adapter(nn.Module):
             self.linear.add_module( 
                 f"linear_block_{len(self.linear)}", 
                 LinearBlock(
-                    in_features=in_features, 
-                    out_features=in_features / 4, 
+                    in_features=int(in_features), 
+                    out_features=int(in_features / 4), 
                     use_norm=False,
                     activation= None
                 )
             )
-            
+
             in_features = in_features / 4
 
 
