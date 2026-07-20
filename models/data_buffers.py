@@ -221,7 +221,29 @@ class ReplayMemory(BaseBuffer):
         batch = [self._memory[i] for i in indices]
 
         return indices.tolist(), batch
+    
 
+    def extract_batch(
+            self, 
+            batch: list[ReplayMemoryUnit],
+            device: torch.device = torch.device("cpu"),
+            ) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+        """
+        Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
+        """
+
+        states = (
+            torch.from_numpy(
+            convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
+            ).unsqueeze(2)
+            .to(device)
+            ) # For Grayscale
+        
+        actions = [transition.action for transition in batch]
+        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
+        
+        return states, actions, q_targets
+    
 
     def update_priorities(
         self,
@@ -233,6 +255,16 @@ class ReplayMemory(BaseBuffer):
 
         for index, error in zip(indices, td_errors):
             self._memory[index].priority = (error + self.priority_epsilon) ** self.priority_alpha 
+
+    
+    
+    def get_states_total_size(self) -> int:
+        """Returns the total size of the states in MB."""
+        return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
+
+
+
+
 
 
 

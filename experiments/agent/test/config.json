@@ -28,8 +28,8 @@
 
     "transition_queue_size": 100,              
     "transition_buffer" : {                    
-        "transition_delay": 20,                
-        "terminal_static_frames": 15
+        "transition_delay": 26,                
+        "terminal_static_frames": 23
     },
 
 
@@ -39,7 +39,7 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 2,
+    "checkpoint_period": 10,
     "save_replay_memory": false,
     "evaluation_period": 10,                   
     "evaluation_episodes": 1,                  

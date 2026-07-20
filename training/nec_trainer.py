@@ -77,7 +77,12 @@ class NECTrainer:
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue_manager = TransitionQueueManager(capacity=config.transition_queue_size)
         self.transition_delay_buffer = TransitionDelayBuffer(delay=self.config.transition_buffer["transition_delay"])
-        self.replay_memory = ReplayMemory(capacity=config.replay_memory_size)
+        self.replay_memory = ReplayMemory(
+            capacity=config.replay_memory_size,
+            prioritized=config.prioritized_replay,
+            priority_alpha=config.priority_alpha,
+            priority_epsilon=config.priority_epsilon,
+        )
 
         # Training progress
         self.global_step = 0
@@ -603,7 +608,7 @@ class NECTrainer:
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
-            
+
                 td_errors = predicted_q_values - q_targets
 
                 if self.config.prioritized_replay:
