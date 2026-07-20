@@ -16,7 +16,7 @@
     
     
     "warmup_steps": 3000,                       
-    "max_episodes": 150,           
+    "max_episodes": 200,           
     "batch_size": 64,                           
     "cache_representations": true,      
     
