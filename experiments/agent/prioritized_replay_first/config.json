@@ -7,13 +7,12 @@
     "num_actions": 5,                           
     "action_mapping": [1, 2, 3, 4, 5],    
 
-    "reward_strategy": "clip",                 
+    "reward_strategy": "log",                 
     "reward_parameters": {                      
-        "keep_zeros": true,
-        "minimum": -1.0,
-        "maximum": 1.0
+        "transport": 0.0,   
+        "scale": 0.01
     },
-    "death_penalty": -1.1, 
+    "death_penalty": -0.9, 
     
     
     "warmup_steps": 3000,                       
@@ -21,7 +20,7 @@
     "batch_size": 64,                           
     "cache_representations": true,      
     
-    "replay_memory_size": 35000,              
+    "replay_memory_size": 50000,              
     "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
     "priority_epsilon": 1e-5,          
@@ -78,7 +77,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 50,                    
 
-    "dnd_duplicate_threshold": 0.1,            
+    "dnd_duplicate_threshold": 0.09,            
 
     "dnd_learning_rate": 5e-6,                
     "dnd_q_learning_rate": 0.01,   
