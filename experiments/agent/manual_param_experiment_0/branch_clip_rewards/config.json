@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/manual_param_experiment_0",
+    "experiment_dir": "experiments/agent/manual_param_experiment_0/branch_clip_rewards",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
