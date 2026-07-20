@@ -18,8 +18,13 @@
     "warmup_steps": 100,                       
     "max_episodes": 50,           
     "batch_size": 32,                           
+    "cache_representations": true,    
+    
     "replay_memory_size": 50000,              
-    "cache_representations": true,      
+    "prioritized_replay": true,                
+    "priority_alpha": 0.5,                     
+    "priority_epsilon": 1e-5,          
+
 
     "transition_queue_size": 100,              
     "transition_buffer" : {                    

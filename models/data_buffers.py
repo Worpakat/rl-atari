@@ -69,6 +69,10 @@ class ReplayMemoryUnit:
     state: np.ndarray
     action: int
     q_target: torch.Tensor
+    
+    # Priority used by prioritized replay.
+    # Ignored when uniform replay is used.
+    priority: float = 1.0
 
 # ------------------------------------
 
@@ -149,37 +153,123 @@ class SequenceReplayBuffer(BaseBuffer):
 #-----Used_for_NEC--------
 
 class ReplayMemory(BaseBuffer):
-    def append(self, state: np.ndarray, action: int, q_target: float) -> None:
+
+    def __init__(
+        self,
+        capacity: int,
+        prioritized: bool = False,
+        priority_alpha: float = 0.6,
+        priority_epsilon: float = 1e-5,
+    ):
+        super().__init__(capacity)
+
+        self.prioritized = prioritized
+        self.priority_alpha = priority_alpha
+        self.priority_epsilon = priority_epsilon
+
+
+    def append(
+        self,
+        state: np.ndarray,
+        action: int,
+        q_target: torch.Tensor,
+    ) -> None:
+
+        # New transitions should always be sampled at least once.
+        if self.prioritized and self.__len__() > 0:
+            initial_priority = max(unit.priority for unit in self._memory)
+        else:
+            initial_priority = 1.0
+
         self._memory.append(
             ReplayMemoryUnit(
                 state=state.copy(),
                 action=action,
                 q_target=q_target,
+                priority=initial_priority,
             )
         )
-    def extract_batch(
-            self, 
-            batch: list[ReplayMemoryUnit],
-            device: torch.device = torch.device("cpu"),
-            ) -> tuple[torch.Tensor, list[int], torch.Tensor]:
-        """
-        Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
-        """
 
-        states = (
-            torch.from_numpy(
-            convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
-            ).unsqueeze(2)
-            .to(device)
-            ) # For Grayscale
-        
-        actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
-        
-        return states, actions, q_targets
 
-    def get_states_total_size(self) -> int:
-        """Returns the total size of the states in MB."""
-        return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
+    def sample(
+        self,
+        batch_size: int,
+    ) -> tuple[list[int], list[ReplayMemoryUnit]]:
+
+        if not self.prioritized:
+            indices = random.sample(range(self.__len__()), batch_size)
+            batch = [self._memory[i] for i in indices]
+            return indices, batch
+
+        priorities = np.asarray(
+            [unit.priority for unit in self._memory],
+            dtype=np.float32,
+        )
+
+        probabilities = priorities / priorities.sum()
+
+        indices = np.random.choice(
+            len(self._memory),
+            size=batch_size,
+            replace=False,
+            p=probabilities,
+        )
+
+        # For sanity check
+        print("Sampled with probabilities:", probabilities[indices])
+
+        batch = [self._memory[i] for i in indices]
+
+        return indices.tolist(), batch
+
+
+    def update_priorities(
+        self,
+        indices: list[int],
+        td_errors: torch.Tensor,
+    ) -> None:
+
+        td_errors = td_errors.detach().abs().cpu().tolist()
+
+        for index, error in zip(indices, td_errors):
+            self._memory[index].priority = (error + self.priority_epsilon) ** self.priority_alpha 
+
+
+
+##==============OLD_IMPLEMENTATION=====================
+
+# class ReplayMemory(BaseBuffer):
+#     def append(self, state: np.ndarray, action: int, q_target: float) -> None:
+#         self._memory.append(
+#             ReplayMemoryUnit(
+#                 state=state.copy(),
+#                 action=action,
+#                 q_target=q_target,
+#             )
+#         )
+#     def extract_batch(
+#             self, 
+#             batch: list[ReplayMemoryUnit],
+#             device: torch.device = torch.device("cpu"),
+#             ) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+#         """
+#         Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
+#         """
+
+#         states = (
+#             torch.from_numpy(
+#             convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
+#             ).unsqueeze(2)
+#             .to(device)
+#             ) # For Grayscale
+        
+#         actions = [transition.action for transition in batch]
+#         q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
+        
+#         return states, actions, q_targets
+
+#     def get_states_total_size(self) -> int:
+#         """Returns the total size of the states in MB."""
+#         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
 
 

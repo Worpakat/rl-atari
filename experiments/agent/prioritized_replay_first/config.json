@@ -1,58 +1,59 @@
 {
-    "colab_execution": true,
+    "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/test",
+    "experiment_dir": "experiments/agent/prioritized_replay_first",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
     "action_mapping": [1, 2, 3, 4, 5],    
 
-    "reward_strategy": "tanh",                 
+    "reward_strategy": "clip",                 
     "reward_parameters": {                      
-        "transport": 0.0,   
-        "scale": 0.01
+        "keep_zeros": true,
+        "minimum": -1.0,
+        "maximum": 1.0
     },
-    "death_penalty": -1.0, 
-
+    "death_penalty": -1.1, 
     
-    "warmup_steps": 100,                       
-    "max_episodes": 50,           
-    "batch_size": 32,                           
-    "cache_representations": true,
     
-    "replay_memory_size": 100000,              
-    "prioritized_replay": false,                
+    "warmup_steps": 3000,                       
+    "max_episodes": 60,           
+    "batch_size": 64,                           
+    "cache_representations": true,      
+    
+    "replay_memory_size": 35000,              
+    "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
-    "priority_epsilon": 1e-5,                  
+    "priority_epsilon": 1e-5,          
 
-    "transition_queue_size": 1000,              
-    "transition_buffer" : {                    
-        "transition_delay": 20,                
-        "terminal_static_frames": 15
+    "transition_queue_size": 1500,                  
+    "transition_buffer": {                    
+        "transition_delay": 26,                
+        "terminal_static_frames": 23
     },
 
 
     "resume_training": false,                   
-    "resume_checkpoint": null,                  
+    "resume_checkpoint": "model_ep_60_step_7432.pt",                  
     "load_replay_memory": false,                 
 
 
     "checkpoint_start": 0,
     "checkpoint_period": 10,
-    "save_replay_memory": true,
+    "save_replay_memory": false,
     "evaluation_period": 10,                   
-    "evaluation_episodes": 1,                  
+    "evaluation_episodes": 3,                  
     "record_video": true,                         
 
 
     "gamma": 0.99, 
-    "n_step": 100,       
+    "n_step": 30,       
     "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 0.95,                    
+    "epsilon_decay": 0.995,                    
 
 
-    "sequence_length": 4,                       
+    "sequence_length": 6,                       
     "input_channels": 1,                        
     "input_height": 176,                         
     "input_width": 160,                          
@@ -60,26 +61,26 @@
     "conv_channels": 4,                       
     "conv_block": 4,                            
     "conv_dim": 32,                           
-    "hidden_dim": 32,                          
+    "hidden_dim": 128,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 32,                          
+    "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 16,                  
+    "representation_dim": 32,                  
 
 
-    "encoder_learning_rate": 0.0002,            
-    "kl_loss_weight": 0.2,                
-    "network_optimization_period": 10,
+    "encoder_learning_rate": 5e-6,            
+    "kl_loss_weight": 0.0,                
+    "network_optimization_period": 5,
     "key_updates": true, 
 
 
-    "dnd_max_memory": 20000,                   
+    "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 50,                    
 
-    "dnd_duplicate_threshold": 0.01,            
+    "dnd_duplicate_threshold": 0.1,            
 
-    "dnd_learning_rate": 0.0002,                
+    "dnd_learning_rate": 5e-6,                
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              

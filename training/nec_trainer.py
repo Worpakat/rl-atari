@@ -586,9 +586,9 @@ class NECTrainer:
         self.transition_delay_buffer.clear()
 
         for _ in range(steps):
-
+    
             # Sample a mini-batch.
-            batch = self.replay_memory.sample(self.config.batch_size)
+            indices, batch = self.replay_memory.sample(self.config.batch_size)
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
             # Encode state sequences.
@@ -601,7 +601,14 @@ class NECTrainer:
                 track_key_updates=self.config.key_updates,
             )
 
-            # Compute optimization loss.
+            with torch.no_grad(): 
+            # To make sure gradients are not affected by calculations of priorities.
+            
+                td_errors = predicted_q_values - q_targets
+
+                if self.config.prioritized_replay:
+                    self.replay_memory.update_priorities(indices, td_errors)
+
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
                 q_targets=q_targets,
