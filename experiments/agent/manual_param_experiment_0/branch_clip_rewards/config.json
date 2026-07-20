@@ -7,10 +7,11 @@
     "num_actions": 5,                           
     "action_mapping": [1, 2, 3, 4, 5],    
 
-    "reward_strategy": "tanh",                 
+    "reward_strategy": "clip",                 
     "reward_parameters": {                      
-        "transport": 0.0,   
-        "scale": 0.01
+        "keep_zeros": true,
+        "maximum": 1.0,     
+        "minimum": -1.0     
     },
     "death_penalty": -1.0, 
     

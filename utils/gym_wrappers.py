@@ -73,6 +73,11 @@ class RewardWrapper(gym.RewardWrapper):
         return reward * scale
 
     def _clip(self, reward):
+        keep_zeros = self._params.get("keep_zeros", False)
+        
+        if keep_zeros and reward == 0.0: # Keep 0.0 rewards unmodified.
+            return 0.0
+        
         minimum = self._params.get("minimum", -1.0)
         maximum = self._params.get("maximum", 1.0)
         return max(min(reward, maximum), minimum)
