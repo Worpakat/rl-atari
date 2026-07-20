@@ -145,7 +145,7 @@ class Adapter(nn.Module):
         super().__init__()
 
         in_features = sequence_length * latent_dim
-        linear_blocks = math.log((in_features / representation_dim), base=4)
+        linear_blocks = math.log(x=(in_features / representation_dim), base=4)
 
         # MATH: ((latent * seq) / repr) = 4^(linear_blocks). 
         # Which means, features will be reduced by 4 times at each block.
