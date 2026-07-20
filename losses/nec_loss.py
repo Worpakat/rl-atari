@@ -31,7 +31,7 @@ def compute_network_loss(
     # Total loss
     total_loss = td_loss + kl_loss_weight * kl_loss
     
-    print(f"TD loss shape: {td_loss.shape} | KL loss: {kl_loss.shape} | Total loss: {total_loss.shape}")
+    print(f"TD loss shape: {td_loss} | KL loss: {kl_loss} | Total loss: {total_loss}")
 
     return {
         "total_loss": total_loss,
