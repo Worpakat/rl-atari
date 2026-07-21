@@ -151,9 +151,6 @@ class TransitionQueueManager:
         yield from self.trajectories()
 
 
-
-
-
 class TrajectoryType(Enum):
     FIRST = "first"
     INTERMEDIATE = "intermediate"
@@ -215,11 +212,11 @@ class RiverRaidStaticSequenceHandler:
         if trajectory_type is TrajectoryType.LAST:
             print("Removing episode end...")
             
-            transition_queue.remove_last(self.terminal_static_frames)
+            transition_queue.remove_last(self.terminal_transitions_tbr)
         else:
             print("Removing death end...")
 
-            transition_queue.remove_last(self.death_static_frames)
+            transition_queue.remove_last(self.death_transitions_tbr)
 
         if penalty is not None:
             transition_queue.get_last().reward = penalty
