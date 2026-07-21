@@ -20,7 +20,7 @@
     "batch_size": 64,                           
     "cache_representations": true,      
     
-    "replay_memory_size": 38000,              
+    "replay_memory_size": 32000,              
     "prioritized_replay": true,                
     "priority_alpha": 0.5,                     
     "priority_epsilon": 1e-5,          
@@ -40,7 +40,7 @@
 
     "checkpoint_start": 0,
     "checkpoint_period": 10,
-    "save_replay_memory": true,
+    "save_replay_memory": false,
     "log_batch_index": true,
     "evaluation_period": 10,                   
     "evaluation_episodes": 3,                  
