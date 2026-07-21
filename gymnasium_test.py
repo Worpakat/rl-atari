@@ -29,13 +29,13 @@ for i in range(1000):
     obs_list.append(obs)
 
     if terminated or truncated:
+        print("Episode ended")
 
+        # obs_list = [obs.tolist() for obs in obs_list]
 
-        obs_list = [obs.tolist() for obs in obs_list]
-
-        # Save obs as json
-        with open("episode_frames.json", "w") as f:
-            json.dump(obs_list, f)
+        # # Save obs as json
+        # with open("episode_frames.json", "w") as f:
+        #     json.dump(obs_list, f)
 
 
 

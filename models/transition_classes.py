@@ -190,10 +190,10 @@ class RiverRaidStaticSequenceHandler:
         # Thus we need to remove (sequence_length - 1) transitions. This is not a whole explanation of removing logic.
         # Look: ... To Be Added ...
 
-        self.death_transitions_tbr = intermediate_static_frames 
+        self.death_transitions_tbr = intermediate_static_frames - 1
         # Look for explanation: ... To Be Added ...
 
-        self.terminal_transitions_tbr = terminal_static_frames - 1
+        self.terminal_transitions_tbr = terminal_static_frames - 2
         # Look for explanation: ... To Be Added ...
 
     def process(
@@ -208,12 +208,17 @@ class RiverRaidStaticSequenceHandler:
 
         # Remove beginning only for the first trajectory.
         if trajectory_type is TrajectoryType.FIRST:
+            print("Removing beginning...")
             transition_queue.remove_first(self.initial_transitions_tbr)
 
         # Remove ending.
         if trajectory_type is TrajectoryType.LAST:
+            print("Removing episode end...")
+            
             transition_queue.remove_last(self.terminal_static_frames)
         else:
+            print("Removing death end...")
+            
             transition_queue.remove_last(self.death_static_frames)
 
         if penalty is not None:

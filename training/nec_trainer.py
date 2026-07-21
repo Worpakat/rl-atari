@@ -68,6 +68,10 @@ class NECTrainer:
                     self.device)
                 )
         
+        self.batch_index_logger = None
+        if self.config.get("log_batch_index", False):
+            self.batch_index_logger = MetricsLogger(self.experiment_dir)
+
 
         self.episode_reward = 0 # Current episode reward
         self.environment = self._init_environment()
@@ -78,9 +82,9 @@ class NECTrainer:
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue_manager = TransitionQueueManager(capacity=config.transition_queue_size)
         self.static_sequence_handler = RiverRaidStaticSequenceHandler(
-            initial_static_frames=config.initial_static_frames,
-            intermediate_static_frames=config.death_static_frames,
-            terminal_static_frames=config.terminal_static_frames,
+            initial_static_frames=config.static_sequence_handler.initial_static_frames, 
+            intermediate_static_frames=config.static_sequence_handler.death_static_frames,
+            terminal_static_frames=config.static_sequence_handler.terminal_static_frames,
         )
 
 
@@ -642,7 +646,7 @@ class NECTrainer:
             self.optimization_step += 1
 
 
-        return losses
+        return indices, losses
 
     
     ##=========LOGGING_AND_EVALUATION===========
@@ -653,7 +657,7 @@ class NECTrainer:
     def _should_evaluate(self):
         return self.episode % self.config.evaluation_period == 0
       
-    def _logging_step(self, losses: dict | None, insert_update_counts: dict | None):
+    def _logging_step(self, indices: list[int], losses: dict | None, insert_update_counts: dict | None):
         """
         Records training metrics.
         """
@@ -688,6 +692,14 @@ class NECTrainer:
         # 'episode_reward' is logged, reset.
         self.episode_reward = 0
 
+        if self.config.get("log_batch_index", False):
+            self.batch_index_logger.log(
+                optimization_step=self.optimization_step,
+                global_step=self.global_step,
+                episode=self.episode,
+                batch_index=indices
+            )
+
         if self._should_checkpoint(): # Saving logs and checkpoint simultaneously.
             self.logger.save(
                 start_step=self.checkpoint_start,
@@ -695,6 +707,14 @@ class NECTrainer:
                 step_name="opt_step",
                 clear=True
             )
+            
+            if self.batch_index_logger:
+                self.batch_index_logger.save(
+                    start_step=self.checkpoint_start,
+                    end_step=self.optimization_step,
+                    step_name="batch_indices_opt_step",
+                    clear=True
+                )
 
     def _checkpoint_step(self):
         """
@@ -775,9 +795,9 @@ class NECTrainer:
 
                 insert_update_counts = self._memory_optimization_step()
 
-                losses = self._network_optimization_step()
+                indices, losses = self._network_optimization_step()
 
-                self._logging_step(losses, insert_update_counts)    
+                self._logging_step(indices, losses, insert_update_counts)    
 
                 if self._should_checkpoint():
                     self._checkpoint_step()

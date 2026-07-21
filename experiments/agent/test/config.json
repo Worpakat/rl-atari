@@ -15,7 +15,7 @@
     "death_penalty": -1.0, 
 
     
-    "warmup_steps": 100,                       
+    "warmup_steps": 300,                       
     "max_episodes": 50,           
     "batch_size": 32,                           
     "cache_representations": true,    
@@ -26,10 +26,11 @@
     "priority_epsilon": 1e-5,          
 
 
-    "transition_queue_size": 100,              
-    "transition_buffer" : {                    
-        "transition_delay": 26,                
-        "terminal_static_frames": 23
+    "transition_queue_size": 300,              
+    "static_sequence_handler": {
+        "initial_static_frames": 22,
+        "death_static_frames": 45,
+        "terminal_static_frames": 25
     },
 
 
