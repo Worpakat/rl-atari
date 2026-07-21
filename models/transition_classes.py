@@ -43,18 +43,18 @@ class TransitionQueue(BaseBuffer):
         """
         Removes the first `count` transitions.
         """
-        count = min(count, len(self._queue))
+        count = min(count, len(self._memory))
         for _ in range(count):
-            self._queue.popleft()
+            self._memory.popleft()
 
 
     def remove_last(self, count: int) -> None:
         """
         Removes the last `count` transitions.
         """
-        count = min(count, len(self._queue))
+        count = min(count, len(self._memory))
         for _ in range(count):
-            self._queue.pop()
+            self._memory.pop()
 
 
 class TransitionQueueManager:
@@ -218,7 +218,7 @@ class RiverRaidStaticSequenceHandler:
             transition_queue.remove_last(self.terminal_static_frames)
         else:
             print("Removing death end...")
-            
+
             transition_queue.remove_last(self.death_static_frames)
 
         if penalty is not None:
