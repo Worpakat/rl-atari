@@ -74,6 +74,9 @@ class TrainingConfig:
     def __getitem__(self, key: str):
         return getattr(self, key)
 
+    def get(self, key: str, default=None):
+        return getattr(self, key, default)
+
     def __setitem__(self, key: str, value) -> None:
         setattr(self, key, value)
 
