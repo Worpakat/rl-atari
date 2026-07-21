@@ -71,9 +71,9 @@
 
 
     "encoder_learning_rate": 5e-6, 
-    "manual_lr_adjustment": 1e-6,
+    "manual_lr_adjustment": 8e-7,
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 5,
+    "network_optimization_period": 20,
     "key_updates": true, 
 
 
@@ -82,7 +82,7 @@
 
     "dnd_duplicate_threshold": 0.1,            
 
-    "dnd_learning_rate": 5e-6,                
+    "dnd_learning_rate": 8e-7,                
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
