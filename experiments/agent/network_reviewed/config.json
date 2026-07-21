@@ -34,7 +34,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_120_step_16852.pt",                  
+    "resume_checkpoint": "model_ep_170_step_24043.pt",                  
     "load_replay_memory": false,                 
 
 
