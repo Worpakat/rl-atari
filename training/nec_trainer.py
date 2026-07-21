@@ -852,6 +852,16 @@ class NECTrainer:
 
         self.checkpoint_start = self.optimization_step
 
+        #-------------------------------------------------
+        # Manual Optimizer Learning Rate Adjustment
+        #-------------------------------------------------
+        if self.config.get("manual_lr_adjustment", None) is not None:
+            for param_group in self.encoder_optimizer.param_groups:
+                param_group['lr'] = self.config.manual_lr_adjustment
+
+        # ! Key optimizer's state is not tracked. 
+        # Hence, it can be adjusted from its main config parameter, which is 'dnd_learning_rate'.
+
         # -------------------------------------------------
         # Replay memory (optional)
         # -------------------------------------------------

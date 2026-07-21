@@ -70,7 +70,8 @@
     "representation_dim": 16,            
 
 
-    "encoder_learning_rate": 5e-6,            
+    "encoder_learning_rate": 5e-6, 
+    "manual_lr_adjustment": 1e-6,
     "kl_loss_weight": 0.0,                
     "network_optimization_period": 5,
     "key_updates": true, 
