@@ -342,6 +342,8 @@ class NECTrainer:
         - the transition queue manager reaches capacity.
         """
 
+        first_flag = True # Flag for the first trajectory. Used with the StaticSequenceHandler.
+
         while True:
 
             # Encode current state.
