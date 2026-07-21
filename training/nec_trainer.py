@@ -21,8 +21,9 @@ from models.data_buffers import (FrameSequenceBuffer, ReplayMemory)
 
 from models.transition_classes import (
     Transition,
-    TransitionDelayBuffer, 
     TransitionQueueManager,
+    RiverRaidStaticSequenceHandler,
+    TrajectoryType
 )
 
 from losses.nec_loss import compute_network_loss
@@ -76,7 +77,13 @@ class NECTrainer:
         # Data buffers
         self.sequence_buffer = FrameSequenceBuffer(sequence_length=config.sequence_length)
         self.transition_queue_manager = TransitionQueueManager(capacity=config.transition_queue_size)
-        self.transition_delay_buffer = TransitionDelayBuffer(delay=self.config.transition_buffer["transition_delay"])
+        self.static_sequence_handler = RiverRaidStaticSequenceHandler(
+            initial_static_frames=config.initial_static_frames,
+            intermediate_static_frames=config.death_static_frames,
+            terminal_static_frames=config.terminal_static_frames,
+        )
+
+
         self.replay_memory = ReplayMemory(
             capacity=config.replay_memory_size,
             prioritized=config.prioritized_replay,
@@ -125,7 +132,6 @@ class NECTrainer:
 
         self.sequence_buffer.clear()
         self.transition_queue_manager.clear()
-        self.transition_delay_buffer.clear()
 
         for _ in range(self.config.sequence_length):
             self.sequence_buffer.append(observation)
@@ -153,6 +159,8 @@ class NECTrainer:
         self._setup()
 
         while True:
+            
+            first_flag = True # Flag for the first trajectory. Used with the StaticSequenceHandler.
 
             # Gather one complete episode.
             while True:
@@ -204,30 +212,32 @@ class NECTrainer:
                     is_exploration_action=True,
                 )
 
-                released_transition = self.transition_delay_buffer.append(transition)
-
-                if released_transition is not None:
-                    self.transition_queue_manager.append(released_transition)
+                self.transition_queue_manager.append(transition)
 
                 self.global_step += 1
 
                 # Finish trajectory on death.
                 if death and not (terminated or truncated): 
                     # ! Each episode end transition also a death transition.
-                    # We don't handle episode end transition here.
+                    # We don't handle episode end last transition here.
 
-                    # Retrieve actual termination transition. (Actual transition that death is occurred.)
-                    terminal_transition = self.transition_delay_buffer.pop_oldest()
+                    current_queue = self.transition_queue_manager.get_current_trajectory()
 
-                    terminal_transition.reward = self.death_penalty
+                    trajectory_type = None
+
+                    if first_flag:
+                        trajectory_type = TrajectoryType.FIRST
+                        first_flag = False
+                    else:
+                        trajectory_type = TrajectoryType.INTERMEDIATE
                     
-                    self.transition_queue_manager.append(terminal_transition)
-                    
+                    # Handle static transitions.
+                    self.static_sequence_handler.process(current_queue, trajectory_type, self.death_penalty)
+
                     self.transition_queue_manager.end_trajectory()
-                    
-                    # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
-                    self.transition_delay_buffer.discard_all()
+                
 
+                    # Prepare next trajectory.
                     self.sequence_buffer.clear()
 
                     for _ in range(self.config.sequence_length):
@@ -237,18 +247,13 @@ class NECTrainer:
 
                 # Episode finished.
                 if terminated or truncated:
-                    # Discard terminal animation frames.
-                    self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_static_frames"])
 
-                    # Release remaining transitions.
-                    while len(self.transition_delay_buffer) > 0:
-                        self.transition_queue_manager.append(
-                            self.transition_delay_buffer.pop_oldest()
-                        )
+                    current_queue = self.transition_queue_manager.get_current_trajectory()
 
-                    if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
-                        last_transition = self.transition_queue_manager.get_last_transition()
-                        last_transition.reward = self.death_penalty
+                    trajectory_type = TrajectoryType.LAST
+                    
+                    # Handle static transitions.
+                    self.static_sequence_handler.process(current_queue, trajectory_type, self.death_penalty)        
                     
                     self.transition_queue_manager.end_trajectory()
 
@@ -305,7 +310,6 @@ class NECTrainer:
 
             # Clear transition queue in case of warmup and episode is not over.
             self.transition_queue_manager.clear()
-            self.transition_delay_buffer.clear()
 
             # Warmup stopping condition.
             if self._warmup_finished():
@@ -387,10 +391,8 @@ class NECTrainer:
                 is_exploration_action=is_exploration,
             )
 
-            released_transition = self.transition_delay_buffer.append(transition)
+            self.transition_queue_manager.append(transition)    
 
-            if released_transition is not None:
-                self.transition_queue_manager.append(released_transition)
 
             self.global_step += 1
 
@@ -399,18 +401,22 @@ class NECTrainer:
                 # ! Each episode end transition also a death transition.
                 # We don't handle episode end transition here.
 
-                # Retrieve actual termination transition. (Actual transition that death is occurred.)
-                terminal_transition = self.transition_delay_buffer.pop_oldest()
+                current_queue = self.transition_queue_manager.get_current_trajectory()
 
-                terminal_transition.reward = self.death_penalty
+                trajectory_type = None
 
-                self.transition_queue_manager.append(terminal_transition)
+                if first_flag:
+                    trajectory_type = TrajectoryType.FIRST
+                    first_flag = False
+                else:
+                    trajectory_type = TrajectoryType.INTERMEDIATE
+                
+                # Handle static transitions.
+                self.static_sequence_handler.process(current_queue, trajectory_type, self.death_penalty)
 
                 self.transition_queue_manager.end_trajectory()
-                
-                # Remaining static states are discarded. We don't incluede those neiher in replay memory or training.
-                self.transition_delay_buffer.discard_all()
 
+                # Prepare next trajectory.
                 self.sequence_buffer.clear()
 
                 for _ in range(self.config.sequence_length):
@@ -443,18 +449,13 @@ class NECTrainer:
 
             # Episode finished.
             if terminated or truncated:
-                # Discard terminal animation frames.
-                self.transition_delay_buffer.discard_newest(self.config.transition_buffer["terminal_static_frames"])
+                
+                current_queue = self.transition_queue_manager.get_current_trajectory()
 
-                # Release remaining transitions.
-                while len(self.transition_delay_buffer) > 0:
-                    self.transition_queue_manager.append(
-                        self.transition_delay_buffer.pop_oldest()
-                    )
-
-                if self.death_penalty is not None: # Apply death penalty to last transition if it is used.
-                    last_transition = self.transition_queue_manager.get_last_transition()
-                    last_transition.reward = self.death_penalty
+                trajectory_type = TrajectoryType.LAST
+                
+                # Handle static transitions.
+                self.static_sequence_handler.process(current_queue, trajectory_type, self.death_penalty)        
                 
                 self.transition_queue_manager.end_trajectory()
 
@@ -588,7 +589,6 @@ class NECTrainer:
         
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
-        self.transition_delay_buffer.clear()
 
         for _ in range(steps):
     

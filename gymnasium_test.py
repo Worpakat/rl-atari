@@ -17,25 +17,28 @@ counter = 0
 action = 1
 
 for i in range(1000):
-    if i == 0: print("START!")
+    action = env.action_space.sample()
 
-    # action = env.action_space.sample()
-    counter += 1
-    if counter > 30:
-        action = 0
-
-    obs, reward, terminated, truncated, info = env.step(action)
+    obs, reward, terminated, truncated, info = env.step(2)
 
     if current_lives != info["lives"]:
         current_lives = info["lives"]
         print(f"Current lives: {current_lives}")
 
-    # if current_lives == 1 or current_lives == 0:
-    #     if terminated or truncated:
-    #         print("Episode finished")
-    #     obs_list.append(obs)
+
+    obs_list.append(obs)
 
     if terminated or truncated:
+
+
+        obs_list = [obs.tolist() for obs in obs_list]
+
+        # Save obs as json
+        with open("episode_frames.json", "w") as f:
+            json.dump(obs_list, f)
+
+
+
         obs, info = env.reset()
 
 env.close()

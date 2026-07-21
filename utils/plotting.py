@@ -1,49 +1,53 @@
 import json
+import math
 
 from matplotlib import pyplot as plt
 import numpy as np
 
 
-def plot_images_from_json(json_path, cmap="gray"):
-    """Loads a 3D array from a JSON file and plots the 2D slices side by side.
+def plot_3d_array_grid(
+    array_3d, images_per_row=4, cmap="gray", title_prefix="Frame"
+):
+    """Plots a 3D NumPy array of images into a multi-row grid layout.
 
     Parameters:
-    - json_path (str): File path to the JSON file.
-    - key_name (str): The dictionary key inside the JSON where the array is stored.
-    - cmap (str): Matplotlib colormap (default is 'gray' for 2D image slices).
+    - array_3d (np.ndarray): 3D array of shape (num_images, height, width).
+    - images_per_row (int): Number of images to display per row (default is 4).
+    - cmap (str): Matplotlib colormap.
+    - title_prefix (str): Label used above each individual image.
     """
-    # 1. Open and parse the JSON file
-    with open(json_path, "r") as f:
-        data = json.load(f)
-
-    # 2. Extract the list and convert it into a 3D NumPy array
-    # Expected shape: (num_images, height, width)
-    matrix_3d = np.array(data, dtype=np.uint8)
-
-    if matrix_3d.ndim != 3:
+    if not isinstance(array_3d, np.ndarray) or array_3d.ndim != 3:
         raise ValueError(
-            f"Expected a 3D array, but got an array with {matrix_3d.ndim} dimensions."
+            "Input must be a 3D NumPy array with shape (num_images, height, width)."
         )
 
-    num_images, height, width = matrix_3d.shape
-    print(
-        f"Loaded {num_images} images. Each image dimension: {height}x{width}"
+    num_images, height, width = array_3d.shape
+
+    # Calculate the required number of rows dynamically
+    num_rows = math.ceil(num_images / images_per_row)
+
+    # Create the figure with a size scaled to the grid dimensions
+    fig, axes = plt.subplots(
+        num_rows,
+        images_per_row,
+        figsize=(images_per_row * 3, num_rows * 3),
+        squeeze=False,  # Ensures axes is always a 2D array even for 1 row
     )
 
-    # 3. Create a side-by-side subplot layout dynamically
-    # figsize scales width based on how many images you have
-    fig, axes = plt.subplots(1, num_images, figsize=(num_images * 3, 3))
+    # Loop through all grid slots
+    for i in range(num_rows * images_per_row):
+        row = i // images_per_row
+        col = i % images_per_row
+        ax = axes[row, col]
 
-    # If there's only 1 image, matplotlib doesn't return an array of axes,
-    # so we wrap it in a list to make it iterable.
-    if num_images == 1:
-        axes = [axes]
+        if i < num_images:
+            # Display the frame image
+            ax.imshow(array_3d[i], cmap=cmap)
+            ax.set_title(f"{title_prefix} {i}")
+            ax.axis("off")
+        else:
+            # Hide empty axes if the last row isn't fully filled (e.g., 6 images total)
+            ax.axis("off")
 
-    # 4. Loop through each 2D slice and plot it
-    for i in range(num_images):
-        axes[i].imshow(matrix_3d[i], cmap=cmap)
-        axes[i].set_title(f"Frame {i}")
-        axes[i].axis("off")  # Hide the pixel grid coordinates for a cleaner look
-
-    plt.tight_layout()  # Adjust spacing cleanly
+    plt.tight_layout()
     plt.show()
