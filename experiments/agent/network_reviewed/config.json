@@ -40,7 +40,7 @@
 
     "checkpoint_start": 0,
     "checkpoint_period": 10,
-    "save_replay_memory": false,
+    "save_replay_memory": true,
     "log_batch_index": true,
     "evaluation_period": 10,                   
     "evaluation_episodes": 3,                  
