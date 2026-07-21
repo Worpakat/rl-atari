@@ -202,94 +202,16 @@ class RiverRaidStaticSequenceHandler:
         """
         Removes static transitions from the given trajectory in-place.
         """
-
         # Remove beginning only for the first trajectory.
         if trajectory_type is TrajectoryType.FIRST:
-            print("Removing beginning...")
             transition_queue.remove_first(self.initial_transitions_tbr)
 
         # Remove ending.
-        if trajectory_type is TrajectoryType.LAST:
-            print("Removing episode end...")
-            
+        if trajectory_type is TrajectoryType.LAST:           
             transition_queue.remove_last(self.terminal_transitions_tbr)
         else:
-            print("Removing death end...")
-
             transition_queue.remove_last(self.death_transitions_tbr)
 
         if penalty is not None:
             transition_queue.get_last().reward = penalty
 
-
-
-# class TransitionDelayBuffer(BaseBuffer):
-#     """
-#     Delays transitions by a fixed number of steps.
-
-#     New transitions are appended immediately but are not released until
-#     they become older than the configured delay.
-
-#     This allows delayed environment signals (e.g. life loss) to modify
-#     recent transitions before they are committed to replay memory or
-#     trajectory buffers.
-#     """
-
-#     def __init__(self, delay: int):
-#         self.delay = delay
-#         self._buffer = deque()
-
-#     def append(self, transition: Transition) -> Transition | None:
-#         """
-#         Appends a transition.
-
-#         Returns
-#         -------
-#         Transition | None
-
-#             The oldest transition if it is ready to be released.
-#             Otherwise None.
-#         """
-
-#         self._buffer.append(transition)
-
-#         if len(self._buffer) > self.delay:
-#             return self._buffer.popleft()
-
-#         return None
-
-#     def pop_oldest(self) -> Transition:
-#         return self._buffer.popleft()
-
-
-#     def pop_all(self) -> list[Transition]:
-#         """
-#         Returns all remaining delayed transitions.
-#         """
-#         remaining = list(self._buffer)
-        
-#         self._buffer.clear()
-
-#         return remaining
-    
-#     def discard_newest(self, count: int) -> None:
-#         """
-#         Discards the newest `count` transitions.
-#         """
-#         count = min(count, len(self._buffer))
-
-#         for _ in range(count):
-#             self._buffer.pop()
-
-
-#     def discard_all(self):
-#         """This and `clear` are equivalent. 
-#         Both exist due to naming convention."""
-#         self._buffer.clear()
-
-#     def clear(self):
-#         self._buffer.clear()
-    
-
-#     def __len__(self):
-#         return len(self._buffer)
