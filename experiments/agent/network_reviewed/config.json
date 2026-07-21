@@ -26,9 +26,10 @@
     "priority_epsilon": 1e-5,          
 
     "transition_queue_size": 1500,                  
-    "transition_buffer": {                    
-        "transition_delay": 26,                
-        "terminal_static_frames": 23
+    "static_sequence_handler": {
+        "initial_static_frames": 22,
+        "death_static_frames": 45,
+        "terminal_static_frames": 25
     },
 
 
@@ -40,6 +41,7 @@
     "checkpoint_start": 0,
     "checkpoint_period": 10,
     "save_replay_memory": false,
+    "log_batch_index": true,
     "evaluation_period": 10,                   
     "evaluation_episodes": 3,                  
     "record_video": true,                         
@@ -49,23 +51,23 @@
     "n_step": 30,       
     "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 0.995,                    
+    "epsilon_decay": 0.99,                    
 
 
-    "sequence_length": 8,                       
+    "sequence_length": 4,                       
     "input_channels": 1,                        
     "input_height": 176,                         
     "input_width": 160,                          
 
-    "conv_channels": 32,                       
+    "conv_channels": 16,                       
     "conv_block": 4,                            
     "conv_dim": 1024,                           
     "hidden_dim": 256,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 128,                          
+    "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 16,                  
+    "representation_dim": 16,            
 
 
     "encoder_learning_rate": 5e-6,            
