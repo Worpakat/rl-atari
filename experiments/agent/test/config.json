@@ -67,7 +67,7 @@
     "flatten_output": true,                     
     "latent_dim": 32,                          
     "adapter": true,                            
-    "representation_dim": 16,                  
+    "representation_dim": 8,                  
 
 
     "encoder_learning_rate": 5e-6,            
