@@ -85,6 +85,7 @@ class NECTrainer:
             initial_static_frames=config["static_sequence_handler"]["initial_static_frames"], 
             intermediate_static_frames=config["static_sequence_handler"]["death_static_frames"],
             terminal_static_frames=config["static_sequence_handler"]["terminal_static_frames"],
+            sequence_length=config.sequence_length
         )
 
 
