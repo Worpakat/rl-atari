@@ -33,8 +33,8 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_100_step_12010.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_120_step_16852.pt",                  
     "load_replay_memory": false,                 
 
 
