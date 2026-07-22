@@ -98,10 +98,20 @@ def create_model_and_trainer(config: TrainingConfig):
     ).to(device)
 
     # Initialize NEC Encoder Optimizer
-    encoder_optimizer = torch.optim.Adam(
-        nec_encoder.parameters(),
-        lr = config.encoder_learning_rate,
-    )
+    encoder_optimizer = None 
+    if config.encoder_optimizer == "Adam":
+        encoder_optimizer = torch.optim.Adam(
+            nec_encoder.parameters(),
+            lr = config.encoder_learning_rate,
+            **config.encoder_optimizer_kwargs
+        )
+
+    elif config.encoder_optimizer == "RMSprop":
+        encoder_optimizer = torch.optim.RMSprop(
+            nec_encoder.parameters(),
+            lr = config.encoder_learning_rate,
+            **config.encoder_optimizer_kwargs
+        )
 
     # Initialize NEC Trainer
     trainer = NECTrainer(

@@ -111,8 +111,12 @@
     // -----------------------------
     // Optimization
     // -----------------------------
+    "encoder_optimizer": "Adam",                // Encoder optimizer
+    "encoder_learning_rate": 0.001,            // Encoder optimizer learning rate
+    "encoder_optimizer_kwargs": {},             // Other parameters for the encoder optimizer
+    "manual_lr_adjustment": 5e-6,               // This is used in case of manual learning rate adjustment when loading a checkpoint. 
+    // It will override the learning rate in the checkpoint.
 
-    "encoder_learning_rate": 0.001,            // Adam learning rate
     "kl_loss_weight": 0.2,                     // KL loss weight
     "key_updates": true,                        // Update DND keys
     "network_optimization_period": 4,           // Transitions between network updates

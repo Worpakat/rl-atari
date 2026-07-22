@@ -26,8 +26,8 @@ class MetricsLogger:
 
     def save(
         self,
-        start_step: int,
-        end_step: int,
+        start_step: int | None,
+        end_step: int | None,
         step_name: str = "step",
         clear: bool = True,
     ) -> Path:
@@ -40,7 +40,12 @@ class MetricsLogger:
             Path of the created CSV file.
         """
 
-        filename = (f"metrics_{step_name}_{start_step:08d}_{end_step:08d}.csv")
+        filename = (f"metrics_{step_name}")
+        if start_step or end_step:
+            filename += f"_{start_step}_{end_step}"
+
+        filename += ".csv"
+
         filepath = self.logs_dir / filename
 
         dataframe = pd.DataFrame(self.records)

@@ -707,7 +707,7 @@ class NECTrainer:
             self.logger.save(
                 start_step=self.checkpoint_start,
                 end_step=self.optimization_step,
-                step_name="opt_step",
+                step_name=f"ep_{self.episode}_opt_step",
                 clear=True
             )
             
@@ -715,7 +715,7 @@ class NECTrainer:
                 self.batch_index_logger.save(
                     start_step=self.checkpoint_start,
                     end_step=self.optimization_step,
-                    step_name="batch_indices_opt_step",
+                    step_name=f"batch_indices_ep_{self.episode}__opt_step",
                     clear=True
                 )
 

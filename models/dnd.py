@@ -375,7 +375,7 @@ class DND(nn.Module):
 
         if (self.key_optimizer is None or self._optimizer_stale):
 
-            self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate, momentum=0.99)
+            self.key_optimizer = torch.optim.RMSprop([self.keys], lr=self.learning_rate)
             self._optimizer_stale = False # Optimizer is now up to date. Reset the flag.
 
 
