@@ -82,7 +82,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 30,                    
 
-    "dnd_duplicate_threshold": 0.1,            
+    "dnd_duplicate_threshold": 0.125,            
 
     "dnd_learning_rate": 5e-6,                
     "dnd_q_learning_rate": 0.01,   
