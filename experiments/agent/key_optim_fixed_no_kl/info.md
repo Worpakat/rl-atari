@@ -1,3 +1,5 @@
+**Application Order: 6**
+
 # First Experiment After `torch.no_grad()` Fix.
 
 **Problem:** We were gather gradients for either encoder and keys out of the `_network_optimization_step()` via `NECAgent.encode()` and variety of operations with `DND.keys`. This was an unintended way for training to process. Also causes serious unstability.

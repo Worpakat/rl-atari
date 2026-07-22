@@ -1,3 +1,5 @@
+**Application Order: 1**
+
 * **!!! BEFORE `torch.no_grad()` FIX !!!** 
 
 * First try of removing static / uncontrollable frame sequences. 
