@@ -311,7 +311,10 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
         # Exploitation action
         if not transition.is_exploration_action: 
             td_error = self.calculate_bellman_update_change(lookup_result.value, q_target)
-            state_update_value = lookup_result.value + td_error
+            state_update_value = (lookup_result.value + td_error).squeeze() 
+            # Squeezed to make it scalar as 'q_target'. 
+            # If 'exploration_update' is not active, it drops to original NEC update, which is assigning N-step 'q_target' directly.
+
 
             q_target_tensor = torch.full_like(neighbor_values, fill_value=q_target.item()).to(dnd.device)
             scalar_rates= self.learning_rate * self.neighbor_shrink * neighbor_similarities.unsqueeze(1)
@@ -335,14 +338,12 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
                 update_value=state_update_value,
             ))
 
-            print("Exploitation action current state insert, state_update_value:", state_update_value)
-
             return requests
 
         # Exploration action
         if exploration_update: # Exploration update mode is active
             td_error = self.calculate_exploration_update_change(lookup_result.value, q_target) # !!
-            state_update_value = lookup_result.value + td_error
+            state_update_value = (lookup_result.value + td_error).squeeze()
 
             q_target_tensor = torch.full_like(neighbor_values, fill_value=q_target.item()).to(dnd.device)
             scalar_rates= self.learning_rate * self.neighbor_shrink * neighbor_similarities.unsqueeze(1) * (1 - self.exploration_lr)
