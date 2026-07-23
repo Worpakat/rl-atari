@@ -70,8 +70,11 @@
     "adapter": true,                            
     "representation_dim": 8,                  
 
-
+   
+    "encoder_optimizer": "RMSprop",                
     "encoder_learning_rate": 5e-6,            
+    "encoder_optimizer_kwargs": {},           
+     
     "kl_loss_weight": 0.0,                
     "network_optimization_period": 10,
     "key_updates": true, 
