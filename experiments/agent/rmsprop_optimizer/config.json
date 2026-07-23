@@ -51,7 +51,7 @@
     "n_step": 30,       
     "epsilon_start": 1.0,                     
     "epsilon_end": 0.05,                        
-    "epsilon_decay": 0.975,                    
+    "epsilon_decay": 0.99,                    
 
 
     "sequence_length": 4,                       
