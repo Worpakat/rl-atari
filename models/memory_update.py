@@ -340,7 +340,7 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
         # Exploration action
         if exploration_update: # Exploration update mode is active
             td_error = self.calculate_exploration_update_change(lookup_result.value, q_target) # !!
-            state_update_value = (lookup_result.value + td_error).squeeze()
+            state_update_value = (lookup_result.value + td_error).squeeze().to(dnd.device)
 
             q_target_tensor = torch.full_like(neighbor_values, fill_value=q_target.item()).to(dnd.device)
             scalar_rates= self.learning_rate * self.neighbor_shrink * neighbor_similarities.unsqueeze(1) * (1 - self.exploration_lr)
