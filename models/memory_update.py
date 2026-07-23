@@ -325,7 +325,7 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
             ) for index, key, update_value in zip(neighbor_indices, neighbor_keys, neighbor_update_values)]
             
             print("neighbor_values shape:", neighbor_values.shape)
-            print("neighbor_similarities shape:", neighbor_similarities.shape)
+            print("q_target_tensor shape:", q_target_tensor.shape)
             print("scalar_rates shape:", scalar_rates.shape)
             print("neighbor_update_values shape:", neighbor_update_values.shape)
             print("neighbor_indices shape:", neighbor_indices.shape)
