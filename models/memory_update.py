@@ -303,7 +303,7 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
         neighbor_indices = lookup_result.neighbor_indices
         neighbor_keys = lookup_result.neighbor_keys
         neighbor_values = lookup_result.neighbor_values
-        neighbor_similarities = lookup_result.neighbor_similarities
+        neighbor_similarities = lookup_result.similarities
 
 
         # Exploitation action
