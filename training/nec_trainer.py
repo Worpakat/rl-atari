@@ -67,6 +67,9 @@ class NECTrainer:
                     self.experiment_dir, 
                     self.device)
                 )
+
+        self.td_error_logger = MetricsLogger(self.experiment_dir)
+        # We'll gather TD errors for analysis for once.
         
         self.batch_index_logger = None
         if self.config.get("log_batch_index", False):
@@ -621,6 +624,11 @@ class NECTrainer:
 
                 if self.config.prioritized_replay:
                     self.replay_memory.update_priorities(indices, td_errors)
+
+                # Gathering for analysis.
+                self.td_error_logger.log(
+                    td_errors = td_errors.detach().cpu().numpy()
+                )
 
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
