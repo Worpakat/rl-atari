@@ -88,7 +88,7 @@
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
-    "dnd_neighbor_shrink": 0.5,                 
+    "dnd_neighbor_shrink": 0.25,                 
 
     "dnd_value_dim": 1,                         
 
