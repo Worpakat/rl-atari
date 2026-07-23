@@ -15,7 +15,7 @@
     "death_penalty": -1.0, 
 
     
-    "warmup_steps": 300,                       
+    "warmup_steps": 100,                       
     "max_episodes": 50,           
     "batch_size": 32,                           
     "cache_representations": true,    
@@ -86,14 +86,14 @@
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
-    "dnd_neighbor_shrink": 0.5,                 
+    "dnd_neighbor_shrink": 0.25,                 
 
     "dnd_value_dim": 1,                         
 
     "use_auxiliary": false,                     
     "auxiliary_dim": 1,                         
 
-    "update_strategy": "nec_original",          
+    "update_strategy": "option_2",          
     "exploration_update": false,                
 
     "similarity_function": "exponential_inverse" 
