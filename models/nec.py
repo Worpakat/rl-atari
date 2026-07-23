@@ -1,5 +1,6 @@
 import random
 
+import numpy as np
 import torch
 import torch.nn as nn
 
@@ -183,13 +184,13 @@ class NECAgent(nn.Module):
         """
 
         transition_count = len(transition_queue)
-        rewards = torch.tensor(
+        rewards = np.array(
             [transition.reward for transition in transition_queue],
-            dtype=torch.float32,
+            dtype=np.float32
         )
 
         # Discounted returns beginning from every timestep.
-        discounted_returns = torch.from_numpy(discount(rewards.numpy(), gamma)).to(torch.float32)
+        discounted_returns = torch.from_numpy(discount(rewards, gamma)).to(torch.float32)
         # !! Dtype is converted to float64 in discount(). We need to convert it back.
 
         q_targets = torch.empty_like(discounted_returns)
