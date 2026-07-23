@@ -34,7 +34,7 @@ def exponential_inverse(
     """
 
 
-    distances = torch.norm(neighbor_keys - key, dim=1)
+    distances = torch.norm(neighbor_keys - key, dim=1).unsqueeze(1)
 
     return torch.exp(-distances * kwargs.get("similarity_scale", 1.0))
 
@@ -69,6 +69,6 @@ def inverse_distance(
     torch.Tensor
         Similarity tensor of shape (num_neighbors,).
     """
-    distances = torch.norm(neighbor_keys - key, dim=1)
+    distances = torch.norm(neighbor_keys - key, dim=1).unsqueeze(1)
 
     return 1.0 / (0.0001 + distances)
