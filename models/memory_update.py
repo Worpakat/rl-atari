@@ -324,6 +324,13 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
                 update_value=update_value,
             ) for index, key, update_value in zip(neighbor_indices, neighbor_keys, neighbor_update_values)]
             
+            print("neighbor_values shape:", neighbor_values.shape)
+            print("neighbor_similarities shape:", neighbor_similarities.shape)
+            print("scalar_rates shape:", scalar_rates.shape)
+            print("neighbor_update_values shape:", neighbor_update_values.shape)
+            print("neighbor_indices shape:", neighbor_indices.shape)
+            print("neighbor_keys shape:", neighbor_keys.shape)
+            
             print("Update value shape:", requests[0].update_value.shape)
             print("Key shape:", requests[0].key.shape)
             print("Index shape:", requests[0].index.shape)
