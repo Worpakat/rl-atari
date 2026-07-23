@@ -370,6 +370,10 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
             return requests
         
         else: # Exploration update mode is inactive, drops to original update
+
+            print("Option2 Dropped to Original update, q_target:", q_target)
+
+
             return [MemoryUpdateRequest(
                 update_or_insert='insert',
                 action=transition.action,
