@@ -165,7 +165,7 @@ class MemoryUpdateStrategy(ABC):
                 keys = [request.key for request in inserts]
                 values = [request.update_value for request in inserts]
 
-                # print("Inserting values shapes:", [v.shape for v in values])
+                print("Inserting values shapes:", [v.shape for v in values])
 
                 dnd.insert(keys, values)
 
