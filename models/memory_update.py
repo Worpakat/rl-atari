@@ -335,6 +335,8 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
                 update_value=state_update_value,
             ))
 
+            print("Exploitation action current state insert, state_update_value:", state_update_value)
+
             return requests
 
         # Exploration action
@@ -371,14 +373,11 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
         
         else: # Exploration update mode is inactive, drops to original update
 
-            print("Option2 Dropped to Original update, q_target:", q_target)
-
-
             return [MemoryUpdateRequest(
                 update_or_insert='insert',
                 action=transition.action,
                 key=transition.representation,
                 index=None,
                 is_change=False,
-                update_value=q_target.item(),
+                update_value=q_target,
             )]
