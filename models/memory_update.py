@@ -324,6 +324,9 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
                 update_value=update_value,
             ) for index, key, update_value in zip(neighbor_indices, neighbor_keys, neighbor_update_values)]
             
+            print("Update value shape:", requests[0].update_value.shape)
+            print("Key shape:", requests[0].key.shape)
+            print("Index shape:", requests[0].index.shape)
 
             requests.append(MemoryUpdateRequest(
                 update_or_insert='insert',
