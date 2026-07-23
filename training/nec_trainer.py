@@ -502,8 +502,6 @@ class NECTrainer:
                 n_step=self.config.n_step,
             )
 
-            update_flag = False # For debugging
-
             for transition_index, transition in enumerate(transition_queue):
 
                 q_target = q_targets[transition_index]
@@ -547,7 +545,6 @@ class NECTrainer:
                     )
                     updates_to_be_applied.append(update_request)
 
-                    update_flag = True
 
                 else: # State does not exist in memory. 
 
@@ -579,8 +576,6 @@ class NECTrainer:
                 transition.representation = None
                 self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
 
-
-            print("Update flag:", update_flag)
 
         # Apply all memory updates simultaneously.
         insert_update_counts = self.agent.apply_memory_updates(updates_to_be_applied)

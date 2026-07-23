@@ -376,5 +376,5 @@ class Option2UpdateStrategy(Option1UpdateStrategy):
                 key=transition.representation,
                 index=None,
                 is_change=False,
-                update_value=q_target,
+                update_value=q_target.item(),
             )]
