@@ -22,7 +22,7 @@
     
     "replay_memory_size": 50000,              
     "prioritized_replay": true,                
-    "priority_alpha": 4.2,                     
+    "priority_alpha": 2.0,                     
     "priority_epsilon": 1e-5,          
 
     "transition_queue_size": 1500,                  
