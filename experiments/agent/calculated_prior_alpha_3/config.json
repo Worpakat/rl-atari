@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/calculated_prior_alpha_2",
+    "experiment_dir": "experiments/agent/calculated_prior_alpha_3",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -22,7 +22,7 @@
     
     "replay_memory_size": 50000,              
     "prioritized_replay": true,                
-    "priority_alpha": 2.0,                     
+    "priority_alpha": 3.0,                     
     "priority_epsilon": 1e-5,          
 
     "transition_queue_size": 1500,                  

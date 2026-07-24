@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/calculated_prior_alpha_2",
+    "experiment_dir": "experiments/agent/option_2_no_shrinkage",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -16,16 +16,16 @@
     
     
     "warmup_steps": 3000,                       
-    "max_episodes": 100,           
+    "max_episodes": 300,           
     "batch_size": 64,                           
     "cache_representations": true,      
     
     "replay_memory_size": 50000,              
     "prioritized_replay": true,                
-    "priority_alpha": 2.0,                     
+    "priority_alpha": 1.4,                     
     "priority_epsilon": 1e-5,          
 
-    "transition_queue_size": 1500,                  
+    "transition_queue_size": 2000,                  
     "static_sequence_handler": {
         "initial_static_frames": 22,
         "death_static_frames": 45,
@@ -59,19 +59,19 @@
     "input_height": 176,                         
     "input_width": 160,                          
 
-    "conv_channels": 16,                       
+    "conv_channels": 32,                       
     "conv_block": 4,                            
-    "conv_dim": 1024,                           
-    "hidden_dim": 256,                          
+    "conv_dim": 2048,                           
+    "hidden_dim": 512,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 64,                          
+    "latent_dim": 128,                          
     "adapter": true,                            
-    "representation_dim": 16,            
+    "representation_dim": 32,            
 
 
     "encoder_optimizer": "RMSprop",                
-    "encoder_learning_rate": 5e-6,            
+    "encoder_learning_rate": 1e-6,            
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
@@ -80,11 +80,11 @@
 
 
     "dnd_max_memory": 100000,                   
-    "dnd_num_neighbors": 30,                    
+    "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.125,            
+    "dnd_duplicate_threshold": 0.97,            
 
-    "dnd_learning_rate": 5e-6,                
+    "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
@@ -95,7 +95,7 @@
     "use_auxiliary": false,                     
     "auxiliary_dim": 1,                         
 
-    "update_strategy": "nec_original",          
+    "update_strategy": "option_2",          
     "exploration_update": false,                
 
     "similarity_function": "exponential_inverse" 
