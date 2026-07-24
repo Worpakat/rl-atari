@@ -12,7 +12,7 @@
         "transport": 0.0,   
         "scale": 0.01
     },
-    "death_penalty": -1.0, 
+    "death_penalty": -0.95, 
     
     
     "warmup_steps": 3000,                       
@@ -82,7 +82,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.097,            
+    "dnd_duplicate_threshold": 0.092,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
