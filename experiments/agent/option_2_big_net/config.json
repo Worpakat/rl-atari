@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/option_2_no_shrinkage",
+    "experiment_dir": "experiments/agent/option_2_big_net",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -12,7 +12,7 @@
         "transport": 0.0,   
         "scale": 0.01
     },
-    "death_penalty": -1, 
+    "death_penalty": -1.0, 
     
     
     "warmup_steps": 3000,                       
