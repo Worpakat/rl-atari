@@ -12,7 +12,7 @@
         "transport": 0.0,   
         "scale": 0.01
     },
-    "death_penalty": -0.9, 
+    "death_penalty": -1, 
     
     
     "warmup_steps": 3000,                       
