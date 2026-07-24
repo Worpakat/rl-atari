@@ -95,7 +95,7 @@
     "use_auxiliary": false,                     
     "auxiliary_dim": 1,                         
 
-    "update_strategy": "option_2",          
+    "update_strategy": "nec_original",          
     "exploration_update": false,                
 
     "similarity_function": "exponential_inverse" 
