@@ -630,7 +630,10 @@ class NECTrainer:
         for _ in range(steps):
     
             # Sample a mini-batch.
-            indices, batch = self.replay_memory.sample(self.config.batch_size)
+            indices, batch = self.replay_memory.sample(
+                self.config.batch_size, 
+                self.config.network_optimization_period
+            )
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
             # Encode state sequences.
