@@ -259,6 +259,7 @@ class StratifiedReplayMemory():
         bucket_rates: dict[ReplayBucketType, float],
         td_statistics_beta: float,
         td_std_multiplier: float = 1.0,
+        death_window: int = 15,
         verbose: bool = False,
     ):
         super().__init__()
@@ -615,6 +616,13 @@ class StratifiedReplayMemory():
             + f"Medium: {len(self._medium_bucket)} | {len(self._medium_bucket) / total_len * 100:.2f}% "
             + f"High: {len(self._high_bucket)} | {len(self._high_bucket) / total_len * 100:.2f}% "
             + f"Death: {len(self._death_bucket)} | {len(self._death_bucket) / total_len * 100:.2f}% ")
+
+    def can_sample(self, batch_size: int) -> bool:
+        """
+        This function is not needed for this Replay Buffer.
+        It exist for compatibility with other Replay Buffers.
+        """
+        return True
 
     def state_dict(self) -> dict:
         """Serialization."""
