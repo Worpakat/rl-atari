@@ -635,16 +635,16 @@ class NECTrainer:
                 self.config.network_optimization_period
             )
 
-            print("After sample()", torch.cuda.memory_allocated() / 1024**3)
+            # print("After sample()", torch.cuda.memory_allocated() / 1024**3)
 
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
-            print("After extract_batch()", torch.cuda.memory_allocated() / 1024**3)
+            # print("After extract_batch()", torch.cuda.memory_allocated() / 1024**3)
 
             # Encode state sequences.
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
-            print("After encode()", torch.cuda.memory_allocated() / 1024**3)
+            # print("After encode()", torch.cuda.memory_allocated() / 1024**3)
 
             # Estimate Q-values from the episodic memories.
             predicted_q_values = self.agent.lookup_batch(
@@ -653,7 +653,7 @@ class NECTrainer:
                 track_key_updates=self.config.key_updates,
             )
 
-            print("After lookup_batch()", torch.cuda.memory_allocated() / 1024**3)
+            # print("After lookup_batch()", torch.cuda.memory_allocated() / 1024**3)
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
@@ -674,7 +674,7 @@ class NECTrainer:
                         all_batches.extend(batch)
                         all_td_errors_abs.extend(td_errors_abs)
 
-                        print("After first turn extend()s", torch.cuda.memory_allocated() / 1024**3)
+                        # print("After first turn extend()s", torch.cuda.memory_allocated() / 1024**3)
 
                         self.replay_memory.register_td_errors(td_errors_abs)
                         # We register all td errors in the first turn.
@@ -682,7 +682,7 @@ class NECTrainer:
                     else: # Normal turns.
                         self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
 
-                        print("After normal turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
+                        # print("After normal turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
 
                         self.replay_memory.register_td_errors(td_errors_abs[:indices])
                         # We return 'new_bucket' indices to use them for TD stats.
@@ -722,14 +722,14 @@ class NECTrainer:
             self.replay_memory.update_td_statistics()
             # Update TD stats first turn case handled inside the function update_td_statistics(), no worries.
 
-            print("After update_td_statistics()", torch.cuda.memory_allocated() / 1024**3)
+            # print("After update_td_statistics()", torch.cuda.memory_allocated() / 1024**3)
 
             if self.replay_memory.first_turn: 
                 # We do all transfer operations at once at the beginning for the first turn. 
                 self.replay_memory.move_between_buckets(transitions=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
 
-                print("After first turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
+                # print("After first turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
 
 
                 all_batches.clear()
