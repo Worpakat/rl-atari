@@ -653,7 +653,7 @@ class NECTrainer:
                 
                 if isinstance(self.replay_memory, ReplayMemory):
                     # Prioritized replay memory needs to update priorities.
-                    if self.config.normal_memory_kwargs.prioritized:
+                    if self.config["normal_memory_kwargs"]["prioritized"]:
                         self.replay_memory.update_priorities(indices, td_errors_abs)
 
                 # Stratified replay memory specifics.
