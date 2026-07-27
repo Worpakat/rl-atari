@@ -24,7 +24,7 @@
     "replay_memory_type": "normal",
     
     "normal_memory_kwargs": {
-        "replay_memory_size": 30000,
+        "capacity": 30000,
         "prioritized_replay": true,
         "priority_alpha": 1.4,
         "priority_epsilon": 1e-5

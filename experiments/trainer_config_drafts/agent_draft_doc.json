@@ -37,7 +37,7 @@
     "replay_memory_type": "normal",             // Replay memory type: 'normal' or 'stratified'
     
     "normal_memory_kwargs": {                   // Needed when "replay_memory_type" : 'normal'
-        "replay_memory_size": 100000,              // Replay buffer capacity
+        "capacity": 100000,              // Replay buffer capacity
         "prioritized_replay": false,                // Enables/disables Prioritized Replay.
         "priority_alpha": 0.5,                     // Controls how strongly priorities affect sampling (0 = uniform replay, 1 = fully prioritized).
         "priority_epsilon": 1e-5                   // Small constant preventing zero priorities.
