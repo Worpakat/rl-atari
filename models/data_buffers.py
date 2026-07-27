@@ -8,7 +8,7 @@ import random
 import numpy as np
 import torch
 
-from models.transition_classes import Transition
+from models.transition_classes import BaseBuffer, Transition
 
 from utils.frame_processing import convert_and_norm_sequence
 
@@ -64,48 +64,6 @@ class FrameSequenceBuffer:
 # ------------------------------------
 
 
-class BaseBuffer(ABC):
-
-    def __init__(
-        self,
-        capacity: int,
-    ):
-        self.capacity = capacity
-        self._memory = deque(maxlen=capacity)
-
-    def __len__(self) -> int:
-        return len(self._memory)
-
-    def can_sample(
-        self,
-        batch_size: int,
-    ) -> bool:
-        return len(self) >= batch_size
-
-    def sample(
-        self,
-        batch_size: int,
-    ):
-        return random.sample(self._memory, batch_size)
-
-    def clear(self) -> None:
-        self._memory.clear()
-
-    def state_dict(self) -> dict:
-        return {
-            "memory": list(self._memory),
-        }
-
-    def load_state_dict(self, state_dict: dict) -> None:
-        self._memory = deque(
-            state_dict["memory"],
-            maxlen=self._memory.maxlen,
-        )
-
-    @abstractmethod
-    def append(self, *args, **kwargs):
-        pass
-
 
 #-----Used_for_DSAE--------
 
@@ -152,7 +110,6 @@ class ReplayMemoryUnit:
     """
     One replay memory sample used for network optimization.
     """
-
     state: np.ndarray
     action: int
     q_target: torch.Tensor

@@ -1,13 +1,62 @@
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from enum import Enum
 
 from collections import deque
+import random
 
 import numpy as np
 import torch
 
-from models.data_buffers import BaseBuffer
 
+
+# ---------------------------------------------------------
+
+# !! WE HAVE TO KEEP THIS CLASS IN THIS FILE TO PREVENT CYCLIC IMPORTS.
+class BaseBuffer(ABC):
+
+    def __init__(
+        self,
+        capacity: int,
+    ):
+        self.capacity = capacity
+        self._memory = deque(maxlen=capacity)
+
+    def __len__(self) -> int:
+        return len(self._memory)
+
+    def can_sample(
+        self,
+        batch_size: int,
+    ) -> bool:
+        return len(self) >= batch_size
+
+    def sample(
+        self,
+        batch_size: int,
+    ):
+        return random.sample(self._memory, batch_size)
+
+    def clear(self) -> None:
+        self._memory.clear()
+
+    def state_dict(self) -> dict:
+        return {
+            "memory": list(self._memory),
+        }
+
+    def load_state_dict(self, state_dict: dict) -> None:
+        self._memory = deque(
+            state_dict["memory"],
+            maxlen=self._memory.maxlen,
+        )
+
+    @abstractmethod
+    def append(self, *args, **kwargs):
+        pass
+
+
+# ---------------------------------------------------------
 
 @dataclass(slots=True)
 class Transition:
