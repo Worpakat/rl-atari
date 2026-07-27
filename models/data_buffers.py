@@ -166,6 +166,7 @@ class ReplayMemory(BaseBuffer):
     def sample(
         self,
         batch_size: int,
+        network_optimization_period: int,
     ) -> tuple[list[int], list[ReplayMemoryUnit]]:
 
         if not self.prioritized:
@@ -288,8 +289,14 @@ class StratifiedReplayMemory():
         # Sampling
         self.death_window = death_window # Used to mark death and near-death transitions.
         self._new_index = 0 # Used to track _new_bucket sampling progress.
-        self.bucket_rates = bucket_rates
+        self.bucket_rates = {
+            ReplayBucketType.LOW: bucket_rates[0],
+            ReplayBucketType.MEDIUM: bucket_rates[1],
+            ReplayBucketType.HIGH: bucket_rates[2],
+            ReplayBucketType.DEATH: bucket_rates[3],
+        }
         # [LOW, MEDIUM, HIGH, DEATH]
+        
 
         # TD statistics
         self.td_statistics_beta = td_statistics_beta
