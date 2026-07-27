@@ -308,7 +308,7 @@ class StratifiedReplayMemory():
 
         # Utils
         self.first_turn = True # Used for first turn of fresh training and loaded checkpoints.
-        self.next_insert_id = np.array(0, dtype=np.long)
+        self.next_insert_id = 0
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
 
         self.verbose = verbose # For reporting
@@ -434,6 +434,9 @@ class StratifiedReplayMemory():
 
             # If replay buckets are not initialized yet, simply return.
             if remaining == 0:
+
+                print("batch size:", len(batch))
+
                 return last_td_index, batch
 
         # ==========================================================
@@ -503,6 +506,8 @@ class StratifiedReplayMemory():
                     )
                 )
 
+        print("Batch size:", len(batch))
+
         return last_td_index, batch 
         # We return indices and batch from same name function of ReplayMemory.
         # To not break the training code, we return None for indices here since they are not used in stratified replay.
@@ -510,7 +515,7 @@ class StratifiedReplayMemory():
     def move_between_buckets(
         self,
         transitions: list[ReplayMemoryUnit],
-        td_errors_abs: torch.Tensor,
+        td_errors_abs: list[float],
     ) -> None:
         """
         Assigns sampled transitions to their corresponding replay buckets
@@ -612,6 +617,8 @@ class StratifiedReplayMemory():
             ).unsqueeze(2)
             .to(device)
         ) # For Grayscale
+
+        print("extract_batch states shape:", states.shape)
         
         actions = [transition.action for transition in batch]
         q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
