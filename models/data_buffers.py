@@ -411,12 +411,12 @@ class StratifiedReplayMemory():
         # 'new_count' is the one plus of last index of new transitions,
         # transitions to be used for TD stats calculation.
         
-        print("new_bucket length:", len(self._new_bucket))
-        print("new_index:", self._new_index)
-        print("new batch_size:", len(batch))
+        # print("new_bucket length:", len(self._new_bucket))
+        # print("new_index:", self._new_index)
+        # print("new batch_size:", len(batch))
 
         if remaining <= 0:
-            print("new return batch size:", len(batch))
+            # print("new return batch size:", len(batch))
             return last_td_index, batch 
 
         
@@ -441,7 +441,7 @@ class StratifiedReplayMemory():
             # If replay buckets are not initialized yet, simply return.
             if remaining == 0:
 
-                print("warmup return batch size:", len(batch))
+                # print("warmup return batch size:", len(batch))
 
                 return last_td_index, batch
 
@@ -512,7 +512,7 @@ class StratifiedReplayMemory():
                     )
                 )
 
-        print("Last return Batch size:", len(batch))
+        # print("Last return Batch size:", len(batch))
 
         return last_td_index, batch 
         # We return indices and batch from same name function of ReplayMemory.
@@ -624,7 +624,7 @@ class StratifiedReplayMemory():
             .to(device)
         ) # For Grayscale
 
-        print("extract_batch states shape:", states.shape)
+        # print("extract_batch states shape:", states.shape)
         
         actions = [transition.action for transition in batch]
         q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
