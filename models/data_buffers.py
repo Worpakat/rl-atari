@@ -286,6 +286,7 @@ class StratifiedReplayMemory():
         # Dictionary makes accessing and operations easier sometimes.
 
         # Sampling
+        self.death_window = death_window # Used to mark death and near-death transitions.
         self._new_index = 0 # Used to track _new_bucket sampling progress.
         self.bucket_rates = bucket_rates
         # [LOW, MEDIUM, HIGH, DEATH]
