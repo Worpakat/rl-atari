@@ -735,7 +735,7 @@ class NECTrainer:
                 all_batches.clear()
                 all_td_errors_abs.clear()
 
-            self.replay_memory.clear_new_bucket() # We don't want to carry over it to the following turns.
+            self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.
 
