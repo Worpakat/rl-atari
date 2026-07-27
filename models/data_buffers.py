@@ -231,7 +231,7 @@ class ReplayMemory(BaseBuffer):
         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
 
 
-class StratifiedReplayMemory(BaseBuffer):
+class StratifiedReplayMemory():
     """
     Stratified replay memory.
 
