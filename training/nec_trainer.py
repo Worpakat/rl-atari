@@ -669,7 +669,7 @@ class NECTrainer:
                         # We register all td errors in the first turn.
 
                     else: # Normal turns.
-                        self.replay_memory.move_between_buckets(batch=batch, td_errors_abs=td_errors_abs)
+                        self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
 
                         self.replay_memory.register_td_errors(td_errors_abs[:indices])
                         # We return 'new_bucket' indices to use them for TD stats.
@@ -711,7 +711,7 @@ class NECTrainer:
 
             if self.replay_memory.first_turn: 
                 # We do all transfer operations at once at the beginning for the first turn. 
-                self.replay_memory.move_between_buckets(batch=all_batches, td_errors_abs=all_td_errors_abs)
+                self.replay_memory.move_between_buckets(transitions=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
 
             self.clear_new_bucket() # We don't want to carry over it to the following turns.
