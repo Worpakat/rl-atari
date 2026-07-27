@@ -21,7 +21,15 @@
     "cache_representations": true,      
     
 
-    "replay_memory_type": "stratified",             
+    "replay_memory_type": "normal",
+    
+    "normal_memory_kwargs": {
+        "replay_memory_size": 30000,
+        "prioritized_replay": true,
+        "priority_alpha": 1.4,
+        "priority_epsilon": 1e-5
+    },
+
     "stratified_memory_kwargs": {
         "bucket_capacities": [6500, 12000, 6500, 5000], 
         "bucket_rates": [0.15, 0.45, 0.3, 0.1],         
