@@ -140,7 +140,7 @@ class SequenceReplayBuffer(BaseBuffer):
 
 #-----Used_for_NEC--------
 class ReplayBucketType(Enum):
-    UNCLASSIFIED = auto()
+    WARMUP = auto()
     NEW = auto()
     LOW = auto()
     MEDIUM = auto()
@@ -171,9 +171,7 @@ class ReplayMemoryUnit:
     # Used only for stratified replay to track the order of insertion
     # and remove the oldest transitions when buckets are full.
 
-    
-
-
+ 
 class ReplayMemory(BaseBuffer):
 
     def __init__(
@@ -276,7 +274,6 @@ class ReplayMemory(BaseBuffer):
         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
 
 
-
 class StratifiedReplayMemory(BaseBuffer):
     """
     Stratified replay memory.
@@ -305,12 +302,14 @@ class StratifiedReplayMemory(BaseBuffer):
         bucket_rates: dict[ReplayBucketType, float],
         td_statistics_beta: float,
         td_std_multiplier: float = 1.0,
+        verbose: bool = False,
     ):
         super().__init__()
 
         # Buckets
         self.bucket_capacities = bucket_capacities
-
+        # [LOW, MEDIUM, HIGH, DEATH]
+        
         self._warmup_bucket = deque()
         self._new_bucket = deque()
         self._low_bucket = deque()
@@ -331,6 +330,7 @@ class StratifiedReplayMemory(BaseBuffer):
         # Sampling
         self._new_index = 0 # Used to track _new_bucket sampling progress.
         self.bucket_rates = bucket_rates
+        # [LOW, MEDIUM, HIGH, DEATH]
 
         # TD statistics
         self.td_statistics_beta = td_statistics_beta
@@ -344,6 +344,8 @@ class StratifiedReplayMemory(BaseBuffer):
         self.first_turn = True # Used for first turn of fresh training and loaded checkpoints.
         self.next_insert_id = np.array(0, dtype=np.long)
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
+
+        self.verbose = verbose # For reporting
 
 
     # ------------------------------------------------------------------
@@ -362,7 +364,7 @@ class StratifiedReplayMemory(BaseBuffer):
                     action=transition.action,
                     q_target=q_target,
                     death_transition=transition.death_transition,
-                    bucket=ReplayBucketType.UNCLASSIFIED,
+                    bucket=ReplayBucketType.WARMUP,
                     insert_id=self.next_insert_id
                 )
             )
@@ -416,8 +418,8 @@ class StratifiedReplayMemory(BaseBuffer):
         Strategy
         --------
         1. Always sample current-turn transitions from the NEW bucket.
-        2. If there are still unclassified transitions, sample remaining
-        instances from the UNCLASSIFIED bucket.
+        2. If there are still warmup transitions, sample remaining
+        instances from the WARMUP bucket.
         3. Otherwise sample from replay buckets in priority order:
             Death -> High -> Low -> Medium.
         Missing quota is transferred to the next bucket.
@@ -585,7 +587,6 @@ class StratifiedReplayMemory(BaseBuffer):
         # Remove oldest transitions if any bucket exceeds its capacity.
         self._clip_buckets()
 
-
     def register_td_errors(self, td_errors: list[float]) -> None:
         self.td_errors.extend(td_errors)
 
@@ -645,7 +646,18 @@ class StratifiedReplayMemory(BaseBuffer):
         
         return states, actions, q_targets
 
+    def report(self):
+        if not self.verbose:
+            return
 
+        total_len = len(self._low_bucket) + len(self._medium_bucket) + len(self._high_bucket) + len(self._death_bucket) 
+
+        print(f"Replay Buffer | Mean TD-error: {self.td_mean:.4f} | Std TD-error: {self.td_std:.4f}")
+        print("Bucket Sizes and Rates:" + "\n"
+            + f"Low: {len(self._low_bucket)} | {len(self._low_bucket) / total_len * 100:.2f}% "
+            + f"Medium: {len(self._medium_bucket)} | {len(self._medium_bucket) / total_len * 100:.2f}% "
+            + f"High: {len(self._high_bucket)} | {len(self._high_bucket) / total_len * 100:.2f}% "
+            + f"Death: {len(self._death_bucket)} | {len(self._death_bucket) / total_len * 100:.2f}% ")
 
     def state_dict(self) -> dict:
         """Serialization."""

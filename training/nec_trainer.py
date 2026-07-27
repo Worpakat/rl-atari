@@ -90,7 +90,7 @@ class NECTrainer:
 
         # Replay memory
         self.replay_memory = None
-        if self.config.replay_memory_type == "prioritized":
+        if self.config.replay_memory_type == "normal":
             self.replay_memory = ReplayMemory(
                 **self.config.normal_memory_kwargs
                 # capacity=config.replay_memory_size,
@@ -105,7 +105,7 @@ class NECTrainer:
             )
 
         else:
-            raise ValueError(f"Invalid replay memory type: {self.config.replay_memory_type}. Use 'prioritized' or 'stratified'.")
+            raise ValueError(f"Invalid replay memory type: {self.config.replay_memory_type}. Use 'normal' or 'stratified'.")
         
 
         # Training progress
@@ -495,7 +495,6 @@ class NECTrainer:
         
         self.episode += 1
 
-
     def _memory_optimization_step(self):
         """
         Computes N-step targets for the collected trajectory, updates the
@@ -712,6 +711,7 @@ class NECTrainer:
                 self.replay_memory.move_between_buckets(batch=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
 
+            self.replay_memory.report() # Print current circumstances.
 
         return indices, losses
 

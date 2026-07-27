@@ -34,10 +34,23 @@
     "cache_representations": true,             // Wheter store representations in transition queue
     
     // Replay memory
-    "replay_memory_size": 100000,              // Replay buffer capacity
-    "prioritized_replay": false,                // Enables/disables Prioritized Replay.
-    "priority_alpha": 0.5,                     // Controls how strongly priorities affect sampling (0 = uniform replay, 1 = fully prioritized).
-    "priority_epsilon": 1e-5,                   // Small constant preventing zero priorities.
+    "replay_memory_type": "normal",             // Replay memory type: 'normal' or 'stratified'
+    
+    "normal_memory_kwargs": {                   // Needed when "replay_memory_type" : 'normal'
+        "replay_memory_size": 100000,              // Replay buffer capacity
+        "prioritized_replay": false,                // Enables/disables Prioritized Replay.
+        "priority_alpha": 0.5,                     // Controls how strongly priorities affect sampling (0 = uniform replay, 1 = fully prioritized).
+        "priority_epsilon": 1e-5                   // Small constant preventing zero priorities.
+    },
+
+    "stratified_memory_kwargs": {               // Needed when "replay_memory_type" : 'stratified' 
+        "bucket_capacities": [5000, 10000, 5000, 3000],     // [LOW, MEDIUM, HIGH, DEATH]
+        "bucket_rates": [0.15, 0.5, 0.25, 0.1],             // Sampling rates. [LOW, MEDIUM, HIGH, DEATH]
+        "td_statistics_beta": 0.1,      // TD-error statistics moving average beta. "old_value = beta * old_value + (1 - beta) * new_value"
+        "td_std_multiplier":  1.0,      // TD-error standard deviation multiplier for defining bucket boundaries.
+        "verbose": true                 // Whether print TD statistics, bucket lengths and rates with respect to total length. 
+    },
+
 
     // Transition queue
     "transition_queue_size": 100,              // N-step trajectory length
