@@ -16,7 +16,7 @@ from training.evaluator import Evaluator
 
 from models.nec import NECAgent
 
-from models.data_buffers import (FrameSequenceBuffer, ReplayMemory)
+from models.data_buffers import (FrameSequenceBuffer, ReplayMemory, StratifiedReplayMemory)
                                 
 
 from models.transition_classes import (
@@ -67,9 +67,6 @@ class NECTrainer:
                     self.experiment_dir, 
                     self.device)
                 )
-
-        self.td_error_logger = MetricsLogger(self.experiment_dir)
-        # We'll gather TD errors for analysis for once.
         
         self.batch_index_logger = None
         if self.config.get("log_batch_index", False):
@@ -91,13 +88,25 @@ class NECTrainer:
             sequence_length=config.sequence_length
         )
 
+        # Replay memory
+        self.replay_memory = None
+        if self.config.replay_memory_type == "prioritized":
+            self.replay_memory = ReplayMemory(
+                **self.config.normal_memory_kwargs
+                # capacity=config.replay_memory_size,
+                # prioritized=config.prioritized_replay,
+                # priority_alpha=config.priority_alpha,
+                # priority_epsilon=config.priority_epsilon,
+            )
 
-        self.replay_memory = ReplayMemory(
-            capacity=config.replay_memory_size,
-            prioritized=config.prioritized_replay,
-            priority_alpha=config.priority_alpha,
-            priority_epsilon=config.priority_epsilon,
-        )
+        elif self.config.replay_memory_type == "stratified":
+            self.replay_memory = StratifiedReplayMemory(
+                **self.config.stratified_memory_kwargs
+            )
+
+        else:
+            raise ValueError(f"Invalid replay memory type: {self.config.replay_memory_type}. Use 'prioritized' or 'stratified'.")
+        
 
         # Training progress
         self.global_step = 0
@@ -311,7 +320,7 @@ class NECTrainer:
 
                     # Store transition for network optimization.
                     transition.representation = None
-                    self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
+                    self.replay_memory.append(transition, q_target=q_target, warmup=True)
 
             # Apply memory updates.
             self.agent.apply_memory_updates(updates_to_be_applied)
@@ -577,7 +586,7 @@ class NECTrainer:
 
                 # Store transition for network optimization.
                 transition.representation = None
-                self.replay_memory.append(state=transition.state, action=transition.action, q_target=q_target)
+                self.replay_memory.append(transition, q_target=q_target, warmup=False)
 
 
         # Apply all memory updates simultaneously.
@@ -601,6 +610,24 @@ class NECTrainer:
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
 
+        # Stratified replay memory spesifics.
+        if isinstance(self.replay_memory, StratifiedReplayMemory): 
+
+            # Stratified replay memory needs to mark death windows before any optimization step. 
+            # Those are going to moved to death bucket.
+            self.replay_memory.mark_death_windows() 
+
+            if self.replay_memory.first_turn:
+                all_batches = []
+                all_td_errors_abs = [] 
+
+                # WHY?:
+                # We don't need any TD stats at the beginning.
+                # Thus, we can't move anything between buckets 
+                # without complete all first _network_optimization_step() run through.
+                # Eventually, we gather all batches and TD errors;
+                # At the end we calculate TD stats, and move transitions to proeper buckets.
+
         for _ in range(steps):
     
             # Sample a mini-batch.
@@ -620,15 +647,32 @@ class NECTrainer:
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
 
-                td_errors = predicted_q_values - q_targets
+                td_errors_abs = (predicted_q_values - q_targets).detach().abs().cpu().tolist()
+                
+                if isinstance(self.replay_memory, ReplayMemory):
+                    # Prioritized replay memory needs to update priorities.
+                    if self.config.normal_memory_kwargs.prioritized:
+                        self.replay_memory.update_priorities(indices, td_errors_abs)
 
-                if self.config.prioritized_replay:
-                    self.replay_memory.update_priorities(indices, td_errors)
+                # Stratified replay memory specifics.
+                elif isinstance(self.replay_memory, StratifiedReplayMemory):
+                    # Stratified replay memory needs to move transitions between buckets,
+                    # and update TD error statistics.
+                    
+                    if self.replay_memory.first_turn:
+                        all_batches.extend(batch)
+                        all_td_errors_abs.extend(td_errors_abs)
 
-                # Gathering for analysis.
-                self.td_error_logger.log(
-                    td_errors = td_errors.detach().cpu().numpy()
-                )
+                        self.replay_memory.register_td_errors(td_errors_abs)
+                        # We register all td errors in the first turn.
+
+                    else: # Normal turns.
+                        self.replay_memory.move_between_buckets(batch=batch, td_errors_abs=td_errors_abs)
+
+                        self.replay_memory.register_td_errors(td_errors_abs[:indices])
+                        # We return 'new_bucket' indices to use them for TD stats.
+                        # !! It is the 1+ of last index of transitions to be used for TD stats.
+
 
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
@@ -656,6 +700,17 @@ class NECTrainer:
             loss['optimization_step'] = self.optimization_step
             losses.append(loss)
             self.optimization_step += 1
+
+
+        if isinstance(self.replay_memory, StratifiedReplayMemory):
+            # Update TD statistics.
+            self.replay_memory.update_td_statistics()
+            # Update TD stats first turn case handled inside the function update_td_statistics(), no worries.
+
+            if self.replay_memory.first_turn: 
+                # We do all transfer operations at once at the beginning for the first turn. 
+                self.replay_memory.move_between_buckets(batch=all_batches, td_errors_abs=all_td_errors_abs)
+                self.replay_memory.first_turn = False
 
 
         return indices, losses

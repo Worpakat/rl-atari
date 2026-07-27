@@ -19,6 +19,7 @@ class Transition:
     reward: float
     representation: torch.Tensor | None = None
     is_exploration_action: bool = False
+    death_transition: bool = False
 
 
 class TransitionQueue(BaseBuffer):
@@ -201,6 +202,7 @@ class RiverRaidStaticSequenceHandler:
     ) -> None:
         """
         Removes static transitions from the given trajectory in-place.
+        A penalty can be applied to the last transition (death transition) if provided.
         """
         # Remove beginning only for the first trajectory.
         if trajectory_type is TrajectoryType.FIRST:
@@ -213,5 +215,8 @@ class RiverRaidStaticSequenceHandler:
             transition_queue.remove_last(self.death_transitions_tbr)
 
         if penalty is not None:
-            transition_queue.get_last().reward = penalty
+            last_transition = transition_queue.get_last()
+
+            last_transition.reward = penalty
+            last_transition.death_transition = True
 
