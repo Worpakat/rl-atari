@@ -604,7 +604,7 @@ class NECTrainer:
         losses = []
 
         # Network will be optimized every 'network_optimization_period' transitions.
-        steps = int(len(self.transition_queue_manager) / self.config.network_optimization_period)
+        steps = int(len(self.transition_queue_manager) / self.config.network_optimization_period) + 1
         
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
@@ -710,6 +710,8 @@ class NECTrainer:
                 # We do all transfer operations at once at the beginning for the first turn. 
                 self.replay_memory.move_between_buckets(batch=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
+
+            self.clear_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.
 

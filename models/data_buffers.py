@@ -604,6 +604,9 @@ class StratifiedReplayMemory():
         
         return states, actions, q_targets
 
+    def clear_new_bucket(self) -> None:
+        self._new_bucket.clear()
+
     def report(self):
         if not self.verbose:
             return
