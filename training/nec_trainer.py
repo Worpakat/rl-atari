@@ -714,6 +714,9 @@ class NECTrainer:
                 self.replay_memory.move_between_buckets(transitions=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
 
+                all_batches.clear()
+                all_td_errors_abs.clear()
+
             self.replay_memory.clear_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.

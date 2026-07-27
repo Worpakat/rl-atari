@@ -611,7 +611,7 @@ class StratifiedReplayMemory():
             convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
             ).unsqueeze(2)
             .to(device)
-            ) # For Grayscale
+        ) # For Grayscale
         
         actions = [transition.action for transition in batch]
         q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
