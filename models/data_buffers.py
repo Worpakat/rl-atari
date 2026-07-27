@@ -487,7 +487,13 @@ class StratifiedReplayMemory():
                 + list(self._new_bucket)
             )
 
-            available = [item for item in available if item not in batch]
+            batch_ids = {id(transition) for transition in batch}
+
+            available = [
+                transition
+                for transition in available
+                if id(transition) not in batch_ids
+            ]
 
             if len(available) > 0:
                 batch.extend(
