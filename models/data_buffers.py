@@ -118,7 +118,7 @@ class ReplayMemoryUnit:
     # Priority used by prioritized replay.
     # Ignored when uniform replay or stratified replay is used.
 
-    bucket: ReplayBucketType | None
+    bucket: ReplayBucketType | None = None
     # Used only for stratified replay. 
     # Indicates which bucket the transition is currently in.
 
