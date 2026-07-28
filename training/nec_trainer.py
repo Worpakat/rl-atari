@@ -38,7 +38,7 @@ from utils.frame_processing import cut_and_transpose_frame, convert_and_norm_seq
 ####
 def print_gpu_usage(where):
     # Returns (free_bytes, total_bytes) on the GPU
-    total_bytes = torch.cuda.memory_allocated()
+    total_bytes = torch.cuda.memory_reserved()
 
     # free_gb = free_bytes / (1024**3)
     total_gb = total_bytes / (1024**3)
