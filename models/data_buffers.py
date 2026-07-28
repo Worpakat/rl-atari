@@ -573,7 +573,8 @@ class StratifiedReplayMemory():
 
             self.buckets[destination_bucket].append(transition)
 
-            if transition not in self.buckets[destination_bucket] or transition is None:
+            if transition not in self.buckets[destination_bucket] or not isinstance(transition, ReplayMemoryUnit):
+                print(transition)    
                 print(f"Transition not in the bucket {destination_bucket}.")
 
         # Remove oldest transitions if any bucket exceeds its capacity.
@@ -656,7 +657,10 @@ class StratifiedReplayMemory():
             + f"Low: {len(self._low_bucket)}, {len(self._low_bucket) / total_len * 100:.2f}% | "
             + f"Medium: {len(self._medium_bucket)}, {len(self._medium_bucket) / total_len * 100:.2f}% | "
             + f"High: {len(self._high_bucket)}, {len(self._high_bucket) / total_len * 100:.2f}% | "
-            + f"Death: {len(self._death_bucket)}, {len(self._death_bucket) / total_len * 100:.2f}% | ")
+            + f"Death: {len(self._death_bucket)}, {len(self._death_bucket) / total_len * 100:.2f}% | "
+            + f"New: {len(self._new_bucket)}, |"
+            + f"Warmup: {len(self._warmup_bucket)}, |"
+            + f"Total: {total_len}")
 
     def can_sample(self, batch_size: int) -> bool:
         """
