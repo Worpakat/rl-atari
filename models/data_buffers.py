@@ -112,7 +112,8 @@ class ReplayMemoryUnit:
     """
     state: np.ndarray
     action: int
-    q_target: torch.Tensor
+    q_target: np.ndarray
+    # q_target: torch.Tensor # Keeping old just in case.
     
     priority: float = 1.0
     # Priority used by prioritized replay.
@@ -157,7 +158,7 @@ class ReplayMemory(BaseBuffer):
             ReplayMemoryUnit(
                 state=transition.state.copy(),
                 action=transition.action,
-                q_target=q_target,
+                q_target=q_target.to("cpu").detach().numpy(),
                 priority=initial_priority,
             )
         )
@@ -210,7 +211,8 @@ class ReplayMemory(BaseBuffer):
             ) # For Grayscale
         
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
+        q_targets = torch.from_numpy(np.stack([transition.q_target for transition in batch])).to(device)
+        # q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
         
         return states, actions, q_targets
     
@@ -328,7 +330,7 @@ class StratifiedReplayMemory():
                 ReplayMemoryUnit(
                     state=transition.state.copy(),
                     action=transition.action,
-                    q_target=q_target,
+                    q_target=q_target.to("cpu").detach().numpy(),
                     death_transition=transition.death_transition,
                     bucket=ReplayBucketType.WARMUP,
                     insert_id=self.next_insert_id
@@ -340,7 +342,7 @@ class StratifiedReplayMemory():
                 ReplayMemoryUnit(
                     state=transition.state.copy(),
                     action=transition.action,
-                    q_target=q_target,
+                    q_target=q_target.to("cpu").detach().numpy(),
                     death_transition=transition.death_transition,
                     bucket=ReplayBucketType.NEW,
                     insert_id=self.next_insert_id
@@ -559,14 +561,12 @@ class StratifiedReplayMemory():
             if transition.bucket == destination_bucket:
                 continue
             
-            try:
+            if transition.bucket != ReplayBucketType.WARMUP: 
+                # WARMUP transitions are removed from buckets during sampling.
+
+                print("Removing transition from ", transition.bucket)
+
                 self.buckets[transition.bucket].remove(transition)
-                print("Removed transition from ", transition.bucket)
-                # We do this, because we pop from warmup bucket during sampling.
-                # Unless we incluede remove line into try block, we would get an error.
-            except ValueError as error:
-                print("Remove passed value error:")
-                print(error)
                 
 
             transition.bucket = destination_bucket
@@ -633,7 +633,8 @@ class StratifiedReplayMemory():
         # print("extract_batch states shape:", states.shape)
         
         actions = [transition.action for transition in batch]
-        q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
+        q_targets = torch.from_numpy(np.stack([transition.q_target for transition in batch])).to(device)
+        # q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
         
         return states, actions, q_targets
 
