@@ -105,7 +105,7 @@ class ReplayBucketType(Enum):
     HIGH = auto()
     DEATH = auto()
 
-@dataclass(slots=True)
+@dataclass(slots=True, eq=False)
 class ReplayMemoryUnit:
     """
     One replay memory sample used for network optimization.
