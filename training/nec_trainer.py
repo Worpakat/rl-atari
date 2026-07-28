@@ -626,6 +626,7 @@ class NECTrainer:
             # Stratified replay memory needs to mark death windows before any optimization step. 
             # Those are going to moved to death bucket.
             self.replay_memory.mark_death_windows() 
+            self.replay_memory.lock_new_bucket_size()
 
             if self.replay_memory.first_turn:
                 all_batches = []

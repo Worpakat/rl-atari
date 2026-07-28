@@ -290,7 +290,6 @@ class StratifiedReplayMemory():
 
         # Sampling
         self.death_window = death_window # Used to mark death and near-death transitions.
-        self._new_index = 0 # Used to track _new_bucket sampling progress.
         self.bucket_rates = {
             ReplayBucketType.LOW: bucket_rates[0],
             ReplayBucketType.MEDIUM: bucket_rates[1],
@@ -312,6 +311,11 @@ class StratifiedReplayMemory():
         self.first_turn = True # Used for first turn of fresh training and loaded checkpoints.
         self.next_insert_id = 0
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
+        
+        self._new_index = 0 # Used to track _new_bucket sampling progress.
+        self._locked_new_bucket_size = 0 # Used for how many transitions to sample from _new_bucket at each sampling.
+        # Due to removals during one turn loop, len(_new_bucket) is not constant. 
+        # Because of that we save start size of _new_bucket in locked_new_bucket_size and use it for sampling.
 
         self.verbose = verbose # For reporting
 
@@ -374,6 +378,12 @@ class StratifiedReplayMemory():
                 if transition.death_transition or index > protect_until:
                     transition.death_transition = True 
                     
+    def lock_new_bucket_size(self) -> None:
+        """
+        Saves the size of the _new_bucket to be used for sampling.
+        This function is called just before the loop of _network_optimization_step().
+        """
+        self._locked_new_bucket_size = len(self._new_bucket)
 
     def sample(
         self,
@@ -400,7 +410,7 @@ class StratifiedReplayMemory():
         # NEW transitions
         # ==========================================================
 
-        new_count = min(network_optimization_period, len(self._new_bucket) - self._new_index)
+        new_count = min(network_optimization_period, len(self._locked_new_bucket_size) - self._new_index)
 
         for i in range(self._new_index, self._new_index + new_count):
             batch.append(self._new_bucket[i])
