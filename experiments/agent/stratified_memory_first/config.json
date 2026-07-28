@@ -33,7 +33,7 @@
     "stratified_memory_kwargs": {
         "bucket_capacities": [6500, 12000, 6500, 5000], 
         "bucket_rates": [0.15, 0.45, 0.3, 0.1],         
-        "td_statistics_beta": 0.1,
+        "td_statistics_beta": 0.9,
         "td_std_multiplier":  1.0,
         "death_window": 15, 
         "verbose": true            
@@ -57,7 +57,7 @@
     "checkpoint_period": 20,
     "save_replay_memory": false,
     "log_batch_index": true,
-    "evaluation_period": 3,                   
+    "evaluation_period": 5,                   
     "evaluation_episodes": 3,                  
     "record_video": true,                         
 
