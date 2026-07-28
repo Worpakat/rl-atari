@@ -702,7 +702,7 @@ class NECTrainer:
                         # We register all td errors in the first turn.
 
                     else: # Normal turns.
-                        print("Stratified normal turn before move_between_buckets()")
+                        # print("Stratified normal turn before move_between_buckets()")
 
                         self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
 
