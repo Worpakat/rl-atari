@@ -35,6 +35,16 @@ from utils.checkpoint import CheckpointManager
 from utils.misc import ensure_directory, print_and_save_death_transitions
 from utils.frame_processing import cut_and_transpose_frame, convert_and_norm_sequence
 
+####
+def print_gpu_usage(where):
+    # Returns (free_bytes, total_bytes) on the GPU
+    free_bytes, total_bytes = torch.cuda.mem_get_info()
+
+    free_gb = free_bytes / (1024**3)
+    total_gb = total_bytes / (1024**3)
+
+    print(f"Free physical VRAM {where}:  {free_gb:.2f} GB / {total_gb:.2f} GB")
+
 
 class NECTrainer:
     """
@@ -503,9 +513,6 @@ class NECTrainer:
         """
         updates_to_be_applied = []
         lookup_requirements = self.agent.update_strategy.lookup_requirements   
-        
-        print(f"GPU memory usage, before memory optimization: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
-
 
         for transition_queue in self.transition_queue_manager:
 
@@ -590,9 +597,6 @@ class NECTrainer:
                 transition.representation = None
                 self.replay_memory.append(transition, q_target=q_target, warmup=False)
 
-        print(f"GPU memory usage, after memory optimization: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
-
-
         # Apply all memory updates simultaneously.
         insert_update_counts = self.agent.apply_memory_updates(updates_to_be_applied)
         
@@ -636,6 +640,8 @@ class NECTrainer:
 
 
         for _ in range(steps):
+
+            print_gpu_usage("before sample()")
     
             # Sample a mini-batch.
             indices, batch = self.replay_memory.sample(
@@ -643,16 +649,20 @@ class NECTrainer:
                 self.config.network_optimization_period
             )
 
-            # print("After sample()", torch.cuda.memory_allocated() / 1024**3)
+            
+            print_gpu_usage("after sample()")
 
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
-            # print("After extract_batch()", torch.cuda.memory_allocated() / 1024**3)
+
+            
+            print_gpu_usage("before encode()")
 
             # Encode state sequences.
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
-            # print("After encode()", torch.cuda.memory_allocated() / 1024**3)
+            print_gpu_usage("after encode()")
+            
 
             # Estimate Q-values from the episodic memories.
             predicted_q_values = self.agent.lookup_batch(
@@ -660,6 +670,8 @@ class NECTrainer:
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
+
+            print_gpu_usage("after lookup_batch()")
 
             # print("After lookup_batch()", torch.cuda.memory_allocated() / 1024**3)
 
@@ -695,6 +707,8 @@ class NECTrainer:
                         self.replay_memory.register_td_errors(td_errors_abs[:indices])
                         # We return 'new_bucket' indices to use them for TD stats.
                         # !! It is the 1+ of last index of transitions to be used for TD stats.
+
+            print_gpu_usage("after torch.no_grad()")
 
 
             loss = compute_network_loss(
