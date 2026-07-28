@@ -533,9 +533,6 @@ class StratifiedReplayMemory():
         never classified by TD error.
         """
 
-        print(f"NEW bucket size: {len(self._new_bucket)}")
-        counter = 1
-
         low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
 
@@ -565,10 +562,7 @@ class StratifiedReplayMemory():
                 continue
             
             if transition.bucket != ReplayBucketType.WARMUP: 
-                # WARMUP transitions are removed from buckets during sampling.
-
-                print(f"Counter {counter}: Removing transition from ", transition.bucket)
-                counter += 1
+                # WARMUP transitions are already removed from buckets during sampling.
 
                 self.buckets[transition.bucket].remove(transition)
                 
@@ -654,10 +648,10 @@ class StratifiedReplayMemory():
 
         print(f"Replay Buffer | Mean TD-error: {self.td_mean:.4f} | Std TD-error: {self.td_std:.4f}")
         print("Bucket Sizes and Rates:" + "\n"
-            + f"Low: {len(self._low_bucket)} | {len(self._low_bucket) / total_len * 100:.2f}% "
-            + f"Medium: {len(self._medium_bucket)} | {len(self._medium_bucket) / total_len * 100:.2f}% "
-            + f"High: {len(self._high_bucket)} | {len(self._high_bucket) / total_len * 100:.2f}% "
-            + f"Death: {len(self._death_bucket)} | {len(self._death_bucket) / total_len * 100:.2f}% ")
+            + f"Low: {len(self._low_bucket)}, {len(self._low_bucket) / total_len * 100:.2f}% | "
+            + f"Medium: {len(self._medium_bucket)}, {len(self._medium_bucket) / total_len * 100:.2f}% | "
+            + f"High: {len(self._high_bucket)}, {len(self._high_bucket) / total_len * 100:.2f}% | "
+            + f"Death: {len(self._death_bucket)}, {len(self._death_bucket) / total_len * 100:.2f}% | ")
 
     def can_sample(self, batch_size: int) -> bool:
         """

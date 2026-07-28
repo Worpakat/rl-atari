@@ -504,6 +504,9 @@ class NECTrainer:
         updates_to_be_applied = []
         lookup_requirements = self.agent.update_strategy.lookup_requirements   
         
+        print(f"GPU memory usage, before memory optimization: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
+
+
         for transition_queue in self.transition_queue_manager:
 
             # Compute N-step targets at once.
@@ -587,6 +590,8 @@ class NECTrainer:
                 transition.representation = None
                 self.replay_memory.append(transition, q_target=q_target, warmup=False)
 
+        print(f"GPU memory usage, after memory optimization: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
+
 
         # Apply all memory updates simultaneously.
         insert_update_counts = self.agent.apply_memory_updates(updates_to_be_applied)
@@ -626,6 +631,9 @@ class NECTrainer:
                 # without complete all first _network_optimization_step() run through.
                 # Eventually, we gather all batches and TD errors;
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
+
+        print(f"GPU memory usage, before network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
+
 
         for _ in range(steps):
     
@@ -738,6 +746,10 @@ class NECTrainer:
             self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.
+
+
+        print(f"GPU memory usage, after network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
+        
 
         return indices, losses
 
