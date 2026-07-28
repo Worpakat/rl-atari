@@ -561,10 +561,12 @@ class StratifiedReplayMemory():
             
             try:
                 self.buckets[transition.bucket].remove(transition)
+                print("Removed transition from ", transition.bucket)
                 # We do this, because we pop from warmup bucket during sampling.
                 # Unless we incluede remove line into try block, we would get an error.
-            except ValueError:
-                print("Remove passed value error")
+            except ValueError as error:
+                print("Remove passed value error:")
+                print(error)
                 
 
             transition.bucket = destination_bucket
