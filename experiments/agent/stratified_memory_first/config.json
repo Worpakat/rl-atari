@@ -21,7 +21,7 @@
     "cache_representations": true,      
     
 
-    "replay_memory_type": "prioritized",
+    "replay_memory_type": "normal",
     
     "normal_memory_kwargs": {
         "capacity": 30000,
