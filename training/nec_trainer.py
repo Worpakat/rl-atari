@@ -722,20 +722,31 @@ class NECTrainer:
                 kl_loss_weight=self.config.kl_loss_weight,
             )
 
+            print_gpu_usage("after compute_network_loss()")
+
+
             # Optimize encoder.
             self.encoder_optimizer.zero_grad()
             self.agent.zero_key_gradients()
 
+            print_gpu_usage("after zero_grad()")
+
             loss['total_loss'].backward()
+
+            print_gpu_usage("after loss.backward()")
 
             # For sanity check
             # self.agent.check_dnd_key_gradients()
 
             self.encoder_optimizer.step()
 
+            print_gpu_usage("after encoder_optimizer.step()")
+
             # Optionally optimize DND keys.
             if self.config.key_updates:
                 self.agent.step_key_optimizers()
+
+                print_gpu_usage("after key_optimizer.step()")
 
             # Store loss to be logged.
             loss['optimization_step'] = self.optimization_step
@@ -764,6 +775,8 @@ class NECTrainer:
             self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.
+
+            print_gpu_usage("after report()")
 
 
         # print(f"GPU memory usage, after network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
