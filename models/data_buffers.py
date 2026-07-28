@@ -410,7 +410,7 @@ class StratifiedReplayMemory():
         # NEW transitions
         # ==========================================================
 
-        new_count = min(network_optimization_period, len(self._locked_new_bucket_size) - self._new_index)
+        new_count = min(network_optimization_period, (self._locked_new_bucket_size - self._new_index))
 
         for i in range(self._new_index, self._new_index + new_count):
             batch.append(self._new_bucket[i])
