@@ -415,7 +415,9 @@ class StratifiedReplayMemory():
         for i in range(self._new_index, self._new_index + new_count):
             batch.append(self._new_bucket[i])
 
-        self._new_index += new_count
+
+        if self.first_turn:        
+            self._new_index += new_count
 
         remaining = batch_size - new_count
 
