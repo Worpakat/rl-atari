@@ -533,10 +533,12 @@ class StratifiedReplayMemory():
         never classified by TD error.
         """
 
+        print(f"NEW bucket size: {len(self._new_bucket)}")
+
         low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
 
-        for transition, td_error in zip(transitions, td_errors_abs):
+        for i, (transition, td_error) in enumerate(zip(transitions, td_errors_abs)):
 
             # ------------------------------------------------------
             # Determine destination bucket
@@ -564,7 +566,7 @@ class StratifiedReplayMemory():
             if transition.bucket != ReplayBucketType.WARMUP: 
                 # WARMUP transitions are removed from buckets during sampling.
 
-                print("Removing transition from ", transition.bucket)
+                print(f"Index {i}: Removing transition from ", transition.bucket)
 
                 self.buckets[transition.bucket].remove(transition)
                 
