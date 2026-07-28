@@ -573,6 +573,9 @@ class StratifiedReplayMemory():
 
             self.buckets[destination_bucket].append(transition)
 
+            if transition not in self.buckets[destination_bucket] or transition is None:
+                print(f"Transition not in the bucket {destination_bucket}.")
+
         # Remove oldest transitions if any bucket exceeds its capacity.
         self._clip_buckets()
 
