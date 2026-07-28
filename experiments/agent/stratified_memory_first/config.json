@@ -35,7 +35,7 @@
         "bucket_rates": [0.15, 0.45, 0.3, 0.1],         
         "td_statistics_beta": 0.9,
         "td_std_multiplier":  1.0,
-        "death_window": 15, 
+        "death_window": 5, 
         "verbose": true            
     },
 
