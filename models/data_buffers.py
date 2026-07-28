@@ -413,9 +413,11 @@ class StratifiedReplayMemory():
         # 'new_count' is the one plus of last index of new transitions,
         # transitions to be used for TD stats calculation.
         
-        # print("new_bucket length:", len(self._new_bucket))
-        # print("new_index:", self._new_index)
-        # print("new batch_size:", len(batch))
+        print(
+            f"new_bucket size: {len(self._new_bucket)}"
+            +f"new_index: {self._new_index}"
+            +f"new batch_size: {len(batch)}"
+            )
 
         if remaining <= 0:
             # print("new return batch size:", len(batch))
