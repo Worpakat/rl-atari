@@ -45,7 +45,7 @@ def print_gpu_usage(where):
 
     # print(f"Free physical VRAM {where}:  {free_gb:.2f} GB / {total_gb:.2f} GB")
     
-    print(f"VRAM allocated {where}:  {total_bytes:.2f} GB")
+    print(f"VRAM allocated {where}:  {total_gb:.2f} GB")
 
 
 class NECTrainer:
