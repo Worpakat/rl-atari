@@ -91,7 +91,7 @@
  
     "kl_loss_weight": 0.0,                
     "network_optimization_period": 8,
-    "key_updates": false, 
+    "key_updates": true, 
 
 
     "dnd_max_memory": 100000,                   
