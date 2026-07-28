@@ -489,31 +489,31 @@ class StratifiedReplayMemory():
 
         # We fill remaining quota with any available transitions from all buckets.
         
-        # if carry > 0:
+        if carry > 0:
 
-        #     available = (
-        #         list(self._death_bucket)
-        #         + list(self._high_bucket)
-        #         + list(self._low_bucket)
-        #         + list(self._medium_bucket)
-        #         + list(self._new_bucket)
-        #     )
+            available = (
+                list(self._death_bucket)
+                + list(self._high_bucket)
+                + list(self._low_bucket)
+                + list(self._medium_bucket)
+                + list(self._new_bucket)
+            )
 
-        #     batch_ids = {id(transition) for transition in batch}
+            batch_ids = {id(transition) for transition in batch}
 
-        #     available = [
-        #         transition
-        #         for transition in available
-        #         if id(transition) not in batch_ids
-        #     ]
+            available = [
+                transition
+                for transition in available
+                if id(transition) not in batch_ids
+            ]
 
-        #     if len(available) > 0:
-        #         batch.extend(
-        #             random.sample(
-        #                 available,
-        #                 min(carry, len(available))
-        #             )
-        #         )
+            if len(available) > 0:
+                batch.extend(
+                    random.sample(
+                        available,
+                        min(carry, len(available))
+                    )
+                )
 
 
         # print("Last return Batch size:", len(batch))
