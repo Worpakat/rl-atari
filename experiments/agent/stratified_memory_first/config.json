@@ -31,9 +31,9 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [6500, 15000, 4500, 3000], 
-        "bucket_rates": [0.1, 0.65, 0.2, 0.1],         
-        "td_statistics_beta": 0.1,
+        "bucket_capacities": [3000, 27000, 2000, 2800], 
+        "bucket_rates": [0.05, 0.65, 0.2, 0.15],         
+        "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 7, 
         "verbose": true            
@@ -97,7 +97,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.097,            
+    "dnd_duplicate_threshold": 0.105,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
