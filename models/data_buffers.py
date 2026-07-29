@@ -319,6 +319,10 @@ class StratifiedReplayMemory():
 
         self.verbose = verbose # For reporting
 
+        self.new_instances = 0
+        self.warmup_instances = 0
+        self.new_removes = 0
+
 
     # ------------------------------------------------------------------
     # Public API
@@ -414,6 +418,7 @@ class StratifiedReplayMemory():
 
         for i in range(self._new_index, self._new_index + new_count):
             batch.append(self._new_bucket[i])
+            self.new_instances += 1
 
 
         if self.first_turn:        
@@ -446,6 +451,7 @@ class StratifiedReplayMemory():
 
             for _ in range(count):
                 batch.append(self._warmup_bucket.popleft())
+                self.warmup_instances += 1
 
             remaining -= count
 
@@ -581,6 +587,9 @@ class StratifiedReplayMemory():
                 # WARMUP transitions are already removed from buckets during sampling.
 
                 self.buckets[transition.bucket].remove(transition)
+
+                if transition.bucket == ReplayBucketType.NEW:
+                    self.new_removes += 1
                 
 
             transition.bucket = destination_bucket
@@ -675,6 +684,13 @@ class StratifiedReplayMemory():
             + f"New: {len(self._new_bucket)}, |"
             + f"Warmup: {len(self._warmup_bucket)}, |"
             + f"Total: {total_len}")
+
+        print(f"Turn total added new transitions: {self.new_instances}")
+        print(f"Turn total added warmup transitions: {self.warmup_instances}")
+        print(f"Turn total removed new transitions: {self.new_removes}")
+        self.new_instances = 0
+        self.warmup_instances = 0
+        self.new_removes = 0
 
     def can_sample(self, batch_size: int) -> bool:
         """
