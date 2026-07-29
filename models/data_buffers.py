@@ -307,6 +307,9 @@ class StratifiedReplayMemory():
         self.td_mean = None
         self.td_std = None
 
+        self.low_boundary = None
+        self.high_boundary = None
+
         # Utils
         self.first_turn = True # Used for first turn of fresh training and loaded checkpoints.
         self.next_insert_id = 0
@@ -574,9 +577,6 @@ class StratifiedReplayMemory():
         never classified by TD error.
         """
 
-        low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
-        high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
-
         for transition, td_error in zip(transitions, td_errors_abs):
 
             # ------------------------------------------------------
@@ -586,10 +586,10 @@ class StratifiedReplayMemory():
             if transition.death_transition:
                 destination_bucket = ReplayBucketType.DEATH
 
-            elif td_error < low_boundary:
+            elif td_error < self.low_boundary:
                 destination_bucket = ReplayBucketType.LOW
 
-            elif td_error > high_boundary:
+            elif td_error > self.high_boundary:
                 destination_bucket = ReplayBucketType.HIGH
 
             else:
@@ -659,6 +659,10 @@ class StratifiedReplayMemory():
         )
 
         self.td_errors.clear()
+
+        # Update boundries
+        self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
+        self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
 
     def extract_batch(
             self, 
