@@ -462,9 +462,6 @@ class StratifiedReplayMemory():
 
             # If replay buckets are not initialized yet, simply return.
             if remaining == 0:
-
-                # print("warmup return batch size:", len(batch))
-
                 return last_td_index, batch
 
         # ==========================================================
@@ -511,6 +508,8 @@ class StratifiedReplayMemory():
         
         if carry > 0:
 
+            print("DROPPPED TO RANDOM SAMPLING !!!")
+            
             available = (
                 list(self._death_bucket)
                 + list(self._high_bucket)
