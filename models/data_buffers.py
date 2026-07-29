@@ -722,6 +722,16 @@ class StratifiedReplayMemory():
     def load_state_dict(self, state: dict) -> None:
         """Deserialization."""
 
+    def get_states_total_size(self) -> int:
+        """Returns the total size of the states in MB."""
+        sum_mbs = 0
+
+        for bucket in self.buckets.values():
+            sum_mbs += sum([transition.state.nbytes for transition in bucket]) / 1024**2
+
+        return sum_mbs
+        
+
     # ------------------------------------------------------------------
     # Internal helpers
     # ------------------------------------------------------------------

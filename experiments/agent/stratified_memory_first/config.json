@@ -31,11 +31,11 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [6500, 12000, 6500, 5000], 
+        "bucket_capacities": [6500, 15000, 4500, 3000], 
         "bucket_rates": [0.1, 0.65, 0.2, 0.1],         
         "td_statistics_beta": 0.1,
-        "td_std_multiplier": 0.9,
-        "death_window": 5, 
+        "td_std_multiplier":  0.9,
+        "death_window": 7, 
         "verbose": true            
     },
 
