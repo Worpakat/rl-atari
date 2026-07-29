@@ -704,12 +704,6 @@ class StratifiedReplayMemory():
             + f"Warmup: {len(self._warmup_bucket)}, |"
             + f"Total: {total_len}")
 
-        print(f"Turn total added new transitions: {self.new_instances}")
-        print(f"Turn total added warmup transitions: {self.warmup_instances}")
-        print(f"Turn total removed new transitions: {self.new_removes}")
-        self.new_instances = 0
-        self.warmup_instances = 0
-        self.new_removes = 0
 
     def can_sample(self, batch_size: int) -> bool:
         """
