@@ -191,7 +191,13 @@ class TransitionQueueManager:
         self._total_size = 0
 
     def __len__(self) -> int:
-        return self._total_size
+        actual_length = 0
+
+        for queue in self._queues:
+            actual_length += len(queue)
+
+        return actual_length
+    
 
     def __iter__(self):
         """
