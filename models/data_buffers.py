@@ -644,6 +644,11 @@ class StratifiedReplayMemory():
         if self.first_turn:
             self.td_mean = batch_mean
             self.td_std = batch_std
+
+            # Update boundries
+            self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
+            self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
+
             return
 
         beta = self.td_statistics_beta
