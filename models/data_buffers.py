@@ -668,8 +668,7 @@ class StratifiedReplayMemory():
         # Update boundries
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
-
-        # print("low_boundary:", self.low_boundary, "high_boundary:", self.high_boundary)
+        
 
     def extract_batch(
             self, 
