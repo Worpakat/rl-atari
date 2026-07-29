@@ -464,41 +464,71 @@ class StratifiedReplayMemory():
             if remaining == 0:
                 return last_td_index, batch
 
+
         # ==========================================================
         # Classified replay buckets
         # ==========================================================
 
-        bucket_chain = [
-            (
-                self._death_bucket,
-                round(remaining * self.bucket_rates[ReplayBucketType.DEATH]),
-            ),
-            (
-                self._high_bucket,
-                round(remaining * self.bucket_rates[ReplayBucketType.HIGH]),
-            ),
-            (
-                self._low_bucket,
-                round(remaining * self.bucket_rates[ReplayBucketType.LOW]),
-            ),
-            (
-                self._medium_bucket,
-                round(remaining * self.bucket_rates[ReplayBucketType.MEDIUM]),
-            ),
-        ]
+        death_quota = round(remaining * self.bucket_rates[ReplayBucketType.DEATH])
+        high_quota  = round(remaining * self.bucket_rates[ReplayBucketType.HIGH])
+        low_quota   = round(remaining * self.bucket_rates[ReplayBucketType.LOW])
 
-        carry = 0
+        # --------------------------
+        # Death
+        # --------------------------
 
-        for bucket, requested in bucket_chain:
+        take = min(death_quota, len(self._death_bucket), remaining)
 
-            requested += carry
+        if take > 0:
+            batch.extend(random.sample(self._death_bucket, take))
 
-            take = min(requested, len(bucket))
+        remaining -= take
 
-            if take > 0:
-                batch.extend(random.sample(bucket, take))
+        death_missing = death_quota - take
 
-            carry = requested - take
+        # --------------------------
+        # High
+        # --------------------------
+
+        requested = high_quota + death_missing
+        # We take the missing death transitions from the high bucket.
+
+        take = min(requested, len(self._high_bucket), remaining)
+
+        if take > 0:
+            batch.extend(random.sample(self._high_bucket, take))
+
+        remaining -= take
+
+        # high_missing = requested - take
+
+        # --------------------------
+        # Low
+        # --------------------------
+
+        requested = low_quota
+
+        take = min(requested, len(self._low_bucket), remaining)
+
+        if take > 0:
+            batch.extend(random.sample(self._low_bucket, take))
+
+        remaining -= take
+
+        # low_missing = requested - take
+
+        # --------------------------
+        # Medium
+        # --------------------------
+
+        # We take what's left from the medium bucket. It contains medium_quota, low_missing and high_missing. 
+        requested = remaining
+        take = min(requested, len(self._medium_bucket))
+
+        if take > 0:
+            batch.extend(random.sample(self._medium_bucket, take))
+
+        remaining -= take
 
         # ==========================================================
         # Final fallback
@@ -506,7 +536,7 @@ class StratifiedReplayMemory():
 
         # We fill remaining quota with any available transitions from all buckets.
         
-        if carry > 0:
+        if remaining > 0:
 
             print("DROPPPED TO RANDOM SAMPLING !!!")
             
@@ -526,15 +556,10 @@ class StratifiedReplayMemory():
                 if id(transition) not in batch_ids
             ]
 
-            if len(available) > 0:
-                batch.extend(
-                    random.sample(
-                        available,
-                        min(carry, len(available))
-                    )
-                )
+            take = min(remaining, len(available))
+            batch.extend(random.sample(available, take))
 
-                print("Drop, carry:", carry, " | available:", len(available), " | batch size:", len(batch))
+            print("Drop, remaining:", remaining, " | available:", len(available), " | batch size:", len(batch))
                 
         # print("Last return Batch size:", len(batch))
 
