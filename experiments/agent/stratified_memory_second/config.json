@@ -15,7 +15,7 @@
     "death_penalty": -3.0, 
     
     
-    "warmup_steps": 3000,                       
+    "warmup_steps": 1000,                       
     "max_episodes": 300,           
     "batch_size": 32,                           
     "cache_representations": true,      
@@ -76,7 +76,7 @@
 
     "conv_channels": 8,                       
     "conv_block": 4,                            
-    "conv_dim": 1024,                           
+    "conv_dim": 512,                           
     "hidden_dim": 256,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
