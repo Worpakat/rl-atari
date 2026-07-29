@@ -616,6 +616,8 @@ class NECTrainer:
 
         # Network will be optimized every 'network_optimization_period' transitions.
         steps = int(len(self.transition_queue_manager) / self.config.network_optimization_period) + 1
+        print(f"Steps: {steps} | Queue size: {self.transition_queue_manager.total_size}")
+
         
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
@@ -641,6 +643,7 @@ class NECTrainer:
 
         # print(f"GPU memory usage, before network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
 
+        print("Before network optimization steps, new bucket size:", len(self.replay_memory._new_bucket))
 
         for _ in range(steps):
 
