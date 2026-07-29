@@ -628,7 +628,6 @@ class NECTrainer:
             # Stratified replay memory needs to mark death windows before any optimization step. 
             # Those are going to moved to death bucket.
             self.replay_memory.mark_death_windows() 
-            self.replay_memory.lock_new_bucket_size()
 
             if self.replay_memory.first_turn:
                 all_batches = []
@@ -643,12 +642,12 @@ class NECTrainer:
 
         # print(f"GPU memory usage, before network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
 
-        print("Before network optimization steps, new bucket size:", len(self.replay_memory._new_bucket))
-        print("Before network optimization steps, warmup bucket size:", len(self.replay_memory._warmup_bucket))
+        # print("Before network optimization steps, new bucket size:", len(self.replay_memory._new_bucket))
+        # print("Before network optimization steps, warmup bucket size:", len(self.replay_memory._warmup_bucket))
 
         for _ in range(steps):
 
-            print_gpu_usage("before sample()")
+            # print_gpu_usage("before sample()")
     
             # Sample a mini-batch.
             indices, batch = self.replay_memory.sample(
@@ -657,18 +656,18 @@ class NECTrainer:
             )
 
             
-            print_gpu_usage("after sample()")
+            # print_gpu_usage("after sample()")
 
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
 
             
-            print_gpu_usage("before encode()")
+            # print_gpu_usage("before encode()")
 
             # Encode state sequences.
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
-            print_gpu_usage("after encode()")
+            # print_gpu_usage("after encode()")
             
 
             # Estimate Q-values from the episodic memories.
@@ -678,7 +677,7 @@ class NECTrainer:
                 track_key_updates=self.config.key_updates,
             )
 
-            print_gpu_usage("after lookup_batch()")
+            # print_gpu_usage("after lookup_batch()")
 
             # print("After lookup_batch()", torch.cuda.memory_allocated() / 1024**3)
 
@@ -717,7 +716,7 @@ class NECTrainer:
                         # We return 'new_bucket' indices to use them for TD stats.
                         # !! It is the 1+ of last index of transitions to be used for TD stats.
 
-            print_gpu_usage("after torch.no_grad()")
+            # print_gpu_usage("after torch.no_grad()")
 
 
             loss = compute_network_loss(
@@ -727,31 +726,31 @@ class NECTrainer:
                 kl_loss_weight=self.config.kl_loss_weight,
             )
 
-            print_gpu_usage("after compute_network_loss()")
+            # print_gpu_usage("after compute_network_loss()")
 
 
             # Optimize encoder.
             self.encoder_optimizer.zero_grad()
             self.agent.zero_key_gradients()
 
-            print_gpu_usage("after zero_grad()")
+            # print_gpu_usage("after zero_grad()")
 
             loss['total_loss'].backward()
 
-            print_gpu_usage("after loss.backward()")
+            # print_gpu_usage("after loss.backward()")
 
             # For sanity check
             # self.agent.check_dnd_key_gradients()
 
             self.encoder_optimizer.step()
 
-            print_gpu_usage("after encoder_optimizer.step()")
+            # print_gpu_usage("after encoder_optimizer.step()")
 
             # Optionally optimize DND keys.
             if self.config.key_updates:
                 self.agent.step_key_optimizers()
 
-                print_gpu_usage("after key_optimizer.step()")
+                # print_gpu_usage("after key_optimizer.step()")
 
             # Store loss to be logged.
             loss['optimization_step'] = self.optimization_step
@@ -781,7 +780,7 @@ class NECTrainer:
 
             self.replay_memory.report() # Print current circumstances.
 
-            print_gpu_usage("after report()")
+            # print_gpu_usage("after report()")
 
 
         # print(f"GPU memory usage, after network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")

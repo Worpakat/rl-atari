@@ -381,14 +381,8 @@ class StratifiedReplayMemory():
 
                 if transition.death_transition or index > protect_until:
                     transition.death_transition = True 
-                    
-    def lock_new_bucket_size(self) -> None:
-        """
-        Saves the size of the _new_bucket to be used for sampling.
-        This function is called just before the loop of _network_optimization_step().
-        """
-        self._locked_new_bucket_size = len(self._new_bucket)
 
+                    
     def sample(
         self,
         batch_size: int,
