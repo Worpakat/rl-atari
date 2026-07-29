@@ -616,7 +616,8 @@ class NECTrainer:
 
         # Network will be optimized every 'network_optimization_period' transitions.
         steps = int(len(self.transition_queue_manager) / self.config.network_optimization_period) + 1
-        print(f"Steps: {steps} | Queue size: {len(self.transition_queue_manager)}")
+
+        # print(f"Steps: {steps} | Queue size: {len(self.transition_queue_manager)}")
 
         
         # Last place it is used in an episode, we clear the transition queue to gain space.

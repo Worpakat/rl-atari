@@ -532,7 +532,7 @@ class StratifiedReplayMemory():
         
         if remaining > 0:
 
-            print("DROPPPED TO RANDOM SAMPLING !!!")
+            # print("DROPPPED TO RANDOM SAMPLING !!!")
             
             available = (
                 list(self._death_bucket)
@@ -553,7 +553,7 @@ class StratifiedReplayMemory():
             take = min(remaining, len(available))
             batch.extend(random.sample(available, take))
 
-            print("Drop, remaining:", remaining, " | available:", len(available), " | batch size:", len(batch))
+            # print("Drop, remaining:", remaining, " | available:", len(available), " | batch size:", len(batch))
                 
         # print("Last return Batch size:", len(batch))
 
