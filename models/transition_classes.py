@@ -94,6 +94,9 @@ class TransitionQueue(BaseBuffer):
         Removes the first `count` transitions.
         """
         count = min(count, len(self._memory))
+
+        print(f"Removing {count} transitions from beginning of queue...")
+
         for _ in range(count):
             self._memory.popleft()
 
@@ -103,6 +106,9 @@ class TransitionQueue(BaseBuffer):
         Removes the last `count` transitions.
         """
         count = min(count, len(self._memory))
+
+        print(f"Removing {count} transitions from end of queue...")
+
         for _ in range(count):
             self._memory.pop()
 
