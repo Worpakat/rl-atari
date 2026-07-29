@@ -534,7 +534,8 @@ class StratifiedReplayMemory():
                     )
                 )
 
-
+                print("Drop, carry:", carry, " | available:", len(available), " | batch size:", len(batch))
+                
         # print("Last return Batch size:", len(batch))
 
         return last_td_index, batch 
