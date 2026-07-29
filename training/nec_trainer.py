@@ -644,6 +644,7 @@ class NECTrainer:
         # print(f"GPU memory usage, before network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
 
         print("Before network optimization steps, new bucket size:", len(self.replay_memory._new_bucket))
+        print("Before network optimization steps, warmup bucket size:", len(self.replay_memory._warmup_bucket))
 
         for _ in range(steps):
 
