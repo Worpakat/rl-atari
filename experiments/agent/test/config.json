@@ -7,26 +7,40 @@
     "num_actions": 5,                           
     "action_mapping": [1, 2, 3, 4, 5],    
 
-    "reward_strategy": "tanh",                 
+    "reward_strategy": "log",                 
     "reward_parameters": {                      
         "transport": 0.0,   
         "scale": 0.01
     },
-    "death_penalty": -1.0, 
+    "death_penalty": -3.0, 
 
     
-    "warmup_steps": 100,                       
+    "warmup_steps": 1500,                       
     "max_episodes": 50,           
     "batch_size": 8,                           
     "cache_representations": true,    
     
-    "replay_memory_size": 50000,              
-    "prioritized_replay": true,                
-    "priority_alpha": 0.5,                     
-    "priority_epsilon": 1e-5,          
+    "replay_memory_type": "stratified",
+    
+    "normal_memory_kwargs": {
+        "capacity": 30000,
+        "prioritized": true,
+        "priority_alpha": 1.4,
+        "priority_epsilon": 1e-5
+    },
+
+    "stratified_memory_kwargs": {
+        "bucket_capacities": [6500, 12000, 6500, 5000], 
+        "bucket_rates": [0.15, 0.45, 0.3, 0.1],         
+        "td_statistics_beta": 0.9,
+        "td_std_multiplier":  1.0,
+        "death_window": 5, 
+        "verbose": true            
+    },
 
 
-    "transition_queue_size": 300,              
+
+    "transition_queue_size": 1500,              
     "static_sequence_handler": {
         "initial_static_frames": 22,
         "death_static_frames": 45,
@@ -40,10 +54,10 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 2,
+    "checkpoint_period": 20,
     "save_replay_memory": true,
     "log_batch_index": true,     
-    "evaluation_period": 10,                   
+    "evaluation_period": 5,                   
     "evaluation_episodes": 1,                  
     "record_video": true,                         
 
@@ -60,7 +74,7 @@
     "input_height": 176,                         
     "input_width": 160,                          
 
-    "conv_channels": 4,                       
+    "conv_channels": 2,                       
     "conv_block": 4,                            
     "conv_dim": 32,                           
     "hidden_dim": 32,                          
@@ -76,14 +90,14 @@
     "encoder_optimizer_kwargs": {},           
      
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 10,
+    "network_optimization_period": 8,
     "key_updates": true, 
 
 
     "dnd_max_memory": 100000,                   
-    "dnd_num_neighbors": 50,                    
+    "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.0001,            
+    "dnd_duplicate_threshold": 0.097,                
 
     "dnd_learning_rate": 5e-6,                
     "dnd_q_learning_rate": 0.01,   
