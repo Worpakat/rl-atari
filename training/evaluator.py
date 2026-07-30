@@ -75,6 +75,8 @@ class Evaluator:
                 action_mapping=self.config.action_mapping,
             )
 
+        print("Env metadata: ", environment.metadata)
+
         if self.config.record_video:
             environment = RecordVideo(
                 environment,
@@ -231,7 +233,7 @@ class Evaluator:
                     
                     if not self._finished(episode):
                         print(f"Evaluatinon episode {episode}.")
-                        
+
                         observation, _ = self.environment.reset()
 
                         observation = cut_and_transpose_frame(observation)
