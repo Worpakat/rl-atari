@@ -16,7 +16,7 @@
 
     
     "warmup_steps": 300,                       
-    "max_episodes": 50,           
+    "max_episodes": 5,           
     "batch_size": 16,                           
     "cache_representations": true,    
     
@@ -54,10 +54,10 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 20,
+    "checkpoint_period": 2,
     "save_replay_memory": true,
     "log_batch_index": true,     
-    "evaluation_period": 1,                   
+    "evaluation_period": 2,                   
     "evaluation_episodes": 3,                  
     "record_video": true,                         
 
