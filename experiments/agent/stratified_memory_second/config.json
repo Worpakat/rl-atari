@@ -15,8 +15,8 @@
     "death_penalty": -3.0, 
     
     
-    "warmup_steps": 1000,                       
-    "max_episodes": 5,           
+    "warmup_steps": 3000,                       
+    "max_episodes": 600,           
     "batch_size": 64,                           
     "cache_representations": true,      
     
