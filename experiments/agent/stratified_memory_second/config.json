@@ -80,9 +80,9 @@
     "hidden_dim": 256,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 128,                          
+    "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 32,       
+    "representation_dim": 16,       
 
 
     "encoder_optimizer": "RMSprop",                
@@ -97,7 +97,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.21,            
+    "dnd_duplicate_threshold": 0.15,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
