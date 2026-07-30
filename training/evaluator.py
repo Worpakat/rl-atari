@@ -86,7 +86,7 @@ class Evaluator:
             )
         
         print("Env metadata 2: ", environment.metadata)
-        
+
         if self.config.grayscale:
             environment = GrayscaleObservation(environment)
         
@@ -237,6 +237,9 @@ class Evaluator:
                     
                     if not self._finished(episode):
                         print(f"Evaluatinon episode {episode}.")
+
+                        print("Env metadata 4: ", self.environment.metadata)
+
 
                         observation, _ = self.environment.reset()
 
