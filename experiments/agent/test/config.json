@@ -15,9 +15,9 @@
     "death_penalty": -3.0, 
 
     
-    "warmup_steps": 1500,                       
+    "warmup_steps": 300,                       
     "max_episodes": 50,           
-    "batch_size": 64,                           
+    "batch_size": 16,                           
     "cache_representations": true,    
     
     "replay_memory_type": "stratified",
@@ -40,7 +40,7 @@
 
 
 
-    "transition_queue_size": 1500,              
+    "transition_queue_size": 100,              
     "static_sequence_handler": {
         "initial_static_frames": 22,
         "death_static_frames": 45,
@@ -57,8 +57,8 @@
     "checkpoint_period": 20,
     "save_replay_memory": true,
     "log_batch_index": true,     
-    "evaluation_period": 5,                   
-    "evaluation_episodes": 1,                  
+    "evaluation_period": 1,                   
+    "evaluation_episodes": 3,                  
     "record_video": true,                         
 
 
