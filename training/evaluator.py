@@ -75,8 +75,6 @@ class Evaluator:
                 action_mapping=self.config.action_mapping,
             )
 
-        print("Env metadata 1: ", environment.metadata)
-
         if self.config.record_video:
             environment = RecordVideo(
                 environment,
@@ -84,16 +82,12 @@ class Evaluator:
                 name_prefix=f"evaluation_{video_file_custom}",
                 episode_trigger=lambda _: True,
             )
-        
-        print("Env metadata 2: ", environment.metadata)
 
         if self.config.grayscale:
             environment = GrayscaleObservation(environment)
         
         # Keep this wrapper at the end.
         environment = RecordEpisodeStatistics(environment)
-
-        print("Env metadata 3: ", environment.metadata)
 
         return environment
 
@@ -236,11 +230,7 @@ class Evaluator:
                     # That causes error on Kaggle platform on top of created unncessary empty video files.
                     
                     if not self._finished(episode):
-                        print(f"Evaluatinon episode {episode}.")
-
-                        print("Env metadata 4: ", self.environment.metadata)
-
-
+                        
                         observation, _ = self.environment.reset()
 
                         observation = cut_and_transpose_frame(observation)

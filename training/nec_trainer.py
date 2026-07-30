@@ -882,9 +882,10 @@ class NECTrainer:
 
         # print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
 
+        filename = f"model_ep_{self.episode}_step_{self.optimization_step}"
         self.checkpoint_manager.save(
             model_checkpoint,
-            filename=f"model_ep_{self.episode}_step_{self.optimization_step}",
+            filename=filename,
             colab_execution=self.config.colab_execution
         )
 
@@ -912,7 +913,7 @@ class NECTrainer:
             )
 
         
-        print("Checkpoint check: Checkpoint saved.")
+        print(f"Checkpoint check: Checkpoint {filename+'.pt'} saved.")
 
         self.checkpoint_start = self.optimization_step
         
