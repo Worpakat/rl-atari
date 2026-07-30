@@ -32,7 +32,7 @@
 
     "stratified_memory_kwargs": {
         "bucket_capacities": [5000, 20000, 2000, 1600], 
-        "bucket_rates": [0.1, 0.6, 0.2, 0.1],         
+        "bucket_rates": [0.18, 0.57, 0.15, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 7, 
@@ -97,7 +97,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.225,            
+    "dnd_duplicate_threshold": 0.22,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
