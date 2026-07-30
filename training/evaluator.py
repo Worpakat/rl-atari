@@ -75,7 +75,7 @@ class Evaluator:
                 action_mapping=self.config.action_mapping,
             )
 
-        print("Env metadata: ", environment.metadata)
+        print("Env metadata 1: ", environment.metadata)
 
         if self.config.record_video:
             environment = RecordVideo(
@@ -85,11 +85,15 @@ class Evaluator:
                 episode_trigger=lambda _: True,
             )
         
+        print("Env metadata 2: ", environment.metadata)
+        
         if self.config.grayscale:
             environment = GrayscaleObservation(environment)
         
         # Keep this wrapper at the end.
         environment = RecordEpisodeStatistics(environment)
+
+        print("Env metadata 3: ", environment.metadata)
 
         return environment
 
