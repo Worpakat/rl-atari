@@ -159,15 +159,6 @@ class Evaluator:
             self.global_step += 1
 
 
-        observation, _ = self.environment.reset()
-
-        observation = cut_and_transpose_frame(observation)
-
-        self.sequence_buffer.clear()
-
-        for _ in range(self.config.sequence_length):
-            self.sequence_buffer.append(observation)
-
         return {
             "episode_reward": episode_reward,
             "episode_length": episode_length,
@@ -221,7 +212,7 @@ class Evaluator:
                 # We don't want to gather gradients, and its must for batch norm 
                 # and dropout layers if they are used.
 
-                while not self._finished(episode):
+                while True:
                     
                     print(f"Evaluating episode {episode} ...")
                     logs = self._evaluation_episode()
@@ -233,6 +224,25 @@ class Evaluator:
                     )
 
                     episode += 1
+
+                    # We need to reset the environment if evaluation is not finished.
+                    # Otherwise, an unnecessary new video recording will be created.
+                    # That causes error on Kaggle platform on top of created unncessary empty video files.
+                    
+                    if not self._finished(episode):
+                        observation, _ = self.environment.reset()
+
+                        observation = cut_and_transpose_frame(observation)
+
+                        self.sequence_buffer.clear()
+
+                        for _ in range(self.config.sequence_length):
+                            self.sequence_buffer.append(observation)
+
+                    else:
+                        # All evaluation episodes are done.
+                        break
+
 
 
             # Summaries of each evaluation episodes
