@@ -16,7 +16,7 @@
     
     
     "warmup_steps": 1000,                       
-    "max_episodes": 300,           
+    "max_episodes": 600,           
     "batch_size": 64,                           
     "cache_representations": true,      
     
@@ -31,8 +31,8 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [5000, 20000, 3000, 800], 
-        "bucket_rates": [0.1, 0.60, 0.2, 0.15],         
+        "bucket_capacities": [8000, 36000, 2000, 1600], 
+        "bucket_rates": [0.1, 0.6, 0.2, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 7, 
@@ -57,7 +57,7 @@
     "checkpoint_period": 20,
     "save_replay_memory": false,
     "log_batch_index": false,
-    "evaluation_period": 2,                   
+    "evaluation_period": 5,                   
     "evaluation_episodes": 3,                  
     "record_video": true,                         
 
@@ -80,9 +80,9 @@
     "hidden_dim": 256,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 64,                          
+    "latent_dim": 128,                          
     "adapter": true,                            
-    "representation_dim": 16,       
+    "representation_dim": 32,       
 
 
     "encoder_optimizer": "RMSprop",                
@@ -97,7 +97,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.2,            
+    "dnd_duplicate_threshold": 0.314,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
