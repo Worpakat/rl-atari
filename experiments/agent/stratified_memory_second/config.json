@@ -15,7 +15,7 @@
     "death_penalty": -3.0, 
     
     
-    "warmup_steps": 3000,                       
+    "warmup_steps": 1000,                       
     "max_episodes": 300,           
     "batch_size": 64,                           
     "cache_representations": true,      
@@ -74,15 +74,15 @@
     "input_height": 176,                         
     "input_width": 160,                          
 
-    "conv_channels": 32,                       
+    "conv_channels": 16,                       
     "conv_block": 4,                            
-    "conv_dim": 2048,                           
-    "hidden_dim": 512,                          
+    "conv_dim": 1024,                           
+    "hidden_dim": 256,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 128,                          
+    "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 32,       
+    "representation_dim": 16,       
 
 
     "encoder_optimizer": "RMSprop",                
@@ -97,7 +97,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.312,            
+    "dnd_duplicate_threshold": 0.21,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
