@@ -230,6 +230,8 @@ class Evaluator:
                     # That causes error on Kaggle platform on top of created unncessary empty video files.
                     
                     if not self._finished(episode):
+                        print(f"Evaluatinon episode {episode}.")
+                        
                         observation, _ = self.environment.reset()
 
                         observation = cut_and_transpose_frame(observation)
