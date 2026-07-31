@@ -800,6 +800,8 @@ class StratifiedReplayMemory():
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
 
+        # It is not actually a first turn
+        self.first_turn = False
 
         # Clear existing replay
         self._low_bucket.clear()
