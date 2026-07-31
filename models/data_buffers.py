@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from collections import deque
 from enum import Enum, auto
 
+from pathlib import Path
 import random
 
 import numpy as np
@@ -11,6 +12,7 @@ import torch
 from models.transition_classes import BaseBuffer, Transition
 
 from utils.frame_processing import convert_and_norm_sequence
+from utils.misc import ensure_directory
 
 
 
@@ -316,15 +318,8 @@ class StratifiedReplayMemory():
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
         
         self._new_index = 0 # Used to track _new_bucket sampling progress.
-        self._locked_new_bucket_size = 0 # Used for how many transitions to sample from _new_bucket at each sampling.
-        # Due to removals during one turn loop, len(_new_bucket) is not constant. 
-        # Because of that we save start size of _new_bucket in locked_new_bucket_size and use it for sampling.
-
+        
         self.verbose = verbose # For reporting
-
-        self.new_instances = 0
-        self.warmup_instances = 0
-        self.new_removes = 0
 
 
     # ------------------------------------------------------------------
@@ -362,7 +357,6 @@ class StratifiedReplayMemory():
 
         self.next_insert_id += 1
 
-
     def mark_death_windows(self) -> None:
         """
         Marks death and near-death transitions inside the warmup and new
@@ -385,7 +379,13 @@ class StratifiedReplayMemory():
                 if transition.death_transition or index > protect_until:
                     transition.death_transition = True 
 
-                    
+    def can_sample(self, batch_size: int) -> bool:
+        """
+        This function is not needed for this Replay Buffer.
+        It exist for compatibility with other Replay Buffers.
+        """
+        return True
+
     def sample(
         self,
         batch_size: int,
@@ -415,7 +415,6 @@ class StratifiedReplayMemory():
 
         for i in range(self._new_index, self._new_index + new_count):
             batch.append(self._new_bucket[i])
-            self.new_instances += 1
 
 
         if self.first_turn:        
@@ -448,7 +447,6 @@ class StratifiedReplayMemory():
 
             for _ in range(count):
                 batch.append(self._warmup_bucket.popleft())
-                self.warmup_instances += 1
 
             remaining -= count
 
@@ -602,14 +600,9 @@ class StratifiedReplayMemory():
             if transition.bucket == destination_bucket:
                 continue
             
-            if transition.bucket != ReplayBucketType.WARMUP: 
-                # WARMUP transitions are already removed from buckets during sampling.
-
+            if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
                 self.buckets[transition.bucket].remove(transition)
 
-                if transition.bucket == ReplayBucketType.NEW:
-                    self.new_removes += 1
-                
 
             transition.bucket = destination_bucket
 
@@ -645,6 +638,8 @@ class StratifiedReplayMemory():
             self.td_mean = batch_mean
             self.td_std = batch_std
 
+            self.td_errors.clear()
+
             # Update boundries
             self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
             self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
@@ -668,7 +663,7 @@ class StratifiedReplayMemory():
         # Update boundries
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
-        
+
 
     def extract_batch(
             self, 
@@ -715,18 +710,120 @@ class StratifiedReplayMemory():
             + f"Total: {total_len}")
 
 
-    def can_sample(self, batch_size: int) -> bool:
+    def save(
+        self,
+        save_directory: str | Path,
+        chunk_size: int = 5000,
+    ) -> None:
         """
-        This function is not needed for this Replay Buffer.
-        It exist for compatibility with other Replay Buffers.
+        Saves the stratified replay memory into a directory.
+
+        Directory structure
+        -------------------
+        replay_memory/
+            metadata.pt
+            low_000.pt
+            low_001.pt
+            ...
+            medium_000.pt
+            ...
+            high_000.pt
+            death_000.pt
         """
-        return True
+        save_directory = ensure_directory(save_directory)
 
-    def state_dict(self) -> dict:
-        """Serialization."""
+        metadata = {
+            "td_mean": self.td_mean,
+            "td_std": self.td_std,
+            "next_insert_id": self.next_insert_id,
+            "bucket_capacities": self.bucket_capacities,
+        }
 
-    def load_state_dict(self, state: dict) -> None:
-        """Deserialization."""
+        torch.save(metadata, (save_directory / "metadata.pt"))
+
+        self._save_bucket(
+            self._low_bucket,
+            "low",
+            save_directory,
+            chunk_size,
+        )
+
+        self._save_bucket(
+            self._medium_bucket,
+            "medium",
+            save_directory,
+            chunk_size,
+        )
+
+        self._save_bucket(
+            self._high_bucket,
+            "high",
+            save_directory,
+            chunk_size,
+        )
+
+        self._save_bucket(
+            self._death_bucket,
+            "death",
+            save_directory,
+            chunk_size,
+        )
+
+    def load(
+        self,
+        save_directory: str | Path,
+    ) -> None:
+        """
+        Loads a previously saved stratified replay memory.
+        """
+
+        save_directory = Path(save_directory)
+
+        if not save_directory.exists():
+            raise FileNotFoundError(
+                f"Replay memory directory does not exist: {save_directory}"
+            )
+
+        # Metadata
+        metadata = torch.load(
+            save_directory / "metadata.pt",
+            map_location="cpu",
+            weights_only=False,
+        )
+
+        self.td_mean = metadata["td_mean"]
+        self.td_std = metadata["td_std"]
+        self.next_insert_id = metadata["next_insert_id"]
+        self.bucket_capacities = metadata["bucket_capacities"]
+
+        # Calculate last TD boundries.
+        self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
+        self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
+
+
+        # Clear existing replay
+        self._low_bucket.clear()
+        self._medium_bucket.clear()
+        self._high_bucket.clear()
+        self._death_bucket.clear()
+
+        self._new_bucket.clear()
+        self._warmup_bucket.clear()
+
+        # Load buckets
+        self._load_bucket(self._low_bucket, "low", save_directory)
+        self._load_bucket(self._medium_bucket, "medium", save_directory)
+        self._load_bucket(self._high_bucket, "high", save_directory)
+        self._load_bucket(self._death_bucket, "death", save_directory)
+
+        print(
+            f"Loaded replay memory:"
+            f"\n  Low:    {len(self._low_bucket)}"
+            f"\n  Medium: {len(self._medium_bucket)}"
+            f"\n  High:   {len(self._high_bucket)}"
+            f"\n  Death:  {len(self._death_bucket)}"
+        )
+
 
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
@@ -782,3 +879,47 @@ class StratifiedReplayMemory():
 
             bucket.clear()
             bucket.extend(filtered_bucket)
+
+    
+    def _save_bucket(
+        self,
+        bucket: deque[ReplayMemoryUnit],
+        bucket_name: str,
+        save_directory: Path,
+        chunk_size: int = 5000,
+    ) -> None:
+        """
+        Saves one replay bucket into multiple chunk files.
+
+        Example:
+            low_000.pt
+            low_001.pt
+            ...
+        """
+
+        bucket = list(bucket)
+
+        for chunk_index, start in enumerate(range(0, len(bucket), chunk_size)):
+
+            chunk = bucket[start : start + chunk_size]
+
+            torch.save(
+                chunk,
+                save_directory / f"{bucket_name}_{chunk_index:03d}.pt",
+            )
+
+    def _load_bucket(self, bucket: deque, prefix: str, save_directory: str | Path):
+        """
+        Rebuilds a bucket by loading and merging multiple chunks.
+        """
+        files = sorted(save_directory.glob(f"{prefix}_*.pt"))
+
+        for file in files:
+
+            chunk = torch.load(
+                file,
+                map_location="cpu",
+                weights_only=False,
+            )
+
+            bucket.extend(chunk)

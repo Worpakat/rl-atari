@@ -86,6 +86,7 @@
     "checkpoint_start": 0,                     // Starting optimization step after checkpoint
     "checkpoint_period": 2,                   // Episodes between checkpoints
     "save_replay_memory": true,                // Whether save replay memory during checkpoint
+    "replay_memory_chunk_size": 5000,          // How many transitions to save in each chunk
     "log_batch_index": true,                       // Whether log batch index during training
     "evaluation_period": 10,                   // Episodes between evaluations
     "evaluation_episodes": 3,                  // Number of evaluation episodes

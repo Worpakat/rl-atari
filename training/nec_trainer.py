@@ -892,25 +892,34 @@ class NECTrainer:
         print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
         
         if self.config.save_replay_memory:
-            print(f"Replay memory length: {len(self.replay_memory)}")
-            print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
-
             print("Saving replay memory...")
 
-            replay_memory_checkpoint = {
-                "replay_memory": self.replay_memory.state_dict(),
-                "training_state": {
-                    "optimization_step": self.optimization_step,
-                    "environment_step": self.global_step,
-                    "episode": self.episode,
+            if isinstance(self.replay_memory, ReplayMemory): # Standard / prioritized replay memory.
+                replay_memory_checkpoint = {
+                    "replay_memory": self.replay_memory.state_dict(),
+                    "training_state": {
+                        "optimization_step": self.optimization_step,
+                        "environment_step": self.global_step,
+                        "episode": self.episode,
+                    }
                 }
-            }
-      
-            self.checkpoint_manager.save(
-                replay_memory_checkpoint,
-                filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
-                colab_execution=self.config.colab_execution
-            )
+        
+                self.checkpoint_manager.save(
+                    replay_memory_checkpoint,
+                    filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
+                    colab_execution=self.config.colab_execution
+                )
+
+            elif isinstance(self.replay_memory, StratifiedReplayMemory): # Stratified replay memory.
+                replay_memory_dir = (
+                    self.checkpoint_manager.checkpoints_dir /
+                    f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"
+                )
+
+                self.replay_memory.save(
+                    replay_memory_dir,
+                    chunk_size=self.config.replay_memory_chunk_size
+                    )
 
         
         print(f"Checkpoint check: Checkpoint {filename+'.pt'} saved.")
@@ -1011,14 +1020,23 @@ class NECTrainer:
                     .replace("model_", "rep_memo_")
                 )
 
-                replay_checkpoint = self.checkpoint_manager.load(
-                    replay_filename,
-                    map_location="cpu",
-                )
+                if isinstance(self.replay_memory, ReplayMemory):
+                    replay_checkpoint = self.checkpoint_manager.load(
+                        replay_filename,
+                        map_location="cpu",
+                    )
 
-                self.replay_memory.load_state_dict(
-                    replay_checkpoint["replay_memory"]
-                )
+                    self.replay_memory.load_state_dict(
+                        replay_checkpoint["replay_memory"]
+                    )
+
+                elif isinstance(self.replay_memory, StratifiedReplayMemory):
+                    replay_memory_dir = replay_filename.replace(".pt", "")
+                    # There might be file extensions in the directory name.
+
+                    self.replay_memory.load(replay_memory_dir)
+
+                
             except:
                 print("Replay memory checkpoint not found." \
                       "Continuing with fresh replay memory...")
