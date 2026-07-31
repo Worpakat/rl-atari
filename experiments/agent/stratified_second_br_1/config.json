@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/stratified_second_br_1",
+    "experiment_dir": "experiments/agent/stratified_second_br_0",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -90,7 +90,7 @@
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 4,
+    "network_optimization_period": 8,
     "key_updates": true, 
 
 
