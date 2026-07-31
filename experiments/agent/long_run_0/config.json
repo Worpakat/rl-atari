@@ -31,7 +31,7 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [7000, 25000, 4000, 2400], 
+        "bucket_capacities": [5000, 20000, 3000, 2000], 
         "bucket_rates": [0.16, 0.57, 0.17, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
