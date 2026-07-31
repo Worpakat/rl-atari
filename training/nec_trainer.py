@@ -1034,6 +1034,8 @@ class NECTrainer:
                     replay_memory_dir = replay_filename.replace(".pt", "")
                     # There might be file extensions in the directory name.
 
+                    print(f"Replay memory directory: {replay_memory_dir}")
+
                     self.replay_memory.load(replay_memory_dir)
 
                 
