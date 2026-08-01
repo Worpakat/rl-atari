@@ -235,7 +235,6 @@ class DND(nn.Module):
         self._optimizer_stale = True
     
         
-    
     def build_index(self):
         """
         Rebuilds the neighbor index.
