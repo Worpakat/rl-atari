@@ -1,5 +1,5 @@
 {
-    "colab_execution": false,
+    "colab_execution": true,
 
     "experiment_dir": "experiments/agent/long_run_1",
     "environment_name": "ALE/Riverraid-v5",    
@@ -55,7 +55,7 @@
 
     "checkpoint_start": 0,
     "checkpoint_period": 50,
-    "save_replay_memory": false,
+    "save_replay_memory": true,
     "replay_memory_chunk_size": 5000,
     "log_batch_index": false,
     "evaluation_period": 5,                   
