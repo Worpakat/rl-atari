@@ -400,13 +400,17 @@ class DND(nn.Module):
         self.keys = state["keys"].to(self.device)
         self.values = state["values"].to(self.device)
         self.generations = state["generations"].to(self.device)
+
+        self.keys.requires_grad_(True) # To make sure it works properly, we are assigning manually
+        self.values.requires_grad_(False)
+        self.generations.requires_grad_(False)
         
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
-
-        self.keys.requires_grad = True # To make sure it works properly, we are assigning manually
+            self.auxiliary.requires_grad_(False)
 
         self.write_index = state["write_index"]
         self.memory_size = state["memory_size"]
         
         self.build_index()
+        self._stale_index = False
