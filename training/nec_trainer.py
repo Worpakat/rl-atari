@@ -1039,7 +1039,8 @@ class NECTrainer:
                     self.replay_memory.load(replay_memory_dir)
 
                 
-            except:
+            except Exception as err:
+                print("Exception error: ", err)
                 print("Replay memory checkpoint not found." \
                       "Continuing with fresh replay memory...")
 
