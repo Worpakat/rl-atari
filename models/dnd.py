@@ -239,7 +239,6 @@ class DND(nn.Module):
         """
         Rebuilds the neighbor index.
         """
-        print(f"DND size: {len(self)}")
         self.neighbor_index.build(
             self.keys[:self.memory_size] # ! WE FUCKING HAVE TO PASS ONLY THE VALID PART !!.
             )
