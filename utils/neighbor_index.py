@@ -74,6 +74,7 @@ class FaissIndex(NeighborIndex):
         self.index.add(
             keys.detach().cpu().numpy()
         )
+        print(f"FAISS index size: {self.index.ntotal}")
 
     def search(self, query: torch.Tensor, k: int) -> torch.Tensor:
         """
