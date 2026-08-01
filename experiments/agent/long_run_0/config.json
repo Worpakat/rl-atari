@@ -17,7 +17,7 @@
     
     "warmup_steps": 3000,                       
     "max_episodes": 1000,           
-    "batch_size": 128,                           
+    "batch_size": 64,                           
     "cache_representations": true,      
     
 
@@ -48,9 +48,9 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_350_step_26427.pt",                  
-    "load_replay_memory": false,                 
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_150_step_20109.pt",                  
+    "load_replay_memory": true,                 
 
 
     "checkpoint_start": 0,
