@@ -240,7 +240,9 @@ class DND(nn.Module):
         """
         Rebuilds the neighbor index.
         """
-        self.neighbor_index.build(self.keys)
+        self.neighbor_index.build(
+            self.keys[:self.memory_size] # ! WE FUCKING HAVE TO PASS ONLY THE VALID PART !!.
+            )
     
     def lookup(
         self,
