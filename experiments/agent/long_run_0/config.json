@@ -49,7 +49,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_150_step_20109.pt",                  
+    "resume_checkpoint": "model_ep_350_step_47831.pt",                  
     "load_replay_memory": true,                 
 
 
