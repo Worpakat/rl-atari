@@ -135,6 +135,9 @@ class NECAgent(nn.Module):
         """
         Decays current epsilon value by a given factor.
         """
+        print(f"current_epsilon: {self.current_epsilon}")
+        print(f"current_epsilon item: {self.current_epsilon.item()}")
+
         if self.current_epsilon > self.epsilon_end:
             self.current_epsilon = self.current_epsilon * self.epsilon_decay
 
