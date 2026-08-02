@@ -641,6 +641,7 @@ class NECTrainer:
         # Experimental: Optimize for each transition just before evaluation.
         optimization_period = 1 if self._should_evaluate() else self._network_optimization_step
         steps = (int(steps * self._network_optimization_step )+ 1) if self._should_evaluate() else steps
+        print(f"Network is goint to be optimized {steps} times.")
 
         for _ in range(steps):
     
