@@ -639,8 +639,8 @@ class NECTrainer:
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
 
         # Experimental: Optimize for each transition just before evaluation.
-        optimization_period = 1 if self._should_evaluate() else self._network_optimization_step
-        steps = (int(steps * self._network_optimization_step )+ 1) if self._should_evaluate() else steps
+        optimization_period = 1 if self._should_evaluate() else self.config.network_optimization_period
+        steps = (int(steps * self.config.network_optimization_period )+ 1) if self._should_evaluate() else steps
         print(f"Network is goint to be optimized {steps} times.")
 
         for _ in range(steps):
