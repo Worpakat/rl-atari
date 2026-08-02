@@ -616,9 +616,6 @@ class NECTrainer:
 
         # Network will be optimized every 'network_optimization_period' transitions.
         steps = int(len(self.transition_queue_manager) / self.config.network_optimization_period) + 1
-
-        # print(f"Steps: {steps} | Queue size: {len(self.transition_queue_manager)}")
-
         
         # Last place it is used in an episode, we clear the transition queue to gain space.
         self.transition_queue_manager.clear() 
@@ -641,35 +638,21 @@ class NECTrainer:
                 # Eventually, we gather all batches and TD errors;
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
 
-        # print(f"GPU memory usage, before network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
-
-        # print("Before network optimization steps, new bucket size:", len(self.replay_memory._new_bucket))
-        # print("Before network optimization steps, warmup bucket size:", len(self.replay_memory._warmup_bucket))
+        # Experimental: Optimize for each transition just before evaluation.
+        optimization_period = 1 if self._should_evaluate() else self._network_optimization_step
+        steps = (int(steps * self._network_optimization_step )+ 1) if self._should_evaluate() else steps
 
         for _ in range(steps):
-
-            # print_gpu_usage("before sample()")
     
             # Sample a mini-batch.
             indices, batch = self.replay_memory.sample(
                 self.config.batch_size, 
-                self.config.network_optimization_period
+                optimization_period
             )
-
-            
-            # print_gpu_usage("after sample()")
-
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
-
-
-            
-            # print_gpu_usage("before encode()")
 
             # Encode state sequences.
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
-
-            # print_gpu_usage("after encode()")
-            
 
             # Estimate Q-values from the episodic memories.
             predicted_q_values = self.agent.lookup_batch(
@@ -677,10 +660,6 @@ class NECTrainer:
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
-
-            # print_gpu_usage("after lookup_batch()")
-
-            # print("After lookup_batch()", torch.cuda.memory_allocated() / 1024**3)
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
@@ -707,18 +686,10 @@ class NECTrainer:
                         # We register all td errors in the first turn.
 
                     else: # Normal turns.
-                        # print("Stratified normal turn before move_between_buckets()")
-
                         self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
-
-                        # print("After normal turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
-
                         self.replay_memory.register_td_errors(td_errors_abs[:indices])
                         # We return 'new_bucket' indices to use them for TD stats.
                         # !! It is the 1+ of last index of transitions to be used for TD stats.
-
-            # print_gpu_usage("after torch.no_grad()")
-
 
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
@@ -727,31 +698,20 @@ class NECTrainer:
                 kl_loss_weight=self.config.kl_loss_weight,
             )
 
-            # print_gpu_usage("after compute_network_loss()")
-
-
             # Optimize encoder.
             self.encoder_optimizer.zero_grad()
             self.agent.zero_key_gradients()
 
-            # print_gpu_usage("after zero_grad()")
-
             loss['total_loss'].backward()
-
-            # print_gpu_usage("after loss.backward()")
 
             # For sanity check
             # self.agent.check_dnd_key_gradients()
 
             self.encoder_optimizer.step()
 
-            # print_gpu_usage("after encoder_optimizer.step()")
-
             # Optionally optimize DND keys.
             if self.config.key_updates:
                 self.agent.step_key_optimizers()
-
-                # print_gpu_usage("after key_optimizer.step()")
 
             # Store loss to be logged.
             loss['optimization_step'] = self.optimization_step
@@ -764,15 +724,10 @@ class NECTrainer:
             self.replay_memory.update_td_statistics()
             # Update TD stats first turn case handled inside the function update_td_statistics(), no worries.
 
-            # print("After update_td_statistics()", torch.cuda.memory_allocated() / 1024**3)
-
             if self.replay_memory.first_turn: 
                 # We do all transfer operations at once at the beginning for the first turn. 
                 self.replay_memory.move_between_buckets(transitions=all_batches, td_errors_abs=all_td_errors_abs)
                 self.replay_memory.first_turn = False
-
-                # print("After first turn move_between_buckets()", torch.cuda.memory_allocated() / 1024**3)
-
 
                 all_batches.clear()
                 all_td_errors_abs.clear()
@@ -780,11 +735,6 @@ class NECTrainer:
             self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
             self.replay_memory.report() # Print current circumstances.
-
-            # print_gpu_usage("after report()")
-
-
-        # print(f"GPU memory usage, after network optimization steps: \n {torch.cuda.memory_summary(device=None, abbreviated=False)}")
         
 
         return indices, losses
