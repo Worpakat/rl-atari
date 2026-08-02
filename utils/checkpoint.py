@@ -53,10 +53,10 @@ class CheckpointManager:
         if colab_execution: # Save to colab session local storage
             local_checkpoint_dir = Path("/content/checkpoints")
             local_checkpoint_dir.mkdir(exist_ok=True)
-            filepath = local_checkpoint_dir / filename
+            self.checkpoints_dir = local_checkpoint_dir
 
-        else: # Save to experiment's checkpoints directory
-            filepath = self.checkpoints_dir / filename
+        # Save to experiment's checkpoints directory
+        filepath = self.checkpoints_dir / filename
 
         torch.save(checkpoint, filepath)
 
