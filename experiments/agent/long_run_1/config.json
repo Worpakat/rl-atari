@@ -1,5 +1,5 @@
 {
-    "colab_execution": true,
+    "colab_execution": false,
 
     "experiment_dir": "experiments/agent/long_run_1",
     "environment_name": "ALE/Riverraid-v5",    
@@ -98,7 +98,7 @@
     "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 40,                    
 
-    "dnd_duplicate_threshold": 0.21,            
+    "dnd_duplicate_threshold": 0.15,            
 
     "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
