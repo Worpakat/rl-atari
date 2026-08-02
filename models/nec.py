@@ -139,7 +139,7 @@ class NECAgent(nn.Module):
             self.current_epsilon = self.current_epsilon * self.epsilon_decay
 
         else:
-            self.current_epsilon = self.epsilon_end
+            self.current_epsilon.copy_(self.epsilon_end)
 
         print(f"Current_epsilon: {self.current_epsilon}")
 
