@@ -1,5 +1,5 @@
 {
-    "colab_execution": false,
+    "colab_execution": true,
 
     "experiment_dir": "experiments/agent/low_net_opt_period",
     "environment_name": "ALE/Riverraid-v5",    
