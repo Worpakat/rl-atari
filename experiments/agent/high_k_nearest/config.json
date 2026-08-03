@@ -1,0 +1,118 @@
+{
+    "colab_execution": false,
+
+    "experiment_dir": "experiments/agent/high_k_nearest",
+    "environment_name": "ALE/Riverraid-v5",    
+    "grayscale": true,
+    "num_actions": 5,                           
+    "action_mapping": [1, 2, 3, 4, 5],    
+
+    "reward_strategy": "log",                 
+    "reward_parameters": {                      
+        "transport": 0.0,   
+        "scale": 0.01
+    },
+    "death_penalty": -5.0, 
+    
+    
+    "warmup_steps": 3000,                       
+    "max_episodes": 1000,           
+    "batch_size": 64,                           
+    "cache_representations": true,      
+    
+
+    "replay_memory_type": "stratified",
+    
+    "normal_memory_kwargs": {
+        "capacity": 30000,
+        "prioritized": true,
+        "priority_alpha": 1.4,
+        "priority_epsilon": 1e-5
+    },
+
+    "stratified_memory_kwargs": {
+        "bucket_capacities": [5000, 20000, 3000, 2000], 
+        "bucket_rates": [0.12, 0.60, 0.18, 0.1],         
+        "td_statistics_beta": 0.96,
+        "td_std_multiplier":  0.9,
+        "death_window": 7, 
+        "verbose": true            
+    },
+
+
+    "transition_queue_size": 2500,                  
+    "static_sequence_handler": {
+        "initial_static_frames": 22,
+        "death_static_frames": 45,
+        "terminal_static_frames": 25
+    },
+
+
+    "resume_training": false,                   
+    "resume_checkpoint": "model_ep_150_step_20109.pt",                  
+    "load_replay_memory": false,                 
+
+
+    "checkpoint_start": 0,
+    "checkpoint_period": 50,
+    "save_replay_memory": true,
+    "replay_memory_chunk_size": 5000,
+    "log_batch_index": false,
+    "evaluation_period": 5,                   
+    "evaluation_episodes": 3,                  
+    "record_video": true,                         
+
+
+    "gamma": 0.99, 
+    "n_step": 30,       
+    "epsilon_start": 1.0,                     
+    "epsilon_end": 0.05,                        
+    "epsilon_decay": 0.97,                    
+
+
+    "sequence_length": 4,                       
+    "input_channels": 1,                        
+    "input_height": 176,                         
+    "input_width": 160,                          
+
+    "conv_channels": 16,                       
+    "conv_block": 4,                            
+    "conv_dim": 1024,                           
+    "hidden_dim": 256,                          
+    "lstm_layers": 1,                           
+    "flatten_output": true,                     
+    "latent_dim": 64,                          
+    "adapter": true,                            
+    "representation_dim": 16,       
+
+
+    "encoder_optimizer": "RMSprop",                
+    "encoder_learning_rate": 1e-6,            
+    "encoder_optimizer_kwargs": {},           
+ 
+    "kl_loss_weight": 0.0,                
+    "network_optimization_period": 4,
+    "key_updates": true, 
+
+
+    "dnd_max_memory": 100000,                   
+    "dnd_num_neighbors": 100,                    
+
+    "dnd_duplicate_threshold": 0.15,            
+
+    "dnd_learning_rate": 1e-6,                
+    "dnd_q_learning_rate": 0.01,   
+    "dnd_exploration_update": false,             
+    "dnd_exploration_q_lr": 0.8,              
+    "dnd_neighbor_shrink": 1.0,                 
+
+    "dnd_value_dim": 1,                         
+
+    "use_auxiliary": false,                     
+    "auxiliary_dim": 1,                         
+
+    "update_strategy": "option_2",          
+    "exploration_update": false,                
+
+    "similarity_function": "exponential_inverse" 
+}

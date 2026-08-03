@@ -86,10 +86,12 @@ class FaissIndex(NeighborIndex):
 
         k = min(k, len(self.keys))
 
-        _, indices = self.index.search(
+        distances, indices = self.index.search(
             query.detach().cpu().numpy(),
             k,
         )
+
+        print("Distances:", distances)
 
         return torch.from_numpy(indices[0]).long()
 
