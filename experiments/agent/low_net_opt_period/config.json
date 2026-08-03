@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/high_net_opt_period",
+    "experiment_dir": "experiments/agent/low_net_opt_period",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -91,12 +91,12 @@
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 32,
+    "network_optimization_period": 2,
     "key_updates": true, 
 
 
     "dnd_max_memory": 100000,                   
-    "dnd_num_neighbors": 40,                    
+    "dnd_num_neighbors": 50,                    
 
     "dnd_duplicate_threshold": 0.15,            
 
