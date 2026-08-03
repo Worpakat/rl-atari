@@ -83,7 +83,8 @@
     "flatten_output": true,                     
     "latent_dim": 64,                          
     "adapter": true,                            
-    "representation_dim": 16,       
+    "representation_dim": 16,   
+    "sequence_prior": false,    
 
 
     "encoder_optimizer": "RMSprop",                
