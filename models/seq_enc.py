@@ -205,6 +205,7 @@ class SequentialEncoder(nn.Module):
         flatten_output: bool = False,
         adapter: bool = False,
         representation_dim: int | None = None,
+        sequence_prior: bool = False,
     ):
         super().__init__()
 
@@ -227,11 +228,14 @@ class SequentialEncoder(nn.Module):
             lstm_layers=lstm_layers,
         )
 
-        self.sequence_prior = SequencePrior(
-            sequence_length=sequence_length,
-            latent_dim=latent_dim,
-            hidden_dim=hidden_dim,
-        )
+        if sequence_prior:
+            self.sequence_prior = SequencePrior(
+                sequence_length=sequence_length,
+                latent_dim=latent_dim,
+                hidden_dim=hidden_dim,
+            )
+        else:
+            self.sequence_prior = None
 
         if adapter:
             self.adapter = Adapter(
@@ -256,11 +260,14 @@ class SequentialEncoder(nn.Module):
             )
         )
 
-        prior_mean, prior_logvar, _ = self.sequence_prior(
-            batch_size=frames.size(0),
-            device=frames.device,
-            random_sampling=random_sampling,
-        )
+        if self.sequence_prior is not None:
+            prior_mean, prior_logvar, _ = self.sequence_prior(
+                batch_size=frames.size(0),
+                device=frames.device,
+                random_sampling=random_sampling,
+            )
+        else:
+            prior_mean, prior_logvar = None, None
 
         representation = posterior_latents
 

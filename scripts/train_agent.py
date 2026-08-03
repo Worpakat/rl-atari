@@ -36,7 +36,8 @@ def create_model_and_trainer(config: TrainingConfig):
             lstm_layers = config.lstm_layers,
             flatten_output = config.flatten_output,
             adapter = config.adapter,
-            representation_dim = config.representation_dim
+            representation_dim = config.representation_dim,
+            sequence_prior = config.sequence_prior
         )
     )
 

@@ -18,14 +18,17 @@ def compute_network_loss(
     # TD loss
     td_loss = F.mse_loss(predicted_q_values, q_targets, reduction=reduction)
 
-    # Temporal KL loss
-    kl_loss = dynamics_kl_loss(
-        encoder_output.posterior_mean,
-        encoder_output.posterior_logvar,
-        encoder_output.prior_mean,
-        encoder_output.prior_logvar,
-        reduction=reduction,
-    )
+    if encoder_output.prior_mean and encoder_output.prior_logvar:
+        # Temporal KL loss
+        kl_loss = dynamics_kl_loss(
+            encoder_output.posterior_mean,
+            encoder_output.posterior_logvar,
+            encoder_output.prior_mean,
+            encoder_output.prior_logvar,
+            reduction=reduction,
+        )
+    else:
+        kl_loss = torch.tensor(0.0, device=predicted_q_values.device)
 
     # Total loss
     total_loss = td_loss + kl_loss_weight * kl_loss
