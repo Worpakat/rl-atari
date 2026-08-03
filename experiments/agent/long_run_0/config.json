@@ -48,7 +48,7 @@
     },
 
 
-    "resume_training": true,                   
+    "resume_training": false,                   
     "resume_checkpoint": "model_ep_550_step_74825.pt",                  
     "load_replay_memory": true,                 
 
