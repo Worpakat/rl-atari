@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/replay_experimental_0",
+    "experiment_dir": "experiments/agent/replay_experimental_1",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -31,8 +31,8 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [15000, 30000, 5000, 5000], 
-        "bucket_rates": [0.25, 0.50, 0.15, 0.1],         
+        "bucket_capacities": [15000, 20000, 5000, 5000], 
+        "bucket_rates": [0.35, 0.45, 0.1, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 7, 
@@ -48,7 +48,7 @@
     },
 
 
-    "resume_training": true,                   
+    "resume_training": false,                   
     "resume_checkpoint": "model_ep_150_step_20109.pt",                  
     "load_replay_memory": false,                 
 
