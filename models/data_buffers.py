@@ -772,6 +772,7 @@ class StratifiedReplayMemory():
     def load(
         self,
         save_directory: str | Path,
+        use_checkpoint_capacity: bool = True,
     ) -> None:
         """
         Loads a previously saved stratified replay memory.
@@ -794,7 +795,9 @@ class StratifiedReplayMemory():
         self.td_mean = metadata["td_mean"]
         self.td_std = metadata["td_std"]
         self.next_insert_id = metadata["next_insert_id"]
-        self.bucket_capacities = metadata["bucket_capacities"]
+
+        if use_checkpoint_capacity: # Use the saved bucket capacities from the checkpoint.
+            self.bucket_capacities = metadata["bucket_capacities"]
 
         # Calculate last TD boundries.
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier

@@ -990,7 +990,9 @@ class NECTrainer:
 
                     print(f"Replay memory directory: {replay_memory_dir}")
 
-                    self.replay_memory.load(replay_memory_dir)
+                    use_checkpoint_capacity = self.config.get("use_checkpoint_capacity", True)
+
+                    self.replay_memory.load(replay_memory_dir, use_checkpoint_capacity=use_checkpoint_capacity)
 
                 
             except Exception as err:
