@@ -1,5 +1,5 @@
 {
-    "colab_execution": false,
+    "colab_execution": true,
 
     "experiment_dir": "experiments/agent/test",
     "environment_name": "ALE/Riverraid-v5",    
@@ -48,15 +48,15 @@
     },
 
 
-    "resume_training": true,                   
+    "resume_training": false,                   
     "resume_checkpoint": "model_ep_10_step_624",                  
     "load_replay_memory": true,                 
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 10,
+    "checkpoint_period": 2,
     "save_replay_memory": true,
-    "replay_memory_chunk_size": 500,
+    "replay_memory_chunk_size": 5000,
     "log_batch_index": false,     
     "evaluation_period": 50,                   
     "evaluation_episodes": 3,                  
@@ -91,7 +91,7 @@
     "encoder_optimizer_kwargs": {},           
      
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 8,
+    "network_optimization_period": 32,
     "key_updates": true, 
 
 
