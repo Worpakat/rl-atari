@@ -939,6 +939,7 @@ class NECTrainer:
         model_checkpoint = self.checkpoint_manager.load(
             self.config.resume_checkpoint,
             map_location=self.device,
+            colab_execution=self.config.colab_execution
         )
 
         self.agent.load_checkpoint_state(model_checkpoint["model"])
