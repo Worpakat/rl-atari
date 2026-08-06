@@ -683,8 +683,6 @@ class NECTrainer:
                         all_batches.extend(batch)
                         all_td_errors_abs.extend(td_errors_abs)
 
-                        # print("After first turn extend()s", torch.cuda.memory_allocated() / 1024**3)
-
                         self.replay_memory.register_td_errors(td_errors_abs)
                         # We register all td errors in the first turn.
 
