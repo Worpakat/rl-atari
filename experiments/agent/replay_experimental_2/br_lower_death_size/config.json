@@ -31,8 +31,8 @@
     },
 
     "stratified_memory_kwargs": {
-        "bucket_capacities": [15000, 40000, 5000, 2000], 
-        "bucket_rates": [0.2, 0.5, 0.2, 0.1],         
+        "bucket_capacities": [15000, 40000, 5000, 3000], 
+        "bucket_rates": [0.2, 0.45, 0.25, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
@@ -93,7 +93,7 @@
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 16,
+    "network_optimization_period": 8,
     "key_updates": true, 
 
 
