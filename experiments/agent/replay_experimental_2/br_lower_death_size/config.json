@@ -1,5 +1,5 @@
 {
-    "colab_execution": true,
+    "colab_execution": false,
 
     "experiment_dir": "experiments/agent/replay_experimental_2/br_lower_death_size",
     "environment_name": "ALE/Riverraid-v5",    
@@ -93,7 +93,7 @@
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 4,
+    "network_optimization_period": 16,
     "key_updates": true, 
 
 
