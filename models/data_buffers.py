@@ -408,7 +408,7 @@ class StratifiedReplayMemory():
         """
 
         batch = []
-        last_td_index = 0
+        td_index_border = 0
 
         # ==========================================================
         # NEW transitions
@@ -426,13 +426,13 @@ class StratifiedReplayMemory():
 
         remaining = batch_size - new_count * self.add_new_times
 
-        last_td_index = new_count 
+        td_index_border = (new_count * (self.add_new_times - 1), new_count * self.add_new_times)  # This is the index border for TD stats calculation.
         # 'new_count' is the one plus of last index of new transitions,
         # transitions to be used for TD stats calculation.
 
         if remaining <= 0:
             # print("new return batch size:", len(batch))
-            return last_td_index, batch 
+            return td_index_border, batch 
 
         
         # ==========================================================
@@ -448,14 +448,14 @@ class StratifiedReplayMemory():
 
             remaining -= count
 
-            last_td_index = batch_size - remaining 
+            td_index_border = batch_size - remaining 
             # This one is most likely not required, but we keep it just in case.
             # Why is not it required?: 
             # -> It is very unlikely that there will be any trnasition in the warmup bucket after the first turn. 
 
             # If replay buckets are not initialized yet, simply return.
             if remaining == 0:
-                return last_td_index, batch
+                return td_index_border, batch
 
 
         # ==========================================================
@@ -556,7 +556,7 @@ class StratifiedReplayMemory():
                 
         # print("Last return Batch size:", len(batch))
 
-        return last_td_index, batch 
+        return td_index_border, batch 
         # We return indices and batch from same name function of ReplayMemory.
         # To not break the training code, we return None for indices here since they are not used in stratified replay.
 
