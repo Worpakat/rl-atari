@@ -265,6 +265,7 @@ class StratifiedReplayMemory():
         td_statistics_beta: float,
         td_std_multiplier: float = 1.0,
         death_window: int = 15,
+        add_new_times: int = 1,
         verbose: bool = False,
     ):
         super().__init__()
@@ -317,6 +318,8 @@ class StratifiedReplayMemory():
         self.next_insert_id = 0
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
         
+        self.add_new_times = add_new_times # How many times to add new transitions to the batch during sampling. 
+
         self._new_index = 0 # Used to track _new_bucket sampling progress.
         
         self.verbose = verbose # For reporting
@@ -413,16 +416,17 @@ class StratifiedReplayMemory():
 
         new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
-        for i in range(self._new_index, self._new_index + new_count):
-            batch.append(self._new_bucket[i])
+        for _ in range(self.add_new_times): # Add new transitions multiple times to the batch.
+            for i in range(self._new_index, self._new_index + new_count):
+                batch.append(self._new_bucket[i])
 
 
         if self.first_turn:        
             self._new_index += new_count
 
-        remaining = batch_size - new_count
+        remaining = batch_size - new_count * self.add_new_times
 
-        last_td_index = batch_size - remaining  # = new_count 
+        last_td_index = new_count 
         # 'new_count' is the one plus of last index of new transitions,
         # transitions to be used for TD stats calculation.
 
@@ -568,7 +572,21 @@ class StratifiedReplayMemory():
         Death transitions are always kept inside the death bucket and are
         never classified by TD error.
         """
+        new_transitions_count = 0
+        # Determine how many is there new transitions at the beginning
+        for transition in transitions:
+            if transition.bucket == ReplayBucketType.NEW:
+                new_transitions_count += 1
+            else:
+                break
 
+        # We only want to move the last added new transitions to their corresponding buckets.
+        start_index = new_transitions_count / self.add_new_times 
+        start_index = int((self.add_new_times-1) * new_transitions_count)
+
+        transitions = transitions[start_index:]
+        td_errors_abs = td_errors_abs[start_index:]
+        
         for transition, td_error in zip(transitions, td_errors_abs):
 
             # ------------------------------------------------------

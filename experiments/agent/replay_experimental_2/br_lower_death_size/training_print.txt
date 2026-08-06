@@ -1,0 +1,1433 @@
+# "bucket_capacities": [15000, 40000, 5000, 3000], 
+# "bucket_rates": [0.15, 0.5, 0.25, 0.1] 
+# "network_optimization_period": 8
+# Ep 150-200
+
+A.L.E: Arcade Learning Environment (version 0.11.2+ecc1138)
+[Powered by Stella]
+Loading checkpoint...
+Current epsilon: 0.05000000074505806
+Replay memory directory: experiments/agent/replay_experimental_2/br_lower_death_size/checkpoints/rep_memo_ep_150_step_20873
+Loaded replay memory:
+  Low:    2347
+  Medium: 40000
+  High:   79
+  Death:  4340
+Checkpoint restored (episode=150, optimization_step=20873, environment_step=112769)epsilon=0.05000000074505806
+Starting training...
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7945 | Std TD-error: 0.7661
+Bucket Sizes and Rates:
+Low: 2528, 5.54% | Medium: 40000, 87.73% | High: 64, 0.14% | Death: 3000, 6.58% | New: 0, |Warmup: 0, |Total: 45592
+Episode 151, optimization step 20941, is fnished.
+{'optimization_step': 20940, 'global_step': 113481, 'episode': 151, 'total_reward': -12.113731309753364, 'total_loss': 0.9528114199638367, 'td_loss': 0.9528114199638367, 'kl_loss': 0.0, 'total_dnd_inserts': 538, 'total_dnd_updates': 50000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 61 times.
+Replay Buffer | Mean TD-error: 0.8040 | Std TD-error: 0.7676
+Bucket Sizes and Rates:
+Low: 2629, 5.75% | Medium: 40000, 87.48% | High: 94, 0.21% | Death: 3000, 6.56% | New: 0, |Warmup: 0, |Total: 45723
+Episode 152, optimization step 21002, is fnished.
+{'optimization_step': 21001, 'global_step': 114135, 'episode': 152, 'total_reward': -12.881230632899205, 'total_loss': 1.6014764308929443, 'td_loss': 1.6014764308929443, 'kl_loss': 0.0, 'total_dnd_inserts': 480, 'total_dnd_updates': 45100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 46 times.
+Replay Buffer | Mean TD-error: 0.8081 | Std TD-error: 0.7639
+Bucket Sizes and Rates:
+Low: 2721, 5.94% | Medium: 40000, 87.32% | High: 86, 0.19% | Death: 3000, 6.55% | New: 0, |Warmup: 0, |Total: 45807
+Episode 153, optimization step 21048, is fnished.
+{'optimization_step': 21047, 'global_step': 114674, 'episode': 153, 'total_reward': -13.723048325990927, 'total_loss': 1.5356147289276123, 'td_loss': 1.5356147289276123, 'kl_loss': 0.0, 'total_dnd_inserts': 365, 'total_dnd_updates': 34700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 81 times.
+Replay Buffer | Mean TD-error: 0.8171 | Std TD-error: 0.7776
+Bucket Sizes and Rates:
+Low: 2908, 6.32% | Medium: 40000, 86.92% | High: 112, 0.24% | Death: 3000, 6.52% | New: 0, |Warmup: 0, |Total: 46020
+Episode 154, optimization step 21129, is fnished.
+{'optimization_step': 21128, 'global_step': 115491, 'episode': 154, 'total_reward': -10.205790086235899, 'total_loss': 1.129094123840332, 'td_loss': 1.129094123840332, 'kl_loss': 0.0, 'total_dnd_inserts': 643, 'total_dnd_updates': 61200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 57 times.
+Replay Buffer | Mean TD-error: 0.8123 | Std TD-error: 0.7702
+Bucket Sizes and Rates:
+Low: 2962, 6.44% | Medium: 40000, 86.90% | High: 66, 0.14% | Death: 3000, 6.52% | New: 0, |Warmup: 0, |Total: 46028
+Episode 155, optimization step 21186, is fnished.
+{'optimization_step': 21185, 'global_step': 116118, 'episode': 155, 'total_reward': -12.140529502908088, 'total_loss': 1.3237051963806152, 'td_loss': 1.3237051963806152, 'kl_loss': 0.0, 'total_dnd_inserts': 453, 'total_dnd_updates': 43200}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1146.6666259765625, 'std_reward': 180.80068969726562, 'max_reward': 1400.0, 'min_reward': 990.0, 'mean_episode_length': 734.6666870117188, 'std_episode_length': 153.98989868164062, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 43 times.
+Replay Buffer | Mean TD-error: 0.8080 | Std TD-error: 0.7685
+Bucket Sizes and Rates:
+Low: 3050, 6.62% | Medium: 40000, 86.77% | High: 48, 0.10% | Death: 3000, 6.51% | New: 0, |Warmup: 0, |Total: 46098
+Episode 156, optimization step 21229, is fnished.
+{'optimization_step': 21228, 'global_step': 116633, 'episode': 156, 'total_reward': -14.898621655795164, 'total_loss': 1.207279920578003, 'td_loss': 1.207279920578003, 'kl_loss': 0.0, 'total_dnd_inserts': 341, 'total_dnd_updates': 32600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.8010 | Std TD-error: 0.7626
+Bucket Sizes and Rates:
+Low: 3155, 6.83% | Medium: 40000, 86.59% | High: 38, 0.08% | Death: 3000, 6.49% | New: 0, |Warmup: 0, |Total: 46193
+Episode 157, optimization step 21282, is fnished.
+{'optimization_step': 21281, 'global_step': 117225, 'episode': 157, 'total_reward': -14.581532491638425, 'total_loss': 1.8198765516281128, 'td_loss': 1.8198765516281128, 'kl_loss': 0.0, 'total_dnd_inserts': 418, 'total_dnd_updates': 39700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 56 times.
+Replay Buffer | Mean TD-error: 0.7971 | Std TD-error: 0.7577
+Bucket Sizes and Rates:
+Low: 3269, 7.06% | Medium: 40000, 86.35% | High: 56, 0.12% | Death: 3000, 6.48% | New: 0, |Warmup: 0, |Total: 46325
+Episode 158, optimization step 21338, is fnished.
+{'optimization_step': 21337, 'global_step': 117841, 'episode': 158, 'total_reward': -11.26358038038375, 'total_loss': 1.1279361248016357, 'td_loss': 1.1279361248016357, 'kl_loss': 0.0, 'total_dnd_inserts': 442, 'total_dnd_updates': 42200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 78 times.
+Replay Buffer | Mean TD-error: 0.7929 | Std TD-error: 0.7516
+Bucket Sizes and Rates:
+Low: 3434, 7.39% | Medium: 40000, 86.06% | High: 46, 0.10% | Death: 3000, 6.45% | New: 0, |Warmup: 0, |Total: 46480
+Episode 159, optimization step 21416, is fnished.
+{'optimization_step': 21415, 'global_step': 118636, 'episode': 159, 'total_reward': -10.801909987415907, 'total_loss': 1.3737577199935913, 'td_loss': 1.3737577199935913, 'kl_loss': 0.0, 'total_dnd_inserts': 621, 'total_dnd_updates': 58100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7907 | Std TD-error: 0.7494
+Bucket Sizes and Rates:
+Low: 3539, 7.60% | Medium: 39995, 85.85% | High: 52, 0.11% | Death: 3000, 6.44% | New: 0, |Warmup: 0, |Total: 46586
+Episode 160, optimization step 21471, is fnished.
+{'optimization_step': 21470, 'global_step': 119243, 'episode': 160, 'total_reward': -13.116796704211973, 'total_loss': 1.8743689060211182, 'td_loss': 1.8743689060211182, 'kl_loss': 0.0, 'total_dnd_inserts': 433, 'total_dnd_updates': 40700}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1123.3333740234375, 'std_reward': 165.19349670410156, 'max_reward': 1250.0, 'min_reward': 890.0, 'mean_episode_length': 698.0, 'std_episode_length': 103.74327087402344, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 52 times.
+Replay Buffer | Mean TD-error: 0.7869 | Std TD-error: 0.7463
+Bucket Sizes and Rates:
+Low: 3637, 7.79% | Medium: 39998, 85.66% | High: 60, 0.13% | Death: 3000, 6.42% | New: 0, |Warmup: 0, |Total: 46695
+Episode 161, optimization step 21523, is fnished.
+{'optimization_step': 21522, 'global_step': 119832, 'episode': 161, 'total_reward': -13.912222733892335, 'total_loss': 0.9741586446762085, 'td_loss': 0.9741586446762085, 'kl_loss': 0.0, 'total_dnd_inserts': 415, 'total_dnd_updates': 39100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 96 times.
+Replay Buffer | Mean TD-error: 0.7922 | Std TD-error: 0.7578
+Bucket Sizes and Rates:
+Low: 3762, 8.02% | Medium: 39996, 85.30% | High: 130, 0.28% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46888
+Episode 162, optimization step 21619, is fnished.
+{'optimization_step': 21618, 'global_step': 120769, 'episode': 162, 'total_reward': -10.702591908636359, 'total_loss': 1.448638916015625, 'td_loss': 1.448638916015625, 'kl_loss': 0.0, 'total_dnd_inserts': 763, 'total_dnd_updates': 71800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 75 times.
+Replay Buffer | Mean TD-error: 0.7933 | Std TD-error: 0.7565
+Bucket Sizes and Rates:
+Low: 3828, 8.15% | Medium: 39996, 85.17% | High: 138, 0.29% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46962
+Episode 163, optimization step 21694, is fnished.
+{'optimization_step': 21693, 'global_step': 121537, 'episode': 163, 'total_reward': -12.176789445720502, 'total_loss': 1.1671093702316284, 'td_loss': 1.1671093702316284, 'kl_loss': 0.0, 'total_dnd_inserts': 594, 'total_dnd_updates': 57400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 52 times.
+Replay Buffer | Mean TD-error: 0.7970 | Std TD-error: 0.7597
+Bucket Sizes and Rates:
+Low: 3887, 8.26% | Medium: 40000, 85.05% | High: 144, 0.31% | Death: 3000, 6.38% | New: 0, |Warmup: 0, |Total: 47031
+Episode 164, optimization step 21746, is fnished.
+{'optimization_step': 21745, 'global_step': 122121, 'episode': 164, 'total_reward': -14.518474355671287, 'total_loss': 1.3749631643295288, 'td_loss': 1.3749631643295288, 'kl_loss': 0.0, 'total_dnd_inserts': 410, 'total_dnd_updates': 39400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7958 | Std TD-error: 0.7677
+Bucket Sizes and Rates:
+Low: 3963, 8.42% | Medium: 40000, 85.02% | High: 87, 0.18% | Death: 3000, 6.38% | New: 0, |Warmup: 0, |Total: 47050
+Episode 165, optimization step 21814, is fnished.
+{'optimization_step': 21813, 'global_step': 122836, 'episode': 165, 'total_reward': -13.903889497614445, 'total_loss': 1.267917275428772, 'td_loss': 1.267917275428772, 'kl_loss': 0.0, 'total_dnd_inserts': 541, 'total_dnd_updates': 51300}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1076.6666259765625, 'std_reward': 94.63379669189453, 'max_reward': 1200.0, 'min_reward': 970.0, 'mean_episode_length': 806.3333129882812, 'std_episode_length': 186.2047882080078, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7971 | Std TD-error: 0.7711
+Bucket Sizes and Rates:
+Low: 3961, 8.41% | Medium: 40000, 84.98% | High: 110, 0.23% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47071
+Episode 166, optimization step 21881, is fnished.
+{'optimization_step': 21880, 'global_step': 123538, 'episode': 166, 'total_reward': -8.91243372077528, 'total_loss': 1.2420659065246582, 'td_loss': 1.2420659065246582, 'kl_loss': 0.0, 'total_dnd_inserts': 528, 'total_dnd_updates': 50500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 42 times.
+Replay Buffer | Mean TD-error: 0.7981 | Std TD-error: 0.7736
+Bucket Sizes and Rates:
+Low: 3992, 8.48% | Medium: 40000, 84.92% | High: 110, 0.23% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47102
+Episode 167, optimization step 21923, is fnished.
+{'optimization_step': 21922, 'global_step': 124041, 'episode': 167, 'total_reward': -15.694047685475526, 'total_loss': 1.2970163822174072, 'td_loss': 1.2970163822174072, 'kl_loss': 0.0, 'total_dnd_inserts': 329, 'total_dnd_updates': 31500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 54 times.
+Replay Buffer | Mean TD-error: 0.7913 | Std TD-error: 0.7635
+Bucket Sizes and Rates:
+Low: 4012, 8.52% | Medium: 40000, 84.92% | High: 89, 0.19% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47101
+Episode 168, optimization step 21977, is fnished.
+{'optimization_step': 21976, 'global_step': 124641, 'episode': 168, 'total_reward': -13.641525233146954, 'total_loss': 1.4659931659698486, 'td_loss': 1.4659931659698486, 'kl_loss': 0.0, 'total_dnd_inserts': 426, 'total_dnd_updates': 40500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 87 times.
+Replay Buffer | Mean TD-error: 0.7905 | Std TD-error: 0.7629
+Bucket Sizes and Rates:
+Low: 3993, 8.48% | Medium: 40000, 84.99% | High: 73, 0.16% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47066
+Episode 169, optimization step 22064, is fnished.
+{'optimization_step': 22063, 'global_step': 125504, 'episode': 169, 'total_reward': -11.525944644851245, 'total_loss': 1.2166024446487427, 'td_loss': 1.2166024446487427, 'kl_loss': 0.0, 'total_dnd_inserts': 689, 'total_dnd_updates': 64700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 75 times.
+Replay Buffer | Mean TD-error: 0.8057 | Std TD-error: 0.7824
+Bucket Sizes and Rates:
+Low: 4003, 8.49% | Medium: 40000, 84.85% | High: 139, 0.29% | Death: 3000, 6.36% | New: 0, |Warmup: 0, |Total: 47142
+Episode 170, optimization step 22139, is fnished.
+{'optimization_step': 22138, 'global_step': 126274, 'episode': 170, 'total_reward': -11.436561083716562, 'total_loss': 1.460400104522705, 'td_loss': 1.460400104522705, 'kl_loss': 0.0, 'total_dnd_inserts': 596, 'total_dnd_updates': 57000}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1520.0, 'std_reward': 148.5485382080078, 'max_reward': 1730.0, 'min_reward': 1410.0, 'mean_episode_length': 894.0, 'std_episode_length': 101.30152893066406, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 112 times.
+Replay Buffer | Mean TD-error: 0.8050 | Std TD-error: 0.7807
+Bucket Sizes and Rates:
+Low: 3952, 8.39% | Medium: 39998, 84.96% | High: 129, 0.27% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47079
+Episode 171, optimization step 22251, is fnished.
+{'optimization_step': 22250, 'global_step': 127343, 'episode': 171, 'total_reward': -6.301652591446084, 'total_loss': 2.6733806133270264, 'td_loss': 2.6733806133270264, 'kl_loss': 0.0, 'total_dnd_inserts': 895, 'total_dnd_updates': 84500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 90 times.
+Replay Buffer | Mean TD-error: 0.8087 | Std TD-error: 0.7915
+Bucket Sizes and Rates:
+Low: 3813, 8.12% | Medium: 40000, 85.17% | High: 154, 0.33% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46967
+Episode 172, optimization step 22341, is fnished.
+{'optimization_step': 22340, 'global_step': 128231, 'episode': 172, 'total_reward': -8.706395637364007, 'total_loss': 2.117314338684082, 'td_loss': 2.117314338684082, 'kl_loss': 0.0, 'total_dnd_inserts': 714, 'total_dnd_updates': 67600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.8143 | Std TD-error: 0.7926
+Bucket Sizes and Rates:
+Low: 3655, 7.80% | Medium: 40000, 85.39% | High: 190, 0.41% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46845
+Episode 173, optimization step 22409, is fnished.
+{'optimization_step': 22408, 'global_step': 128942, 'episode': 173, 'total_reward': -12.764105275661793, 'total_loss': 1.273248314857483, 'td_loss': 1.273248314857483, 'kl_loss': 0.0, 'total_dnd_inserts': 537, 'total_dnd_updates': 52000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 113 times.
+Replay Buffer | Mean TD-error: 0.8082 | Std TD-error: 0.7894
+Bucket Sizes and Rates:
+Low: 3558, 7.62% | Medium: 40000, 85.71% | High: 113, 0.24% | Death: 3000, 6.43% | New: 0, |Warmup: 0, |Total: 46671
+Episode 174, optimization step 22522, is fnished.
+{'optimization_step': 22521, 'global_step': 130012, 'episode': 174, 'total_reward': -13.73298284363579, 'total_loss': 1.050714373588562, 'td_loss': 1.050714373588562, 'kl_loss': 0.0, 'total_dnd_inserts': 896, 'total_dnd_updates': 85000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 37 times.
+Replay Buffer | Mean TD-error: 0.8048 | Std TD-error: 0.7858
+Bucket Sizes and Rates:
+Low: 3527, 7.56% | Medium: 40000, 85.75% | High: 122, 0.26% | Death: 3000, 6.43% | New: 0, |Warmup: 0, |Total: 46649
+Episode 175, optimization step 22559, is fnished.
+{'optimization_step': 22558, 'global_step': 130481, 'episode': 175, 'total_reward': -14.843896756105918, 'total_loss': 1.3912768363952637, 'td_loss': 1.3912768363952637, 'kl_loss': 0.0, 'total_dnd_inserts': 295, 'total_dnd_updates': 28700}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1256.6666259765625, 'std_reward': 193.96449279785156, 'max_reward': 1530.0, 'min_reward': 1100.0, 'mean_episode_length': 644.3333129882812, 'std_episode_length': 48.623268127441406, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 81 times.
+Replay Buffer | Mean TD-error: 0.8057 | Std TD-error: 0.7882
+Bucket Sizes and Rates:
+Low: 3446, 7.40% | Medium: 40000, 85.92% | High: 107, 0.23% | Death: 3000, 6.44% | New: 0, |Warmup: 0, |Total: 46553
+Episode 176, optimization step 22640, is fnished.
+{'optimization_step': 22639, 'global_step': 131298, 'episode': 176, 'total_reward': -11.208855480694506, 'total_loss': 1.4687825441360474, 'td_loss': 1.4687825441360474, 'kl_loss': 0.0, 'total_dnd_inserts': 643, 'total_dnd_updates': 61000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 81 times.
+Replay Buffer | Mean TD-error: 0.8042 | Std TD-error: 0.7847
+Bucket Sizes and Rates:
+Low: 3384, 7.28% | Medium: 40000, 86.07% | High: 90, 0.19% | Death: 3000, 6.46% | New: 0, |Warmup: 0, |Total: 46474
+Episode 177, optimization step 22721, is fnished.
+{'optimization_step': 22720, 'global_step': 132119, 'episode': 177, 'total_reward': -7.357841604226963, 'total_loss': 1.4741358757019043, 'td_loss': 1.4741358757019043, 'kl_loss': 0.0, 'total_dnd_inserts': 647, 'total_dnd_updates': 60700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 74 times.
+Replay Buffer | Mean TD-error: 0.8003 | Std TD-error: 0.7766
+Bucket Sizes and Rates:
+Low: 3359, 7.23% | Medium: 40000, 86.11% | High: 92, 0.20% | Death: 3000, 6.46% | New: 0, |Warmup: 0, |Total: 46451
+Episode 178, optimization step 22795, is fnished.
+{'optimization_step': 22794, 'global_step': 132884, 'episode': 178, 'total_reward': -10.621068815792388, 'total_loss': 1.5606224536895752, 'td_loss': 1.5606224536895752, 'kl_loss': 0.0, 'total_dnd_inserts': 591, 'total_dnd_updates': 55900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.7970 | Std TD-error: 0.7720
+Bucket Sizes and Rates:
+Low: 3378, 7.27% | Medium: 40000, 86.10% | High: 82, 0.18% | Death: 3000, 6.46% | New: 0, |Warmup: 0, |Total: 46460
+Episode 179, optimization step 22859, is fnished.
+{'optimization_step': 22858, 'global_step': 133563, 'episode': 179, 'total_reward': -14.021672533270829, 'total_loss': 1.0611553192138672, 'td_loss': 1.0611553192138672, 'kl_loss': 0.0, 'total_dnd_inserts': 505, 'total_dnd_updates': 48700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 65 times.
+Replay Buffer | Mean TD-error: 0.7897 | Std TD-error: 0.7638
+Bucket Sizes and Rates:
+Low: 3449, 7.41% | Medium: 39997, 85.97% | High: 80, 0.17% | Death: 3000, 6.45% | New: 0, |Warmup: 0, |Total: 46526
+Episode 180, optimization step 22924, is fnished.
+{'optimization_step': 22923, 'global_step': 134255, 'episode': 180, 'total_reward': -14.373893126860182, 'total_loss': 1.2943347692489624, 'td_loss': 1.2943347692489624, 'kl_loss': 0.0, 'total_dnd_inserts': 518, 'total_dnd_updates': 49200}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1203.3333740234375, 'std_reward': 47.84233474731445, 'max_reward': 1270.0, 'min_reward': 1160.0, 'mean_episode_length': 662.6666870117188, 'std_episode_length': 23.697162628173828, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 51 times.
+Replay Buffer | Mean TD-error: 0.7922 | Std TD-error: 0.7641
+Bucket Sizes and Rates:
+Low: 3472, 7.46% | Medium: 40000, 85.90% | High: 92, 0.20% | Death: 3000, 6.44% | New: 0, |Warmup: 0, |Total: 46564
+Episode 181, optimization step 22975, is fnished.
+{'optimization_step': 22974, 'global_step': 134831, 'episode': 181, 'total_reward': -12.113731309753364, 'total_loss': 1.2946289777755737, 'td_loss': 1.2946289777755737, 'kl_loss': 0.0, 'total_dnd_inserts': 402, 'total_dnd_updates': 38000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 58 times.
+Replay Buffer | Mean TD-error: 0.7917 | Std TD-error: 0.7604
+Bucket Sizes and Rates:
+Low: 3504, 7.52% | Medium: 40000, 85.81% | High: 109, 0.23% | Death: 3000, 6.44% | New: 0, |Warmup: 0, |Total: 46613
+Episode 182, optimization step 23033, is fnished.
+{'optimization_step': 23032, 'global_step': 135464, 'episode': 182, 'total_reward': -11.65206091678552, 'total_loss': 1.282701849937439, 'td_loss': 1.282701849937439, 'kl_loss': 0.0, 'total_dnd_inserts': 459, 'total_dnd_updates': 43600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.7836 | Std TD-error: 0.7519
+Bucket Sizes and Rates:
+Low: 3577, 7.67% | Medium: 40000, 85.72% | High: 86, 0.18% | Death: 3000, 6.43% | New: 0, |Warmup: 0, |Total: 46663
+Episode 183, optimization step 23097, is fnished.
+{'optimization_step': 23096, 'global_step': 136149, 'episode': 183, 'total_reward': -12.465951903342717, 'total_loss': 1.4494487047195435, 'td_loss': 1.4494487047195435, 'kl_loss': 0.0, 'total_dnd_inserts': 511, 'total_dnd_updates': 48300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 104 times.
+Replay Buffer | Mean TD-error: 0.7806 | Std TD-error: 0.7496
+Bucket Sizes and Rates:
+Low: 3696, 7.90% | Medium: 39999, 85.48% | High: 98, 0.21% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46793
+Episode 184, optimization step 23201, is fnished.
+{'optimization_step': 23200, 'global_step': 137147, 'episode': 184, 'total_reward': -9.62633665761167, 'total_loss': 1.217128038406372, 'td_loss': 1.217128038406372, 'kl_loss': 0.0, 'total_dnd_inserts': 824, 'total_dnd_updates': 77400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 115 times.
+Replay Buffer | Mean TD-error: 0.7791 | Std TD-error: 0.7519
+Bucket Sizes and Rates:
+Low: 3770, 8.04% | Medium: 40000, 85.31% | High: 119, 0.25% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46889
+Episode 185, optimization step 23316, is fnished.
+{'optimization_step': 23315, 'global_step': 138240, 'episode': 185, 'total_reward': -7.510756069315961, 'total_loss': 1.3080189228057861, 'td_loss': 1.3080189228057861, 'kl_loss': 0.0, 'total_dnd_inserts': 919, 'total_dnd_updates': 86200}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1243.3333740234375, 'std_reward': 59.06681442260742, 'max_reward': 1290.0, 'min_reward': 1160.0, 'mean_episode_length': 661.0, 'std_episode_length': 38.401390075683594, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 91 times.
+Replay Buffer | Mean TD-error: 0.7834 | Std TD-error: 0.7677
+Bucket Sizes and Rates:
+Low: 3728, 7.95% | Medium: 40000, 85.29% | High: 172, 0.37% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46900
+Episode 186, optimization step 23407, is fnished.
+{'optimization_step': 23406, 'global_step': 139141, 'episode': 186, 'total_reward': -11.471219745161997, 'total_loss': 1.2778578996658325, 'td_loss': 1.2778578996658325, 'kl_loss': 0.0, 'total_dnd_inserts': 727, 'total_dnd_updates': 68000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 57 times.
+Replay Buffer | Mean TD-error: 0.7874 | Std TD-error: 0.7688
+Bucket Sizes and Rates:
+Low: 3629, 7.75% | Medium: 40000, 85.47% | High: 173, 0.37% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46802
+Episode 187, optimization step 23464, is fnished.
+{'optimization_step': 23463, 'global_step': 139767, 'episode': 187, 'total_reward': -12.195254402597335, 'total_loss': 1.8365373611450195, 'td_loss': 1.8365373611450195, 'kl_loss': 0.0, 'total_dnd_inserts': 452, 'total_dnd_updates': 43500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 54 times.
+Replay Buffer | Mean TD-error: 0.7922 | Std TD-error: 0.7685
+Bucket Sizes and Rates:
+Low: 3558, 7.61% | Medium: 40000, 85.50% | High: 224, 0.48% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46782
+Episode 188, optimization step 23518, is fnished.
+{'optimization_step': 23517, 'global_step': 140365, 'episode': 188, 'total_reward': -11.028014309070988, 'total_loss': 1.734161615371704, 'td_loss': 1.734161615371704, 'kl_loss': 0.0, 'total_dnd_inserts': 424, 'total_dnd_updates': 40500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.7869 | Std TD-error: 0.7586
+Bucket Sizes and Rates:
+Low: 3522, 7.54% | Medium: 40000, 85.61% | High: 199, 0.43% | Death: 3000, 6.42% | New: 0, |Warmup: 0, |Total: 46721
+Episode 189, optimization step 23571, is fnished.
+{'optimization_step': 23570, 'global_step': 140956, 'episode': 189, 'total_reward': -14.52680759194918, 'total_loss': 1.4106724262237549, 'td_loss': 1.4106724262237549, 'kl_loss': 0.0, 'total_dnd_inserts': 417, 'total_dnd_updates': 39600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 62 times.
+Replay Buffer | Mean TD-error: 0.7827 | Std TD-error: 0.7525
+Bucket Sizes and Rates:
+Low: 3567, 7.63% | Medium: 40000, 85.56% | High: 182, 0.39% | Death: 3000, 6.42% | New: 0, |Warmup: 0, |Total: 46749
+Episode 190, optimization step 23633, is fnished.
+{'optimization_step': 23632, 'global_step': 141619, 'episode': 190, 'total_reward': -13.234579739868357, 'total_loss': 1.5103693008422852, 'td_loss': 1.5103693008422852, 'kl_loss': 0.0, 'total_dnd_inserts': 489, 'total_dnd_updates': 46100}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1090.0, 'std_reward': 206.0744171142578, 'max_reward': 1380.0, 'min_reward': 920.0, 'mean_episode_length': 828.6666870117188, 'std_episode_length': 138.8580322265625, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 63 times.
+Replay Buffer | Mean TD-error: 0.7755 | Std TD-error: 0.7424
+Bucket Sizes and Rates:
+Low: 3602, 7.70% | Medium: 40000, 85.53% | High: 167, 0.36% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46769
+Episode 191, optimization step 23696, is fnished.
+{'optimization_step': 23695, 'global_step': 142296, 'episode': 191, 'total_reward': -12.99901366855559, 'total_loss': 1.1694309711456299, 'td_loss': 1.1694309711456299, 'kl_loss': 0.0, 'total_dnd_inserts': 503, 'total_dnd_updates': 47000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7710 | Std TD-error: 0.7356
+Bucket Sizes and Rates:
+Low: 3671, 7.84% | Medium: 39997, 85.37% | High: 181, 0.39% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46849
+Episode 192, optimization step 23763, is fnished.
+{'optimization_step': 23762, 'global_step': 142998, 'episode': 192, 'total_reward': -12.16845620944261, 'total_loss': 1.2028071880340576, 'td_loss': 1.2028071880340576, 'kl_loss': 0.0, 'total_dnd_inserts': 528, 'total_dnd_updates': 51000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7700 | Std TD-error: 0.7326
+Bucket Sizes and Rates:
+Low: 3740, 7.97% | Medium: 39996, 85.19% | High: 212, 0.45% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46948
+Episode 193, optimization step 23831, is fnished.
+{'optimization_step': 23830, 'global_step': 143708, 'episode': 193, 'total_reward': -12.474285139620605, 'total_loss': 1.4355695247650146, 'td_loss': 1.4355695247650146, 'kl_loss': 0.0, 'total_dnd_inserts': 536, 'total_dnd_updates': 50500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 82 times.
+Replay Buffer | Mean TD-error: 0.7741 | Std TD-error: 0.7459
+Bucket Sizes and Rates:
+Low: 3774, 8.03% | Medium: 40000, 85.08% | High: 239, 0.51% | Death: 3000, 6.38% | New: 0, |Warmup: 0, |Total: 47013
+Episode 194, optimization step 23913, is fnished.
+{'optimization_step': 23912, 'global_step': 144532, 'episode': 194, 'total_reward': -15.370226566407872, 'total_loss': 1.28292977809906, 'td_loss': 1.28292977809906, 'kl_loss': 0.0, 'total_dnd_inserts': 650, 'total_dnd_updates': 62100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 94 times.
+Replay Buffer | Mean TD-error: 0.7768 | Std TD-error: 0.7461
+Bucket Sizes and Rates:
+Low: 3707, 7.89% | Medium: 39997, 85.15% | High: 271, 0.58% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46975
+Episode 195, optimization step 24007, is fnished.
+{'optimization_step': 24006, 'global_step': 145455, 'episode': 195, 'total_reward': -9.790984124666586, 'total_loss': 1.333228588104248, 'td_loss': 1.333228588104248, 'kl_loss': 0.0, 'total_dnd_inserts': 749, 'total_dnd_updates': 70600}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 996.6666870117188, 'std_reward': 341.79266357421875, 'max_reward': 1480.0, 'min_reward': 750.0, 'mean_episode_length': 656.3333129882812, 'std_episode_length': 151.86911010742188, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 51 times.
+Replay Buffer | Mean TD-error: 0.7859 | Std TD-error: 0.7557
+Bucket Sizes and Rates:
+Low: 3625, 7.72% | Medium: 40000, 85.20% | High: 324, 0.69% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46949
+Episode 196, optimization step 24058, is fnished.
+{'optimization_step': 24057, 'global_step': 146034, 'episode': 196, 'total_reward': -14.221451429758359, 'total_loss': 1.204185962677002, 'td_loss': 1.204185962677002, 'kl_loss': 0.0, 'total_dnd_inserts': 405, 'total_dnd_updates': 39100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 45 times.
+Replay Buffer | Mean TD-error: 0.7860 | Std TD-error: 0.7530
+Bucket Sizes and Rates:
+Low: 3579, 7.63% | Medium: 40000, 85.30% | High: 316, 0.67% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46895
+Episode 197, optimization step 24103, is fnished.
+{'optimization_step': 24102, 'global_step': 146562, 'episode': 197, 'total_reward': -12.935955532588451, 'total_loss': 1.5389641523361206, 'td_loss': 1.5389641523361206, 'kl_loss': 0.0, 'total_dnd_inserts': 354, 'total_dnd_updates': 33700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.7828 | Std TD-error: 0.7472
+Bucket Sizes and Rates:
+Low: 3551, 7.58% | Medium: 40000, 85.34% | High: 321, 0.68% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46872
+Episode 198, optimization step 24156, is fnished.
+{'optimization_step': 24155, 'global_step': 147153, 'episode': 198, 'total_reward': -13.523742197490572, 'total_loss': 1.4974240064620972, 'td_loss': 1.4974240064620972, 'kl_loss': 0.0, 'total_dnd_inserts': 417, 'total_dnd_updates': 40300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 118 times.
+Replay Buffer | Mean TD-error: 0.7792 | Std TD-error: 0.7483
+Bucket Sizes and Rates:
+Low: 3529, 7.53% | Medium: 40000, 85.38% | High: 321, 0.69% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46850
+Episode 199, optimization step 24274, is fnished.
+{'optimization_step': 24273, 'global_step': 148266, 'episode': 199, 'total_reward': -9.211057928055181, 'total_loss': 1.854325771331787, 'td_loss': 1.854325771331787, 'kl_loss': 0.0, 'total_dnd_inserts': 939, 'total_dnd_updates': 90200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 65 times.
+Replay Buffer | Mean TD-error: 0.7755 | Std TD-error: 0.7423
+Bucket Sizes and Rates:
+Low: 3545, 7.57% | Medium: 40000, 85.40% | High: 291, 0.62% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46836
+Episode 200, optimization step 24339, is fnished.
+{'optimization_step': 24338, 'global_step': 148958, 'episode': 200, 'total_reward': -13.143594897366697, 'total_loss': 1.1877179145812988, 'td_loss': 1.1877179145812988, 'kl_loss': 0.0, 'total_dnd_inserts': 518, 'total_dnd_updates': 50000}
+
+Saving model...
+Replay memory states total size: 5031.2109375 MB
+Saving replay memory...
+Checkpoint check: Checkpoint model_ep_200_step_24339.pt saved.
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1103.3333740234375, 'std_reward': 63.420989990234375, 'max_reward': 1190.0, 'min_reward': 1040.0, 'mean_episode_length': 661.0, 'std_episode_length': 71.05397033691406, 'num_episodes': 3}
+
+----------------------
+
+# "bucket_capacities": [15000, 40000, 5000, 3000], 
+# "bucket_rates": [0.2, 0.5, 0.2, 0.1] 
+# "network_optimization_period": 8
+# Ep 200-250
+
+A.L.E: Arcade Learning Environment (version 0.11.2+ecc1138)
+[Powered by Stella]
+Loading checkpoint...
+Current epsilon: 0.05000000074505806
+Replay memory directory: experiments/agent/replay_experimental_2/br_lower_death_size/checkpoints/rep_memo_ep_200_step_24339
+Loaded replay memory:
+  Low:    3545
+  Medium: 40000
+  High:   291
+  Death:  3000
+Checkpoint restored (episode=200, optimization_step=24339, environment_step=148958)epsilon=0.05000000074505806
+Starting training...
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 54 times.
+Replay Buffer | Mean TD-error: 0.7799 | Std TD-error: 0.7410
+Bucket Sizes and Rates:
+Low: 3476, 7.42% | Medium: 40000, 85.44% | High: 341, 0.73% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46817
+Episode 201, optimization step 24393, is fnished.
+{'optimization_step': 24392, 'global_step': 149561, 'episode': 201, 'total_reward': -11.733584009629489, 'total_loss': 1.2904655933380127, 'td_loss': 1.2904655933380127, 'kl_loss': 0.0, 'total_dnd_inserts': 429, 'total_dnd_updates': 40800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 44 times.
+Replay Buffer | Mean TD-error: 0.7815 | Std TD-error: 0.7390
+Bucket Sizes and Rates:
+Low: 3444, 7.36% | Medium: 40000, 85.45% | High: 367, 0.78% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46811
+Episode 202, optimization step 24437, is fnished.
+{'optimization_step': 24436, 'global_step': 150084, 'episode': 202, 'total_reward': -12.67359126812096, 'total_loss': 1.0046119689941406, 'td_loss': 1.0046119689941406, 'kl_loss': 0.0, 'total_dnd_inserts': 349, 'total_dnd_updates': 32100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.7772 | Std TD-error: 0.7312
+Bucket Sizes and Rates:
+Low: 3456, 7.39% | Medium: 40000, 85.48% | High: 339, 0.72% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46795
+Episode 203, optimization step 24490, is fnished.
+{'optimization_step': 24489, 'global_step': 150678, 'episode': 203, 'total_reward': -13.198319797055943, 'total_loss': 1.0374782085418701, 'td_loss': 1.0374782085418701, 'kl_loss': 0.0, 'total_dnd_inserts': 420, 'total_dnd_updates': 40500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.7754 | Std TD-error: 0.7246
+Bucket Sizes and Rates:
+Low: 3468, 7.41% | Medium: 40000, 85.44% | High: 350, 0.75% | Death: 3000, 6.41% | New: 0, |Warmup: 0, |Total: 46818
+Episode 204, optimization step 24543, is fnished.
+{'optimization_step': 24542, 'global_step': 151273, 'episode': 204, 'total_reward': -12.08580460321884, 'total_loss': 1.5859452486038208, 'td_loss': 1.5859452486038208, 'kl_loss': 0.0, 'total_dnd_inserts': 421, 'total_dnd_updates': 38600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7718 | Std TD-error: 0.7249
+Bucket Sizes and Rates:
+Low: 3507, 7.48% | Medium: 39999, 85.34% | High: 363, 0.77% | Death: 3000, 6.40% | New: 0, |Warmup: 0, |Total: 46869
+Episode 205, optimization step 24612, is fnished.
+{'optimization_step': 24611, 'global_step': 151998, 'episode': 205, 'total_reward': -10.702591908636359, 'total_loss': 1.4564129114151, 'td_loss': 1.4564129114151, 'kl_loss': 0.0, 'total_dnd_inserts': 551, 'total_dnd_updates': 52100}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1163.3333740234375, 'std_reward': 143.83631896972656, 'max_reward': 1270.0, 'min_reward': 960.0, 'mean_episode_length': 599.6666870117188, 'std_episode_length': 11.323525428771973, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 77 times.
+Replay Buffer | Mean TD-error: 0.7736 | Std TD-error: 0.7272
+Bucket Sizes and Rates:
+Low: 3540, 7.54% | Medium: 40000, 85.17% | High: 423, 0.90% | Death: 3000, 6.39% | New: 0, |Warmup: 0, |Total: 46963
+Episode 206, optimization step 24689, is fnished.
+{'optimization_step': 24688, 'global_step': 152780, 'episode': 206, 'total_reward': -10.177863379701378, 'total_loss': 0.9983961582183838, 'td_loss': 0.9983961582183838, 'kl_loss': 0.0, 'total_dnd_inserts': 608, 'total_dnd_updates': 58200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 96 times.
+Replay Buffer | Mean TD-error: 0.7708 | Std TD-error: 0.7201
+Bucket Sizes and Rates:
+Low: 3623, 7.70% | Medium: 39996, 84.98% | High: 444, 0.94% | Death: 3000, 6.37% | New: 0, |Warmup: 0, |Total: 47063
+Episode 207, optimization step 24785, is fnished.
+{'optimization_step': 24784, 'global_step': 153715, 'episode': 207, 'total_reward': -13.324436068990217, 'total_loss': 1.2277581691741943, 'td_loss': 1.2277581691741943, 'kl_loss': 0.0, 'total_dnd_inserts': 761, 'total_dnd_updates': 72900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7685 | Std TD-error: 0.7167
+Bucket Sizes and Rates:
+Low: 3718, 7.88% | Medium: 40000, 84.77% | High: 468, 0.99% | Death: 3000, 6.36% | New: 0, |Warmup: 0, |Total: 47186
+Episode 208, optimization step 24853, is fnished.
+{'optimization_step': 24852, 'global_step': 154425, 'episode': 208, 'total_reward': -14.11152886239269, 'total_loss': 0.8183894157409668, 'td_loss': 0.8183894157409668, 'kl_loss': 0.0, 'total_dnd_inserts': 536, 'total_dnd_updates': 50900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 93 times.
+Replay Buffer | Mean TD-error: 0.7633 | Std TD-error: 0.7103
+Bucket Sizes and Rates:
+Low: 3861, 8.15% | Medium: 39992, 84.47% | High: 493, 1.04% | Death: 3000, 6.34% | New: 0, |Warmup: 0, |Total: 47346
+Episode 209, optimization step 24946, is fnished.
+{'optimization_step': 24945, 'global_step': 155337, 'episode': 209, 'total_reward': -12.972215475400866, 'total_loss': 1.272399663925171, 'td_loss': 1.272399663925171, 'kl_loss': 0.0, 'total_dnd_inserts': 738, 'total_dnd_updates': 70000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7656 | Std TD-error: 0.7087
+Bucket Sizes and Rates:
+Low: 3945, 8.31% | Medium: 39997, 84.30% | High: 506, 1.07% | Death: 3000, 6.32% | New: 0, |Warmup: 0, |Total: 47448
+Episode 210, optimization step 25014, is fnished.
+{'optimization_step': 25013, 'global_step': 156052, 'episode': 210, 'total_reward': -10.232588279390624, 'total_loss': 1.2205431461334229, 'td_loss': 1.2205431461334229, 'kl_loss': 0.0, 'total_dnd_inserts': 541, 'total_dnd_updates': 51500}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1190.0, 'std_reward': 214.6314697265625, 'max_reward': 1380.0, 'min_reward': 890.0, 'mean_episode_length': 708.3333129882812, 'std_episode_length': 90.9847412109375, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 60 times.
+Replay Buffer | Mean TD-error: 0.7653 | Std TD-error: 0.7046
+Bucket Sizes and Rates:
+Low: 4044, 8.50% | Medium: 39999, 84.10% | High: 519, 1.09% | Death: 3000, 6.31% | New: 0, |Warmup: 0, |Total: 47562
+Episode 211, optimization step 25074, is fnished.
+{'optimization_step': 25073, 'global_step': 156703, 'episode': 211, 'total_reward': -13.93068769076917, 'total_loss': 1.2340970039367676, 'td_loss': 1.2340970039367676, 'kl_loss': 0.0, 'total_dnd_inserts': 477, 'total_dnd_updates': 46200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 74 times.
+Replay Buffer | Mean TD-error: 0.7662 | Std TD-error: 0.7012
+Bucket Sizes and Rates:
+Low: 4156, 8.71% | Medium: 39992, 83.80% | High: 577, 1.21% | Death: 3000, 6.29% | New: 0, |Warmup: 0, |Total: 47725
+Episode 212, optimization step 25148, is fnished.
+{'optimization_step': 25147, 'global_step': 157463, 'episode': 212, 'total_reward': -12.673591268120958, 'total_loss': 1.1922410726547241, 'td_loss': 1.1922410726547241, 'kl_loss': 0.0, 'total_dnd_inserts': 586, 'total_dnd_updates': 55200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 74 times.
+Replay Buffer | Mean TD-error: 0.7694 | Std TD-error: 0.7099
+Bucket Sizes and Rates:
+Low: 4307, 8.98% | Medium: 39996, 83.43% | High: 639, 1.33% | Death: 3000, 6.26% | New: 0, |Warmup: 0, |Total: 47942
+Episode 213, optimization step 25222, is fnished.
+{'optimization_step': 25221, 'global_step': 158221, 'episode': 213, 'total_reward': -11.733584009629489, 'total_loss': 0.9874523282051086, 'td_loss': 0.9874523282051086, 'kl_loss': 0.0, 'total_dnd_inserts': 584, 'total_dnd_updates': 56300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 78 times.
+Replay Buffer | Mean TD-error: 0.7767 | Std TD-error: 0.7273
+Bucket Sizes and Rates:
+Low: 4403, 9.15% | Medium: 39999, 83.09% | High: 740, 1.54% | Death: 3000, 6.23% | New: 0, |Warmup: 0, |Total: 48142
+Episode 214, optimization step 25300, is fnished.
+{'optimization_step': 25299, 'global_step': 159011, 'episode': 214, 'total_reward': -12.085804603218843, 'total_loss': 1.1888618469238281, 'td_loss': 1.1888618469238281, 'kl_loss': 0.0, 'total_dnd_inserts': 616, 'total_dnd_updates': 58800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 80 times.
+Replay Buffer | Mean TD-error: 0.7744 | Std TD-error: 0.7263
+Bucket Sizes and Rates:
+Low: 4438, 9.21% | Medium: 40000, 83.03% | High: 738, 1.53% | Death: 3000, 6.23% | New: 0, |Warmup: 0, |Total: 48176
+Episode 215, optimization step 25380, is fnished.
+{'optimization_step': 25379, 'global_step': 159821, 'episode': 215, 'total_reward': -10.476487586981278, 'total_loss': 0.907996416091919, 'td_loss': 0.907996416091919, 'kl_loss': 0.0, 'total_dnd_inserts': 636, 'total_dnd_updates': 60700}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1136.6666259765625, 'std_reward': 70.39570617675781, 'max_reward': 1230.0, 'min_reward': 1060.0, 'mean_episode_length': 755.3333129882812, 'std_episode_length': 61.44012451171875, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 76 times.
+Replay Buffer | Mean TD-error: 0.7749 | Std TD-error: 0.7219
+Bucket Sizes and Rates:
+Low: 4487, 9.31% | Medium: 39996, 82.97% | High: 723, 1.50% | Death: 3000, 6.22% | New: 0, |Warmup: 0, |Total: 48206
+Episode 216, optimization step 25456, is fnished.
+{'optimization_step': 25455, 'global_step': 160599, 'episode': 216, 'total_reward': -12.592068175276989, 'total_loss': 1.147425651550293, 'td_loss': 1.147425651550293, 'kl_loss': 0.0, 'total_dnd_inserts': 604, 'total_dnd_updates': 57100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 66 times.
+Replay Buffer | Mean TD-error: 0.7772 | Std TD-error: 0.7286
+Bucket Sizes and Rates:
+Low: 4525, 9.37% | Medium: 40000, 82.86% | High: 750, 1.55% | Death: 3000, 6.21% | New: 0, |Warmup: 0, |Total: 48275
+Episode 217, optimization step 25522, is fnished.
+{'optimization_step': 25521, 'global_step': 161299, 'episode': 217, 'total_reward': -12.673591268120962, 'total_loss': 1.2232260704040527, 'td_loss': 1.2232260704040527, 'kl_loss': 0.0, 'total_dnd_inserts': 526, 'total_dnd_updates': 49700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 40 times.
+Replay Buffer | Mean TD-error: 0.8072 | Std TD-error: 0.7553
+Bucket Sizes and Rates:
+Low: 4483, 9.28% | Medium: 40000, 82.84% | High: 801, 1.66% | Death: 3000, 6.21% | New: 0, |Warmup: 0, |Total: 48284
+Episode 218, optimization step 25562, is fnished.
+{'optimization_step': 25561, 'global_step': 161785, 'episode': 218, 'total_reward': -13.66832342630168, 'total_loss': 1.209672212600708, 'td_loss': 1.209672212600708, 'kl_loss': 0.0, 'total_dnd_inserts': 312, 'total_dnd_updates': 30100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 42 times.
+Replay Buffer | Mean TD-error: 0.8041 | Std TD-error: 0.7495
+Bucket Sizes and Rates:
+Low: 4482, 9.29% | Medium: 40000, 82.90% | High: 770, 1.60% | Death: 3000, 6.22% | New: 0, |Warmup: 0, |Total: 48252
+Episode 219, optimization step 25604, is fnished.
+{'optimization_step': 25603, 'global_step': 162287, 'episode': 219, 'total_reward': -15.431683421008035, 'total_loss': 0.9784693717956543, 'td_loss': 0.9784693717956543, 'kl_loss': 0.0, 'total_dnd_inserts': 328, 'total_dnd_updates': 31800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.8003 | Std TD-error: 0.7433
+Bucket Sizes and Rates:
+Low: 4512, 9.34% | Medium: 39998, 82.83% | High: 779, 1.61% | Death: 3000, 6.21% | New: 0, |Warmup: 0, |Total: 48289
+Episode 220, optimization step 25671, is fnished.
+{'optimization_step': 25670, 'global_step': 162992, 'episode': 220, 'total_reward': -12.5837349389991, 'total_loss': 0.9820780158042908, 'td_loss': 0.9820780158042908, 'kl_loss': 0.0, 'total_dnd_inserts': 531, 'total_dnd_updates': 51100}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1166.6666259765625, 'std_reward': 168.19300842285156, 'max_reward': 1360.0, 'min_reward': 950.0, 'mean_episode_length': 642.3333129882812, 'std_episode_length': 75.78185272216797, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 86 times.
+Replay Buffer | Mean TD-error: 0.7981 | Std TD-error: 0.7360
+Bucket Sizes and Rates:
+Low: 4583, 9.47% | Medium: 40000, 82.70% | High: 787, 1.63% | Death: 3000, 6.20% | New: 0, |Warmup: 0, |Total: 48370
+Episode 221, optimization step 25757, is fnished.
+{'optimization_step': 25756, 'global_step': 163851, 'episode': 221, 'total_reward': -11.398029888595918, 'total_loss': 1.0333449840545654, 'td_loss': 1.0333449840545654, 'kl_loss': 0.0, 'total_dnd_inserts': 685, 'total_dnd_updates': 65300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7971 | Std TD-error: 0.7283
+Bucket Sizes and Rates:
+Low: 4676, 9.65% | Medium: 40000, 82.56% | High: 775, 1.60% | Death: 3000, 6.19% | New: 0, |Warmup: 0, |Total: 48451
+Episode 222, optimization step 25826, is fnished.
+{'optimization_step': 25825, 'global_step': 164569, 'episode': 222, 'total_reward': -12.84609920346659, 'total_loss': 1.3813223838806152, 'td_loss': 1.3813223838806152, 'kl_loss': 0.0, 'total_dnd_inserts': 544, 'total_dnd_updates': 52300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7944 | Std TD-error: 0.7313
+Bucket Sizes and Rates:
+Low: 4764, 9.81% | Medium: 40000, 82.38% | High: 793, 1.63% | Death: 3000, 6.18% | New: 0, |Warmup: 0, |Total: 48557
+Episode 223, optimization step 25893, is fnished.
+{'optimization_step': 25892, 'global_step': 165277, 'episode': 223, 'total_reward': -13.379160968679464, 'total_loss': 1.462702989578247, 'td_loss': 1.462702989578247, 'kl_loss': 0.0, 'total_dnd_inserts': 534, 'total_dnd_updates': 50400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 66 times.
+Replay Buffer | Mean TD-error: 0.7954 | Std TD-error: 0.7361
+Bucket Sizes and Rates:
+Low: 4822, 9.92% | Medium: 39998, 82.27% | High: 799, 1.64% | Death: 3000, 6.17% | New: 0, |Warmup: 0, |Total: 48619
+Episode 224, optimization step 25959, is fnished.
+{'optimization_step': 25958, 'global_step': 165973, 'episode': 224, 'total_reward': -12.348168867686333, 'total_loss': 1.6036218404769897, 'td_loss': 1.6036218404769897, 'kl_loss': 0.0, 'total_dnd_inserts': 522, 'total_dnd_updates': 50300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 51 times.
+Replay Buffer | Mean TD-error: 0.7912 | Std TD-error: 0.7304
+Bucket Sizes and Rates:
+Low: 4883, 10.03% | Medium: 39997, 82.17% | High: 795, 1.63% | Death: 3000, 6.16% | New: 0, |Warmup: 0, |Total: 48675
+Episode 225, optimization step 26010, is fnished.
+{'optimization_step': 26009, 'global_step': 166549, 'episode': 225, 'total_reward': -15.431683421008037, 'total_loss': 1.051372766494751, 'td_loss': 1.051372766494751, 'kl_loss': 0.0, 'total_dnd_inserts': 402, 'total_dnd_updates': 37900}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1096.6666259765625, 'std_reward': 88.06562805175781, 'max_reward': 1220.0, 'min_reward': 1020.0, 'mean_episode_length': 583.0, 'std_episode_length': 65.0281982421875, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7908 | Std TD-error: 0.7251
+Bucket Sizes and Rates:
+Low: 4956, 10.17% | Medium: 40000, 82.05% | High: 797, 1.63% | Death: 3000, 6.15% | New: 0, |Warmup: 0, |Total: 48753
+Episode 226, optimization step 26065, is fnished.
+{'optimization_step': 26064, 'global_step': 167158, 'episode': 226, 'total_reward': -13.116796704211973, 'total_loss': 1.2049026489257812, 'td_loss': 1.2049026489257812, 'kl_loss': 0.0, 'total_dnd_inserts': 435, 'total_dnd_updates': 41200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 77 times.
+Replay Buffer | Mean TD-error: 0.7999 | Std TD-error: 0.7368
+Bucket Sizes and Rates:
+Low: 5013, 10.26% | Medium: 39997, 81.82% | High: 872, 1.78% | Death: 3000, 6.14% | New: 0, |Warmup: 0, |Total: 48882
+Episode 227, optimization step 26142, is fnished.
+{'optimization_step': 26141, 'global_step': 167947, 'episode': 227, 'total_reward': -9.646402895855477, 'total_loss': 1.3132994174957275, 'td_loss': 1.3132994174957275, 'kl_loss': 0.0, 'total_dnd_inserts': 615, 'total_dnd_updates': 58400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 116 times.
+Replay Buffer | Mean TD-error: 0.8013 | Std TD-error: 0.7418
+Bucket Sizes and Rates:
+Low: 5112, 10.43% | Medium: 39994, 81.61% | High: 900, 1.84% | Death: 3000, 6.12% | New: 0, |Warmup: 0, |Total: 49006
+Episode 228, optimization step 26258, is fnished.
+{'optimization_step': 26257, 'global_step': 169048, 'episode': 228, 'total_reward': -7.74519362724893, 'total_loss': 1.405999779701233, 'td_loss': 1.405999779701233, 'kl_loss': 0.0, 'total_dnd_inserts': 927, 'total_dnd_updates': 87000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 51 times.
+Replay Buffer | Mean TD-error: 0.8002 | Std TD-error: 0.7392
+Bucket Sizes and Rates:
+Low: 5162, 10.53% | Medium: 40000, 81.59% | High: 862, 1.76% | Death: 3000, 6.12% | New: 0, |Warmup: 0, |Total: 49024
+Episode 229, optimization step 26309, is fnished.
+{'optimization_step': 26308, 'global_step': 169626, 'episode': 229, 'total_reward': -12.321370674531607, 'total_loss': 1.3797463178634644, 'td_loss': 1.3797463178634644, 'kl_loss': 0.0, 'total_dnd_inserts': 404, 'total_dnd_updates': 38200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 47 times.
+Replay Buffer | Mean TD-error: 0.7980 | Std TD-error: 0.7353
+Bucket Sizes and Rates:
+Low: 5206, 10.61% | Medium: 40000, 81.48% | High: 884, 1.80% | Death: 3000, 6.11% | New: 0, |Warmup: 0, |Total: 49090
+Episode 230, optimization step 26356, is fnished.
+{'optimization_step': 26355, 'global_step': 170168, 'episode': 230, 'total_reward': -14.51847435567129, 'total_loss': 1.3503649234771729, 'td_loss': 1.3503649234771729, 'kl_loss': 0.0, 'total_dnd_inserts': 368, 'total_dnd_updates': 35100}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1313.3333740234375, 'std_reward': 106.56244659423828, 'max_reward': 1450.0, 'min_reward': 1190.0, 'mean_episode_length': 753.3333129882812, 'std_episode_length': 154.79090881347656, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 57 times.
+Replay Buffer | Mean TD-error: 0.7954 | Std TD-error: 0.7312
+Bucket Sizes and Rates:
+Low: 5276, 10.73% | Medium: 40000, 81.38% | High: 879, 1.79% | Death: 3000, 6.10% | New: 0, |Warmup: 0, |Total: 49155
+Episode 231, optimization step 26413, is fnished.
+{'optimization_step': 26412, 'global_step': 170792, 'episode': 231, 'total_reward': -12.854432439744482, 'total_loss': 1.2711185216903687, 'td_loss': 1.2711185216903687, 'kl_loss': 0.0, 'total_dnd_inserts': 450, 'total_dnd_updates': 43000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7946 | Std TD-error: 0.7264
+Bucket Sizes and Rates:
+Low: 5341, 10.85% | Medium: 39994, 81.25% | High: 889, 1.81% | Death: 3000, 6.09% | New: 0, |Warmup: 0, |Total: 49224
+Episode 232, optimization step 26480, is fnished.
+{'optimization_step': 26479, 'global_step': 171499, 'episode': 232, 'total_reward': -12.529010039309853, 'total_loss': 1.209018588066101, 'td_loss': 1.209018588066101, 'kl_loss': 0.0, 'total_dnd_inserts': 533, 'total_dnd_updates': 50600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7868 | Std TD-error: 0.7173
+Bucket Sizes and Rates:
+Low: 5465, 11.08% | Medium: 40000, 81.07% | High: 878, 1.78% | Death: 3000, 6.08% | New: 0, |Warmup: 0, |Total: 49343
+Episode 233, optimization step 26549, is fnished.
+{'optimization_step': 26548, 'global_step': 172220, 'episode': 233, 'total_reward': -11.906091944975119, 'total_loss': 1.1056126356124878, 'td_loss': 1.1056126356124878, 'kl_loss': 0.0, 'total_dnd_inserts': 547, 'total_dnd_updates': 50800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 57 times.
+Replay Buffer | Mean TD-error: 0.7858 | Std TD-error: 0.7133
+Bucket Sizes and Rates:
+Low: 5564, 11.25% | Medium: 39995, 80.90% | High: 878, 1.78% | Death: 3000, 6.07% | New: 0, |Warmup: 0, |Total: 49437
+Episode 234, optimization step 26606, is fnished.
+{'optimization_step': 26605, 'global_step': 172842, 'episode': 234, 'total_reward': -13.786106461958061, 'total_loss': 1.046517252922058, 'td_loss': 1.046517252922058, 'kl_loss': 0.0, 'total_dnd_inserts': 448, 'total_dnd_updates': 42400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 54 times.
+Replay Buffer | Mean TD-error: 0.7803 | Std TD-error: 0.7070
+Bucket Sizes and Rates:
+Low: 5684, 11.46% | Medium: 39996, 80.66% | High: 904, 1.82% | Death: 3000, 6.05% | New: 0, |Warmup: 0, |Total: 49584
+Episode 235, optimization step 26660, is fnished.
+{'optimization_step': 26659, 'global_step': 173446, 'episode': 235, 'total_reward': -13.460684061523434, 'total_loss': 1.4803657531738281, 'td_loss': 1.4803657531738281, 'kl_loss': 0.0, 'total_dnd_inserts': 430, 'total_dnd_updates': 40200}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1160.0, 'std_reward': 69.7614974975586, 'max_reward': 1250.0, 'min_reward': 1080.0, 'mean_episode_length': 652.6666870117188, 'std_episode_length': 87.1410140991211, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7756 | Std TD-error: 0.6993
+Bucket Sizes and Rates:
+Low: 5776, 11.63% | Medium: 39998, 80.51% | High: 906, 1.82% | Death: 3000, 6.04% | New: 0, |Warmup: 0, |Total: 49680
+Episode 236, optimization step 26715, is fnished.
+{'optimization_step': 26714, 'global_step': 174054, 'episode': 236, 'total_reward': -14.247776854925908, 'total_loss': 1.1224870681762695, 'td_loss': 1.1224870681762695, 'kl_loss': 0.0, 'total_dnd_inserts': 434, 'total_dnd_updates': 41100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7751 | Std TD-error: 0.7013
+Bucket Sizes and Rates:
+Low: 5863, 11.77% | Medium: 39998, 80.31% | High: 943, 1.89% | Death: 3000, 6.02% | New: 0, |Warmup: 0, |Total: 49804
+Episode 237, optimization step 26782, is fnished.
+{'optimization_step': 26781, 'global_step': 174759, 'episode': 237, 'total_reward': -11.878165238440598, 'total_loss': 1.197346806526184, 'td_loss': 1.197346806526184, 'kl_loss': 0.0, 'total_dnd_inserts': 531, 'total_dnd_updates': 50200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.7697 | Std TD-error: 0.6935
+Bucket Sizes and Rates:
+Low: 5999, 12.01% | Medium: 40000, 80.07% | High: 959, 1.92% | Death: 3000, 6.01% | New: 0, |Warmup: 0, |Total: 49958
+Episode 238, optimization step 26846, is fnished.
+{'optimization_step': 26845, 'global_step': 175440, 'episode': 238, 'total_reward': -11.589002780818381, 'total_loss': 1.3008530139923096, 'td_loss': 1.3008530139923096, 'kl_loss': 0.0, 'total_dnd_inserts': 507, 'total_dnd_updates': 48200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 71 times.
+Replay Buffer | Mean TD-error: 0.7673 | Std TD-error: 0.6885
+Bucket Sizes and Rates:
+Low: 6145, 12.26% | Medium: 40000, 79.79% | High: 988, 1.97% | Death: 3000, 5.98% | New: 0, |Warmup: 0, |Total: 50133
+Episode 239, optimization step 26917, is fnished.
+{'optimization_step': 26916, 'global_step': 176174, 'episode': 239, 'total_reward': -13.116796704211973, 'total_loss': 1.2905229330062866, 'td_loss': 1.2905229330062866, 'kl_loss': 0.0, 'total_dnd_inserts': 560, 'total_dnd_updates': 53300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 72 times.
+Replay Buffer | Mean TD-error: 0.7628 | Std TD-error: 0.6815
+Bucket Sizes and Rates:
+Low: 6297, 12.51% | Medium: 40000, 79.50% | High: 1019, 2.03% | Death: 3000, 5.96% | New: 0, |Warmup: 0, |Total: 50316
+Episode 240, optimization step 26989, is fnished.
+{'optimization_step': 26988, 'global_step': 176921, 'episode': 240, 'total_reward': -14.11152886239269, 'total_loss': 0.9801514148712158, 'td_loss': 0.9801514148712158, 'kl_loss': 0.0, 'total_dnd_inserts': 573, 'total_dnd_updates': 54300}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1210.0, 'std_reward': 163.09506225585938, 'max_reward': 1440.0, 'min_reward': 1080.0, 'mean_episode_length': 704.3333129882812, 'std_episode_length': 74.37442779541016, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 60 times.
+Replay Buffer | Mean TD-error: 0.7577 | Std TD-error: 0.6775
+Bucket Sizes and Rates:
+Low: 6441, 12.76% | Medium: 40000, 79.25% | High: 1035, 2.05% | Death: 3000, 5.94% | New: 0, |Warmup: 0, |Total: 50476
+Episode 241, optimization step 27049, is fnished.
+{'optimization_step': 27048, 'global_step': 177571, 'episode': 241, 'total_reward': -13.379160968679464, 'total_loss': 1.030045986175537, 'td_loss': 1.030045986175537, 'kl_loss': 0.0, 'total_dnd_inserts': 476, 'total_dnd_updates': 45500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 70 times.
+Replay Buffer | Mean TD-error: 0.7528 | Std TD-error: 0.6709
+Bucket Sizes and Rates:
+Low: 6633, 13.08% | Medium: 40000, 78.89% | High: 1068, 2.11% | Death: 3000, 5.92% | New: 0, |Warmup: 0, |Total: 50701
+Episode 242, optimization step 27119, is fnished.
+{'optimization_step': 27118, 'global_step': 178304, 'episode': 242, 'total_reward': -12.909157339433726, 'total_loss': 0.984454870223999, 'td_loss': 0.984454870223999, 'kl_loss': 0.0, 'total_dnd_inserts': 559, 'total_dnd_updates': 52900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7524 | Std TD-error: 0.6737
+Bucket Sizes and Rates:
+Low: 6735, 13.25% | Medium: 40000, 78.71% | High: 1085, 2.13% | Death: 3000, 5.90% | New: 0, |Warmup: 0, |Total: 50820
+Episode 243, optimization step 27174, is fnished.
+{'optimization_step': 27173, 'global_step': 178917, 'episode': 243, 'total_reward': -13.52374219749057, 'total_loss': 1.093268871307373, 'td_loss': 1.093268871307373, 'kl_loss': 0.0, 'total_dnd_inserts': 439, 'total_dnd_updates': 41600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 71 times.
+Replay Buffer | Mean TD-error: 0.7520 | Std TD-error: 0.6710
+Bucket Sizes and Rates:
+Low: 6905, 13.53% | Medium: 40000, 78.40% | High: 1114, 2.18% | Death: 3000, 5.88% | New: 0, |Warmup: 0, |Total: 51019
+Episode 244, optimization step 27245, is fnished.
+{'optimization_step': 27244, 'global_step': 179657, 'episode': 244, 'total_reward': -13.116796704211973, 'total_loss': 1.1294729709625244, 'td_loss': 1.1294729709625244, 'kl_loss': 0.0, 'total_dnd_inserts': 566, 'total_dnd_updates': 54000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7476 | Std TD-error: 0.6644
+Bucket Sizes and Rates:
+Low: 7052, 13.77% | Medium: 40000, 78.13% | High: 1143, 2.23% | Death: 3000, 5.86% | New: 0, |Warmup: 0, |Total: 51195
+Episode 245, optimization step 27314, is fnished.
+{'optimization_step': 27313, 'global_step': 180382, 'episode': 245, 'total_reward': -11.914425181253009, 'total_loss': 1.0951511859893799, 'td_loss': 1.0951511859893799, 'kl_loss': 0.0, 'total_dnd_inserts': 551, 'total_dnd_updates': 52900}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1066.6666259765625, 'std_reward': 97.41093444824219, 'max_reward': 1200.0, 'min_reward': 970.0, 'mean_episode_length': 644.0, 'std_episode_length': 65.9140853881836, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7468 | Std TD-error: 0.6605
+Bucket Sizes and Rates:
+Low: 7180, 13.97% | Medium: 40000, 77.85% | High: 1204, 2.34% | Death: 3000, 5.84% | New: 0, |Warmup: 0, |Total: 51384
+Episode 246, optimization step 27382, is fnished.
+{'optimization_step': 27381, 'global_step': 181095, 'episode': 246, 'total_reward': -11.0642742518834, 'total_loss': 1.1858127117156982, 'td_loss': 1.1858127117156982, 'kl_loss': 0.0, 'total_dnd_inserts': 539, 'total_dnd_updates': 51000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 65 times.
+Replay Buffer | Mean TD-error: 0.7453 | Std TD-error: 0.6599
+Bucket Sizes and Rates:
+Low: 7308, 14.18% | Medium: 39999, 77.62% | High: 1224, 2.38% | Death: 3000, 5.82% | New: 0, |Warmup: 0, |Total: 51531
+Episode 247, optimization step 27447, is fnished.
+{'optimization_step': 27446, 'global_step': 181786, 'episode': 247, 'total_reward': -11.525944644851245, 'total_loss': 1.0178513526916504, 'td_loss': 1.0178513526916504, 'kl_loss': 0.0, 'total_dnd_inserts': 517, 'total_dnd_updates': 48900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 58 times.
+Replay Buffer | Mean TD-error: 0.7446 | Std TD-error: 0.6559
+Bucket Sizes and Rates:
+Low: 7386, 14.29% | Medium: 39997, 77.38% | High: 1305, 2.52% | Death: 3000, 5.80% | New: 0, |Warmup: 0, |Total: 51688
+Episode 248, optimization step 27505, is fnished.
+{'optimization_step': 27504, 'global_step': 182419, 'episode': 248, 'total_reward': -13.731381562268815, 'total_loss': 1.1851692199707031, 'td_loss': 1.1851692199707031, 'kl_loss': 0.0, 'total_dnd_inserts': 459, 'total_dnd_updates': 43400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.7469 | Std TD-error: 0.6571
+Bucket Sizes and Rates:
+Low: 7506, 14.48% | Medium: 40000, 77.14% | High: 1348, 2.60% | Death: 3000, 5.79% | New: 0, |Warmup: 0, |Total: 51854
+Episode 249, optimization step 27558, is fnished.
+{'optimization_step': 27557, 'global_step': 183011, 'episode': 249, 'total_reward': -14.111528862392689, 'total_loss': 1.0786259174346924, 'td_loss': 1.0786259174346924, 'kl_loss': 0.0, 'total_dnd_inserts': 418, 'total_dnd_updates': 39300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7438 | Std TD-error: 0.6527
+Bucket Sizes and Rates:
+Low: 7660, 14.72% | Medium: 39999, 76.85% | High: 1386, 2.66% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52045
+Episode 250, optimization step 27625, is fnished.
+{'optimization_step': 27624, 'global_step': 183720, 'episode': 250, 'total_reward': -11.001216115916261, 'total_loss': 0.8664522767066956, 'td_loss': 0.8664522767066956, 'kl_loss': 0.0, 'total_dnd_inserts': 535, 'total_dnd_updates': 50700}
+
+Saving model...
+Replay memory states total size: 5590.771484375 MB
+Saving replay memory...
+Checkpoint check: Checkpoint model_ep_250_step_27625.pt saved.
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1193.3333740234375, 'std_reward': 103.3870849609375, 'max_reward': 1290.0, 'min_reward': 1050.0, 'mean_episode_length': 720.3333129882812, 'std_episode_length': 26.132143020629883, 'num_episodes': 3}
+
+---------------------
+
+# "bucket_capacities": [15000, 40000, 5000, 3000], 
+# "bucket_rates": [0.25, 0.4, 0.25, 0.1] 
+# "network_optimization_period": 8
+# Ep 250-300
+
+
+A.L.E: Arcade Learning Environment (version 0.11.2+ecc1138)
+[Powered by Stella]
+Loading checkpoint...
+Current epsilon: 0.05000000074505806
+Replay memory directory: experiments/agent/replay_experimental_2/br_lower_death_size/checkpoints/rep_memo_ep_250_step_27625
+Loaded replay memory:
+  Low:    7660
+  Medium: 39999
+  High:   1386
+  Death:  3000
+Checkpoint restored (episode=250, optimization_step=27625, environment_step=183720)epsilon=0.05000000074505806
+Starting training...
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7445 | Std TD-error: 0.6497
+Bucket Sizes and Rates:
+Low: 7701, 14.79% | Medium: 39997, 76.81% | High: 1374, 2.64% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52072
+Episode 251, optimization step 27694, is fnished.
+{'optimization_step': 27693, 'global_step': 184442, 'episode': 251, 'total_reward': -11.471219745162, 'total_loss': 1.2572633028030396, 'td_loss': 1.2572633028030396, 'kl_loss': 0.0, 'total_dnd_inserts': 548, 'total_dnd_updates': 51800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7412 | Std TD-error: 0.6463
+Bucket Sizes and Rates:
+Low: 7786, 14.94% | Medium: 40000, 76.75% | High: 1334, 2.56% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52120
+Episode 252, optimization step 27761, is fnished.
+{'optimization_step': 27760, 'global_step': 185151, 'episode': 252, 'total_reward': -12.439153710187991, 'total_loss': 1.0476415157318115, 'td_loss': 1.0476415157318115, 'kl_loss': 0.0, 'total_dnd_inserts': 535, 'total_dnd_updates': 51000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7457 | Std TD-error: 0.6586
+Bucket Sizes and Rates:
+Low: 7831, 15.01% | Medium: 40000, 76.66% | High: 1345, 2.58% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52176
+Episode 253, optimization step 27828, is fnished.
+{'optimization_step': 27827, 'global_step': 185856, 'episode': 253, 'total_reward': -11.705657303094966, 'total_loss': 0.9912667870521545, 'td_loss': 0.9912667870521545, 'kl_loss': 0.0, 'total_dnd_inserts': 531, 'total_dnd_updates': 51100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 90 times.
+Replay Buffer | Mean TD-error: 0.7467 | Std TD-error: 0.6636
+Bucket Sizes and Rates:
+Low: 7880, 15.09% | Medium: 40000, 76.59% | High: 1348, 2.58% | Death: 3000, 5.74% | New: 0, |Warmup: 0, |Total: 52228
+Episode 254, optimization step 27918, is fnished.
+{'optimization_step': 27917, 'global_step': 186749, 'episode': 254, 'total_reward': -12.321370674531607, 'total_loss': 1.4928398132324219, 'td_loss': 1.4928398132324219, 'kl_loss': 0.0, 'total_dnd_inserts': 719, 'total_dnd_updates': 68800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 49 times.
+Replay Buffer | Mean TD-error: 0.7491 | Std TD-error: 0.6636
+Bucket Sizes and Rates:
+Low: 7905, 15.12% | Medium: 40000, 76.53% | High: 1363, 2.61% | Death: 3000, 5.74% | New: 0, |Warmup: 0, |Total: 52268
+Episode 255, optimization step 27967, is fnished.
+{'optimization_step': 27966, 'global_step': 187309, 'episode': 255, 'total_reward': -12.41122700365347, 'total_loss': 1.4061977863311768, 'td_loss': 1.4061977863311768, 'kl_loss': 0.0, 'total_dnd_inserts': 386, 'total_dnd_updates': 36500}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1340.0, 'std_reward': 211.81753540039062, 'max_reward': 1630.0, 'min_reward': 1130.0, 'mean_episode_length': 728.0, 'std_episode_length': 180.6230010986328, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7450 | Std TD-error: 0.6584
+Bucket Sizes and Rates:
+Low: 7929, 15.18% | Medium: 40000, 76.56% | High: 1317, 2.52% | Death: 3000, 5.74% | New: 0, |Warmup: 0, |Total: 52246
+Episode 256, optimization step 28022, is fnished.
+{'optimization_step': 28021, 'global_step': 187915, 'episode': 256, 'total_reward': -14.11152886239269, 'total_loss': 0.8650550842285156, 'td_loss': 0.8650550842285156, 'kl_loss': 0.0, 'total_dnd_inserts': 432, 'total_dnd_updates': 40900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 106 times.
+Replay Buffer | Mean TD-error: 0.7466 | Std TD-error: 0.6681
+Bucket Sizes and Rates:
+Low: 7896, 15.12% | Medium: 40000, 76.61% | High: 1316, 2.52% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52212
+Episode 257, optimization step 28128, is fnished.
+{'optimization_step': 28127, 'global_step': 188932, 'episode': 257, 'total_reward': -8.243123963029186, 'total_loss': 1.0080523490905762, 'td_loss': 1.0080523490905762, 'kl_loss': 0.0, 'total_dnd_inserts': 843, 'total_dnd_updates': 80100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7485 | Std TD-error: 0.6677
+Bucket Sizes and Rates:
+Low: 7861, 15.08% | Medium: 40000, 76.71% | High: 1282, 2.46% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52143
+Episode 258, optimization step 28183, is fnished.
+{'optimization_step': 28182, 'global_step': 189540, 'episode': 258, 'total_reward': -13.523742197490572, 'total_loss': 0.9584519267082214, 'td_loss': 0.9584519267082214, 'kl_loss': 0.0, 'total_dnd_inserts': 434, 'total_dnd_updates': 41200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 48 times.
+Replay Buffer | Mean TD-error: 0.7448 | Std TD-error: 0.6650
+Bucket Sizes and Rates:
+Low: 7872, 15.11% | Medium: 40000, 76.76% | High: 1238, 2.38% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52110
+Episode 259, optimization step 28231, is fnished.
+{'optimization_step': 28230, 'global_step': 190092, 'episode': 259, 'total_reward': -14.636257391327673, 'total_loss': 1.2782318592071533, 'td_loss': 1.2782318592071533, 'kl_loss': 0.0, 'total_dnd_inserts': 378, 'total_dnd_updates': 36300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 56 times.
+Replay Buffer | Mean TD-error: 0.7405 | Std TD-error: 0.6585
+Bucket Sizes and Rates:
+Low: 7862, 15.09% | Medium: 40000, 76.76% | High: 1248, 2.39% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52110
+Episode 260, optimization step 28287, is fnished.
+{'optimization_step': 28286, 'global_step': 190706, 'episode': 260, 'total_reward': -13.053738568244835, 'total_loss': 1.3043941259384155, 'td_loss': 1.3043941259384155, 'kl_loss': 0.0, 'total_dnd_inserts': 440, 'total_dnd_updates': 41900}
+
+Evaluating...
+/usr/local/lib/python3.12/dist-packages/gymnasium/wrappers/rendering.py:293: UserWarning: WARN: Overwriting existing videos at /kaggle/working/rl-atari/experiments/agent/replay_experimental_2/br_lower_death_size/videos folder (try specifying a different `video_folder` for the `RecordVideo` wrapper if this is not desired)
+  logger.warn(
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1150.0, 'std_reward': 135.89210510253906, 'max_reward': 1340.0, 'min_reward': 1030.0, 'mean_episode_length': 573.0, 'std_episode_length': 78.79508972167969, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7416 | Std TD-error: 0.6576
+Bucket Sizes and Rates:
+Low: 7894, 15.14% | Medium: 40000, 76.74% | High: 1230, 2.36% | Death: 3000, 5.76% | New: 0, |Warmup: 0, |Total: 52124
+Episode 261, optimization step 28354, is fnished.
+{'optimization_step': 28353, 'global_step': 191415, 'episode': 261, 'total_reward': -11.471219745162, 'total_loss': 1.2304210662841797, 'td_loss': 1.2304210662841797, 'kl_loss': 0.0, 'total_dnd_inserts': 535, 'total_dnd_updates': 52100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 70 times.
+Replay Buffer | Mean TD-error: 0.7400 | Std TD-error: 0.6543
+Bucket Sizes and Rates:
+Low: 7922, 15.20% | Medium: 39999, 76.73% | High: 1208, 2.32% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52129
+Episode 262, optimization step 28424, is fnished.
+{'optimization_step': 28423, 'global_step': 192145, 'episode': 262, 'total_reward': -11.118999151572645, 'total_loss': 1.3232336044311523, 'td_loss': 1.3232336044311523, 'kl_loss': 0.0, 'total_dnd_inserts': 556, 'total_dnd_updates': 53300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.7366 | Std TD-error: 0.6494
+Bucket Sizes and Rates:
+Low: 7940, 15.22% | Medium: 39999, 76.67% | High: 1228, 2.35% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52167
+Episode 263, optimization step 28488, is fnished.
+{'optimization_step': 28487, 'global_step': 192826, 'episode': 263, 'total_reward': -12.439153710187991, 'total_loss': 1.1103720664978027, 'td_loss': 1.1103720664978027, 'kl_loss': 0.0, 'total_dnd_inserts': 507, 'total_dnd_updates': 47700}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 54 times.
+Replay Buffer | Mean TD-error: 0.7360 | Std TD-error: 0.6487
+Bucket Sizes and Rates:
+Low: 7949, 15.23% | Medium: 40000, 76.65% | High: 1239, 2.37% | Death: 3000, 5.75% | New: 0, |Warmup: 0, |Total: 52188
+Episode 264, optimization step 28542, is fnished.
+{'optimization_step': 28541, 'global_step': 193429, 'episode': 264, 'total_reward': -13.316102832712327, 'total_loss': 1.156245231628418, 'td_loss': 1.156245231628418, 'kl_loss': 0.0, 'total_dnd_inserts': 429, 'total_dnd_updates': 40100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 87 times.
+Replay Buffer | Mean TD-error: 0.7341 | Std TD-error: 0.6480
+Bucket Sizes and Rates:
+Low: 8080, 15.44% | Medium: 40000, 76.42% | High: 1265, 2.42% | Death: 3000, 5.73% | New: 0, |Warmup: 0, |Total: 52345
+Episode 265, optimization step 28629, is fnished.
+{'optimization_step': 28628, 'global_step': 194291, 'episode': 265, 'total_reward': -11.271913616661644, 'total_loss': 0.827305257320404, 'td_loss': 0.827305257320404, 'kl_loss': 0.0, 'total_dnd_inserts': 688, 'total_dnd_updates': 65000}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1236.6666259765625, 'std_reward': 214.52789306640625, 'max_reward': 1540.0, 'min_reward': 1080.0, 'mean_episode_length': 709.0, 'std_episode_length': 72.71863555908203, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 79 times.
+Replay Buffer | Mean TD-error: 0.7405 | Std TD-error: 0.6509
+Bucket Sizes and Rates:
+Low: 8108, 15.45% | Medium: 40000, 76.23% | High: 1366, 2.60% | Death: 3000, 5.72% | New: 0, |Warmup: 0, |Total: 52474
+Episode 266, optimization step 28708, is fnished.
+{'optimization_step': 28707, 'global_step': 195091, 'episode': 266, 'total_reward': -9.383565863400811, 'total_loss': 1.1810264587402344, 'td_loss': 1.1810264587402344, 'kl_loss': 0.0, 'total_dnd_inserts': 626, 'total_dnd_updates': 59200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7443 | Std TD-error: 0.6535
+Bucket Sizes and Rates:
+Low: 8197, 15.58% | Medium: 40000, 76.03% | High: 1411, 2.68% | Death: 3000, 5.70% | New: 0, |Warmup: 0, |Total: 52608
+Episode 267, optimization step 28776, is fnished.
+{'optimization_step': 28775, 'global_step': 195807, 'episode': 267, 'total_reward': -11.263580380383758, 'total_loss': 1.3954894542694092, 'td_loss': 1.3954894542694092, 'kl_loss': 0.0, 'total_dnd_inserts': 542, 'total_dnd_updates': 51400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 66 times.
+Replay Buffer | Mean TD-error: 0.7460 | Std TD-error: 0.6565
+Bucket Sizes and Rates:
+Low: 8266, 15.69% | Medium: 40000, 75.91% | High: 1429, 2.71% | Death: 3000, 5.69% | New: 0, |Warmup: 0, |Total: 52695
+Episode 268, optimization step 28842, is fnished.
+{'optimization_step': 28841, 'global_step': 196501, 'episode': 268, 'total_reward': -13.053738568244835, 'total_loss': 1.2306673526763916, 'td_loss': 1.2306673526763916, 'kl_loss': 0.0, 'total_dnd_inserts': 520, 'total_dnd_updates': 50000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 97 times.
+Replay Buffer | Mean TD-error: 0.7541 | Std TD-error: 0.6588
+Bucket Sizes and Rates:
+Low: 8317, 15.76% | Medium: 39998, 75.77% | High: 1474, 2.79% | Death: 3000, 5.68% | New: 0, |Warmup: 0, |Total: 52789
+Episode 269, optimization step 28939, is fnished.
+{'optimization_step': 28938, 'global_step': 197445, 'episode': 269, 'total_reward': -6.5160239111352425, 'total_loss': 1.1672002077102661, 'td_loss': 1.1672002077102661, 'kl_loss': 0.0, 'total_dnd_inserts': 770, 'total_dnd_updates': 72400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 103 times.
+Replay Buffer | Mean TD-error: 0.7601 | Std TD-error: 0.6646
+Bucket Sizes and Rates:
+Low: 8395, 15.86% | Medium: 40000, 75.59% | High: 1523, 2.88% | Death: 3000, 5.67% | New: 0, |Warmup: 0, |Total: 52918
+Episode 270, optimization step 29042, is fnished.
+{'optimization_step': 29041, 'global_step': 198441, 'episode': 270, 'total_reward': -10.29564641535776, 'total_loss': 1.05330491065979, 'td_loss': 1.05330491065979, 'kl_loss': 0.0, 'total_dnd_inserts': 822, 'total_dnd_updates': 78300}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1383.3333740234375, 'std_reward': 75.8653793334961, 'max_reward': 1490.0, 'min_reward': 1320.0, 'mean_episode_length': 784.6666870117188, 'std_episode_length': 66.01177978515625, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 85 times.
+Replay Buffer | Mean TD-error: 0.7677 | Std TD-error: 0.6665
+Bucket Sizes and Rates:
+Low: 8468, 15.97% | Medium: 40000, 75.41% | High: 1573, 2.97% | Death: 3000, 5.66% | New: 0, |Warmup: 0, |Total: 53041
+Episode 271, optimization step 29127, is fnished.
+{'optimization_step': 29126, 'global_step': 199289, 'episode': 271, 'total_reward': -11.534277881129135, 'total_loss': 1.0931437015533447, 'td_loss': 1.0931437015533447, 'kl_loss': 0.0, 'total_dnd_inserts': 674, 'total_dnd_updates': 63300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 80 times.
+Replay Buffer | Mean TD-error: 0.7712 | Std TD-error: 0.6679
+Bucket Sizes and Rates:
+Low: 8603, 16.17% | Medium: 39996, 75.19% | High: 1594, 3.00% | Death: 3000, 5.64% | New: 0, |Warmup: 0, |Total: 53193
+Episode 272, optimization step 29207, is fnished.
+{'optimization_step': 29206, 'global_step': 200102, 'episode': 272, 'total_reward': -11.208855480694506, 'total_loss': 1.4479302167892456, 'td_loss': 1.4479302167892456, 'kl_loss': 0.0, 'total_dnd_inserts': 639, 'total_dnd_updates': 60100}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 84 times.
+Replay Buffer | Mean TD-error: 0.7766 | Std TD-error: 0.6705
+Bucket Sizes and Rates:
+Low: 8769, 16.42% | Medium: 39999, 74.89% | High: 1639, 3.07% | Death: 3000, 5.62% | New: 0, |Warmup: 0, |Total: 53407
+Episode 273, optimization step 29291, is fnished.
+{'optimization_step': 29290, 'global_step': 200943, 'episode': 273, 'total_reward': -9.735786456990164, 'total_loss': 1.4789297580718994, 'td_loss': 1.4789297580718994, 'kl_loss': 0.0, 'total_dnd_inserts': 667, 'total_dnd_updates': 64000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 101 times.
+Replay Buffer | Mean TD-error: 0.7791 | Std TD-error: 0.6887
+Bucket Sizes and Rates:
+Low: 8971, 16.74% | Medium: 40000, 74.63% | High: 1624, 3.03% | Death: 3000, 5.60% | New: 0, |Warmup: 0, |Total: 53595
+Episode 274, optimization step 29392, is fnished.
+{'optimization_step': 29391, 'global_step': 201919, 'episode': 274, 'total_reward': -10.558010679825252, 'total_loss': 1.5407735109329224, 'td_loss': 1.5407735109329224, 'kl_loss': 0.0, 'total_dnd_inserts': 802, 'total_dnd_updates': 75200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 69 times.
+Replay Buffer | Mean TD-error: 0.7753 | Std TD-error: 0.6820
+Bucket Sizes and Rates:
+Low: 9038, 16.85% | Medium: 40000, 74.59% | High: 1585, 2.96% | Death: 3000, 5.59% | New: 0, |Warmup: 0, |Total: 53623
+Episode 275, optimization step 29461, is fnished.
+{'optimization_step': 29460, 'global_step': 202638, 'episode': 275, 'total_reward': -12.791374303777342, 'total_loss': 0.9867684841156006, 'td_loss': 0.9867684841156006, 'kl_loss': 0.0, 'total_dnd_inserts': 545, 'total_dnd_updates': 51100}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1133.3333740234375, 'std_reward': 106.24918365478516, 'max_reward': 1260.0, 'min_reward': 1000.0, 'mean_episode_length': 766.0, 'std_episode_length': 44.95182418823242, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 58 times.
+Replay Buffer | Mean TD-error: 0.7738 | Std TD-error: 0.6795
+Bucket Sizes and Rates:
+Low: 9090, 16.94% | Medium: 39998, 74.52% | High: 1583, 2.95% | Death: 3000, 5.59% | New: 0, |Warmup: 0, |Total: 53671
+Episode 276, optimization step 29519, is fnished.
+{'optimization_step': 29518, 'global_step': 203275, 'episode': 276, 'total_reward': -13.289304639557603, 'total_loss': 1.5449073314666748, 'td_loss': 1.5449073314666748, 'kl_loss': 0.0, 'total_dnd_inserts': 463, 'total_dnd_updates': 43900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 70 times.
+Replay Buffer | Mean TD-error: 0.7811 | Std TD-error: 0.6857
+Bucket Sizes and Rates:
+Low: 9135, 16.99% | Medium: 40000, 74.40% | High: 1629, 3.03% | Death: 3000, 5.58% | New: 0, |Warmup: 0, |Total: 53764
+Episode 277, optimization step 29589, is fnished.
+{'optimization_step': 29588, 'global_step': 204003, 'episode': 277, 'total_reward': -8.360906998685572, 'total_loss': 1.281349539756775, 'td_loss': 1.281349539756775, 'kl_loss': 0.0, 'total_dnd_inserts': 554, 'total_dnd_updates': 53300}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7795 | Std TD-error: 0.6838
+Bucket Sizes and Rates:
+Low: 9190, 17.08% | Medium: 40000, 74.36% | High: 1603, 2.98% | Death: 3000, 5.58% | New: 0, |Warmup: 0, |Total: 53793
+Episode 278, optimization step 29656, is fnished.
+{'optimization_step': 29655, 'global_step': 204711, 'episode': 278, 'total_reward': -11.796642145596625, 'total_loss': 1.158952236175537, 'td_loss': 1.158952236175537, 'kl_loss': 0.0, 'total_dnd_inserts': 534, 'total_dnd_updates': 50800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 55 times.
+Replay Buffer | Mean TD-error: 0.7781 | Std TD-error: 0.6839
+Bucket Sizes and Rates:
+Low: 9248, 17.18% | Medium: 40000, 74.30% | High: 1586, 2.95% | Death: 3000, 5.57% | New: 0, |Warmup: 0, |Total: 53834
+Episode 279, optimization step 29711, is fnished.
+{'optimization_step': 29710, 'global_step': 205320, 'episode': 279, 'total_reward': -12.854432439744482, 'total_loss': 1.4482879638671875, 'td_loss': 1.4482879638671875, 'kl_loss': 0.0, 'total_dnd_inserts': 435, 'total_dnd_updates': 41500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 72 times.
+Replay Buffer | Mean TD-error: 0.7771 | Std TD-error: 0.6799
+Bucket Sizes and Rates:
+Low: 9320, 17.30% | Medium: 40000, 74.26% | High: 1548, 2.87% | Death: 3000, 5.57% | New: 0, |Warmup: 0, |Total: 53868
+Episode 280, optimization step 29783, is fnished.
+{'optimization_step': 29782, 'global_step': 206066, 'episode': 280, 'total_reward': -12.70151797465548, 'total_loss': 1.3111988306045532, 'td_loss': 1.3111988306045532, 'kl_loss': 0.0, 'total_dnd_inserts': 572, 'total_dnd_updates': 54800}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1240.0, 'std_reward': 184.9324188232422, 'max_reward': 1450.0, 'min_reward': 1000.0, 'mean_episode_length': 725.3333129882812, 'std_episode_length': 122.60868835449219, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7778 | Std TD-error: 0.6785
+Bucket Sizes and Rates:
+Low: 9430, 17.47% | Medium: 40000, 74.12% | High: 1539, 2.85% | Death: 3000, 5.56% | New: 0, |Warmup: 0, |Total: 53969
+Episode 281, optimization step 29851, is fnished.
+{'optimization_step': 29850, 'global_step': 206779, 'episode': 281, 'total_reward': -12.122064546031254, 'total_loss': 1.2930985689163208, 'td_loss': 1.2930985689163208, 'kl_loss': 0.0, 'total_dnd_inserts': 539, 'total_dnd_updates': 50200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 73 times.
+Replay Buffer | Mean TD-error: 0.7780 | Std TD-error: 0.6774
+Bucket Sizes and Rates:
+Low: 9500, 17.57% | Medium: 39998, 73.98% | High: 1565, 2.89% | Death: 3000, 5.55% | New: 0, |Warmup: 0, |Total: 54063
+Episode 282, optimization step 29924, is fnished.
+{'optimization_step': 29923, 'global_step': 207533, 'episode': 282, 'total_reward': -11.706785816474763, 'total_loss': 1.1890202760696411, 'td_loss': 1.1890202760696411, 'kl_loss': 0.0, 'total_dnd_inserts': 580, 'total_dnd_updates': 56000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 66 times.
+Replay Buffer | Mean TD-error: 0.7790 | Std TD-error: 0.6781
+Bucket Sizes and Rates:
+Low: 9553, 17.65% | Medium: 40000, 73.89% | High: 1580, 2.92% | Death: 3000, 5.54% | New: 0, |Warmup: 0, |Total: 54133
+Episode 283, optimization step 29990, is fnished.
+{'optimization_step': 29989, 'global_step': 208233, 'episode': 283, 'total_reward': -13.814033168492587, 'total_loss': 1.6013983488082886, 'td_loss': 1.6013983488082886, 'kl_loss': 0.0, 'total_dnd_inserts': 526, 'total_dnd_updates': 49900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.7765 | Std TD-error: 0.6897
+Bucket Sizes and Rates:
+Low: 9724, 17.90% | Medium: 40000, 73.64% | High: 1594, 2.93% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54318
+Episode 284, optimization step 30054, is fnished.
+{'optimization_step': 30053, 'global_step': 208913, 'episode': 284, 'total_reward': -14.961679791762299, 'total_loss': 1.3373267650604248, 'td_loss': 1.3373267650604248, 'kl_loss': 0.0, 'total_dnd_inserts': 506, 'total_dnd_updates': 48600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.7752 | Std TD-error: 0.6846
+Bucket Sizes and Rates:
+Low: 9759, 17.97% | Medium: 40000, 73.66% | High: 1548, 2.85% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54307
+Episode 285, optimization step 30122, is fnished.
+{'optimization_step': 30121, 'global_step': 209630, 'episode': 285, 'total_reward': -12.32137067453161, 'total_loss': 0.9006462097167969, 'td_loss': 0.9006462097167969, 'kl_loss': 0.0, 'total_dnd_inserts': 543, 'total_dnd_updates': 52200}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1413.3333740234375, 'std_reward': 323.1442565917969, 'max_reward': 1870.0, 'min_reward': 1170.0, 'mean_episode_length': 715.3333129882812, 'std_episode_length': 112.47913360595703, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 75 times.
+Replay Buffer | Mean TD-error: 0.7809 | Std TD-error: 0.6870
+Bucket Sizes and Rates:
+Low: 9851, 18.09% | Medium: 40000, 73.47% | High: 1594, 2.93% | Death: 3000, 5.51% | New: 0, |Warmup: 0, |Total: 54445
+Episode 286, optimization step 30197, is fnished.
+{'optimization_step': 30196, 'global_step': 210398, 'episode': 286, 'total_reward': -10.47648758698128, 'total_loss': 1.1153974533081055, 'td_loss': 1.1153974533081055, 'kl_loss': 0.0, 'total_dnd_inserts': 594, 'total_dnd_updates': 56000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 47 times.
+Replay Buffer | Mean TD-error: 0.7909 | Std TD-error: 0.7083
+Bucket Sizes and Rates:
+Low: 9864, 18.11% | Medium: 40000, 73.45% | High: 1596, 2.93% | Death: 3000, 5.51% | New: 0, |Warmup: 0, |Total: 54460
+Episode 287, optimization step 30244, is fnished.
+{'optimization_step': 30243, 'global_step': 210947, 'episode': 287, 'total_reward': -14.546401062205813, 'total_loss': 1.0401015281677246, 'td_loss': 1.0401015281677246, 'kl_loss': 0.0, 'total_dnd_inserts': 375, 'total_dnd_updates': 36200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 80 times.
+Replay Buffer | Mean TD-error: 0.7977 | Std TD-error: 0.7198
+Bucket Sizes and Rates:
+Low: 9826, 18.06% | Medium: 40000, 73.53% | High: 1576, 2.90% | Death: 3000, 5.51% | New: 0, |Warmup: 0, |Total: 54402
+Episode 288, optimization step 30324, is fnished.
+{'optimization_step': 30323, 'global_step': 211759, 'episode': 288, 'total_reward': -10.730518615170881, 'total_loss': 1.2235634326934814, 'td_loss': 1.2235634326934814, 'kl_loss': 0.0, 'total_dnd_inserts': 638, 'total_dnd_updates': 60800}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 67 times.
+Replay Buffer | Mean TD-error: 0.7989 | Std TD-error: 0.7182
+Bucket Sizes and Rates:
+Low: 9828, 18.08% | Medium: 40000, 73.57% | High: 1542, 2.84% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54370
+Episode 289, optimization step 30391, is fnished.
+{'optimization_step': 30390, 'global_step': 212468, 'episode': 289, 'total_reward': -12.963882239122974, 'total_loss': 1.407515048980713, 'td_loss': 1.407515048980713, 'kl_loss': 0.0, 'total_dnd_inserts': 535, 'total_dnd_updates': 49200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 81 times.
+Replay Buffer | Mean TD-error: 0.8041 | Std TD-error: 0.7167
+Bucket Sizes and Rates:
+Low: 9817, 18.06% | Medium: 40000, 73.59% | High: 1535, 2.82% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54352
+Episode 290, optimization step 30472, is fnished.
+{'optimization_step': 30471, 'global_step': 213289, 'episode': 290, 'total_reward': -7.4208997401941, 'total_loss': 1.6011574268341064, 'td_loss': 1.6011574268341064, 'kl_loss': 0.0, 'total_dnd_inserts': 647, 'total_dnd_updates': 62400}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1266.6666259765625, 'std_reward': 103.3870849609375, 'max_reward': 1410.0, 'min_reward': 1170.0, 'mean_episode_length': 815.6666870117188, 'std_episode_length': 83.50782012939453, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 53 times.
+Replay Buffer | Mean TD-error: 0.8005 | Std TD-error: 0.7114
+Bucket Sizes and Rates:
+Low: 9852, 18.13% | Medium: 40000, 73.60% | High: 1498, 2.76% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54350
+Episode 291, optimization step 30525, is fnished.
+{'optimization_step': 30524, 'global_step': 213884, 'episode': 291, 'total_reward': -13.586800333457708, 'total_loss': 1.2891653776168823, 'td_loss': 1.2891653776168823, 'kl_loss': 0.0, 'total_dnd_inserts': 421, 'total_dnd_updates': 40000}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 64 times.
+Replay Buffer | Mean TD-error: 0.8132 | Std TD-error: 0.7405
+Bucket Sizes and Rates:
+Low: 9820, 18.08% | Medium: 40000, 73.63% | High: 1503, 2.77% | Death: 3000, 5.52% | New: 0, |Warmup: 0, |Total: 54323
+Episode 292, optimization step 30589, is fnished.
+{'optimization_step': 30588, 'global_step': 214566, 'episode': 292, 'total_reward': -15.577865931186116, 'total_loss': 2.6277220249176025, 'td_loss': 2.6277220249176025, 'kl_loss': 0.0, 'total_dnd_inserts': 508, 'total_dnd_updates': 48400}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 62 times.
+Replay Buffer | Mean TD-error: 0.8092 | Std TD-error: 0.7370
+Bucket Sizes and Rates:
+Low: 9759, 18.02% | Medium: 40000, 73.85% | High: 1402, 2.59% | Death: 3000, 5.54% | New: 0, |Warmup: 0, |Total: 54161
+Episode 293, optimization step 30651, is fnished.
+{'optimization_step': 30650, 'global_step': 215234, 'episode': 293, 'total_reward': -13.958614397303693, 'total_loss': 1.296140193939209, 'td_loss': 1.296140193939209, 'kl_loss': 0.0, 'total_dnd_inserts': 494, 'total_dnd_updates': 47500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 65 times.
+Replay Buffer | Mean TD-error: 0.8170 | Std TD-error: 0.7396
+Bucket Sizes and Rates:
+Low: 9671, 17.89% | Medium: 40000, 74.01% | High: 1376, 2.55% | Death: 3000, 5.55% | New: 0, |Warmup: 0, |Total: 54047
+Episode 294, optimization step 30716, is fnished.
+{'optimization_step': 30715, 'global_step': 215923, 'episode': 294, 'total_reward': -10.558010679825252, 'total_loss': 1.2346141338348389, 'td_loss': 1.2346141338348389, 'kl_loss': 0.0, 'total_dnd_inserts': 515, 'total_dnd_updates': 48500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 82 times.
+Replay Buffer | Mean TD-error: 0.8136 | Std TD-error: 0.7401
+Bucket Sizes and Rates:
+Low: 9637, 17.85% | Medium: 39998, 74.10% | High: 1341, 2.48% | Death: 3000, 5.56% | New: 0, |Warmup: 0, |Total: 53976
+Episode 295, optimization step 30798, is fnished.
+{'optimization_step': 30797, 'global_step': 216747, 'episode': 295, 'total_reward': -12.701517974655484, 'total_loss': 1.5836786031723022, 'td_loss': 1.5836786031723022, 'kl_loss': 0.0, 'total_dnd_inserts': 650, 'total_dnd_updates': 61300}
+
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1536.6666259765625, 'std_reward': 100.7747802734375, 'max_reward': 1640.0, 'min_reward': 1400.0, 'mean_episode_length': 815.3333129882812, 'std_episode_length': 73.19532775878906, 'num_episodes': 3}
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 83 times.
+Replay Buffer | Mean TD-error: 0.8114 | Std TD-error: 0.7461
+Bucket Sizes and Rates:
+Low: 9608, 17.83% | Medium: 39999, 74.22% | High: 1283, 2.38% | Death: 3000, 5.57% | New: 0, |Warmup: 0, |Total: 53890
+Episode 296, optimization step 30881, is fnished.
+{'optimization_step': 30880, 'global_step': 217578, 'episode': 296, 'total_reward': -11.14579734472737, 'total_loss': 1.1916545629501343, 'td_loss': 1.1916545629501343, 'kl_loss': 0.0, 'total_dnd_inserts': 657, 'total_dnd_updates': 62500}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 70 times.
+Replay Buffer | Mean TD-error: 0.8119 | Std TD-error: 0.7428
+Bucket Sizes and Rates:
+Low: 9548, 17.74% | Medium: 40000, 74.31% | High: 1279, 2.38% | Death: 3000, 5.57% | New: 0, |Warmup: 0, |Total: 53827
+Episode 297, optimization step 30951, is fnished.
+{'optimization_step': 30950, 'global_step': 218306, 'episode': 297, 'total_reward': -10.79357675113802, 'total_loss': 1.270148754119873, 'td_loss': 1.270148754119873, 'kl_loss': 0.0, 'total_dnd_inserts': 554, 'total_dnd_updates': 52900}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 66 times.
+Replay Buffer | Mean TD-error: 0.8177 | Std TD-error: 0.7432
+Bucket Sizes and Rates:
+Low: 9489, 17.64% | Medium: 40000, 74.37% | High: 1296, 2.41% | Death: 3000, 5.58% | New: 0, |Warmup: 0, |Total: 53785
+Episode 298, optimization step 31017, is fnished.
+{'optimization_step': 31016, 'global_step': 219003, 'episode': 298, 'total_reward': -9.563278521644534, 'total_loss': 1.3479466438293457, 'td_loss': 1.3479466438293457, 'kl_loss': 0.0, 'total_dnd_inserts': 523, 'total_dnd_updates': 49600}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 71 times.
+Replay Buffer | Mean TD-error: 0.8131 | Std TD-error: 0.7427
+Bucket Sizes and Rates:
+Low: 9533, 17.72% | Medium: 40000, 74.37% | High: 1253, 2.33% | Death: 3000, 5.58% | New: 0, |Warmup: 0, |Total: 53786
+Episode 299, optimization step 31088, is fnished.
+{'optimization_step': 31087, 'global_step': 219738, 'episode': 299, 'total_reward': -11.995948274096982, 'total_loss': 1.2147445678710938, 'td_loss': 1.2147445678710938, 'kl_loss': 0.0, 'total_dnd_inserts': 561, 'total_dnd_updates': 52200}
+
+Current_epsilon: 0.05000000074505806
+Network is goint to be optimized 68 times.
+Replay Buffer | Mean TD-error: 0.8092 | Std TD-error: 0.7354
+Bucket Sizes and Rates:
+Low: 9504, 17.68% | Medium: 40000, 74.43% | High: 1237, 2.30% | Death: 3000, 5.58% | New: 0, |Warmup: 0, |Total: 53741
+Episode 300, optimization step 31156, is fnished.
+{'optimization_step': 31155, 'global_step': 220452, 'episode': 300, 'total_reward': -11.001216115916263, 'total_loss': 1.3873610496520996, 'td_loss': 1.3873610496520996, 'kl_loss': 0.0, 'total_dnd_inserts': 540, 'total_dnd_updates': 52200}
+
+Saving model...
+Replay memory states total size: 5772.958984375 MB
+Saving replay memory...
+Checkpoint check: Checkpoint model_ep_300_step_31156.pt saved.
+Evaluating...
+Evaluating episode 0 ...
+Evaluating episode 1 ...
+Evaluating episode 2 ...
+{'mean_reward': 1410.0, 'std_reward': 179.07168579101562, 'max_reward': 1600.0, 'min_reward': 1170.0, 'mean_episode_length': 851.6666870117188, 'std_episode_length': 137.46353149414062, 'num_episodes': 3}
+

@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
 
-    "experiment_dir": "experiments/agent/replay_experimental_2/br_lower_death_size",
+    "experiment_dir": "experiments/agent/replay_experimental_2/br_new_mult_2",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -36,7 +36,7 @@
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
-        "add_new_times": 1,
+        "add_new_times": 2,
         "verbose": true            
     },
 
@@ -50,7 +50,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_250_step_27625.pt",                  
+    "resume_checkpoint": "model_ep_150_step_20873.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_capacity": false,                 
 
