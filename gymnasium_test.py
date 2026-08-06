@@ -16,7 +16,7 @@ obs_list = []
 counter = 0
 action = 1
 
-for i in range(52):
+for i in range(32):
     action = env.action_space.sample()
 
     obs, reward, terminated, truncated, info = env.step(action)
