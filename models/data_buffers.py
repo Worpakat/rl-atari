@@ -581,7 +581,7 @@ class StratifiedReplayMemory():
 
         # We only want to move the last added new transitions to their corresponding buckets.
         start_index = new_transitions_count / self.add_new_times 
-        start_index = int((self.add_new_times-1) * new_transitions_count)
+        start_index = int((self.add_new_times-1) * start_index) 
 
         transitions = transitions[start_index:]
         td_errors_abs = td_errors_abs[start_index:]
