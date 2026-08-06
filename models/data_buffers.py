@@ -614,13 +614,12 @@ class StratifiedReplayMemory():
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
                 self.buckets[transition.bucket].remove(transition)
 
-            print("transition moved from", transition.bucket, "to", destination_bucket, " | td_error:", td_error)
-
             transition.bucket = destination_bucket
 
             self.buckets[destination_bucket].append(transition)
 
             if transition not in self.buckets[destination_bucket] or not isinstance(transition, ReplayMemoryUnit):
+                # For sanity check, we print the transition and the destination bucket if it is not in the bucket after appending.
                 print(transition)    
                 print(f"Transition not in the bucket {destination_bucket}.")
 
