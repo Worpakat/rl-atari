@@ -94,7 +94,7 @@
     "encoder_optimizer_kwargs": {},           
  
     "kl_loss_weight": 0.0,                
-    "network_optimization_period": 8,
+    "network_optimization_period": 4,
     "key_updates": true, 
 
 
