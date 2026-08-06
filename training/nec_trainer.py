@@ -640,8 +640,8 @@ class NECTrainer:
 
 
         # Experimental: Optimize for each transition just before evaluation.
-        # optimization_period = 1 if self._should_evaluate() else self.config.network_optimization_period
-        # steps = (int(steps * self.config.network_optimization_period )+ 1) if self._should_evaluate() else steps
+        optimization_period = 1 if self._should_evaluate() else self.config.network_optimization_period
+        steps = (int(steps * self.config.network_optimization_period )+ 1) if self._should_evaluate() else steps
         print(f"Network is goint to be optimized {steps} times.")
 
 
@@ -650,7 +650,7 @@ class NECTrainer:
             # Sample a mini-batch.
             indices, batch = self.replay_memory.sample(
                 self.config.batch_size, 
-                self.config.network_optimization_period
+                optimization_period
             )
             states, actions, q_targets = self.replay_memory.extract_batch(batch, device=self.device)
 
