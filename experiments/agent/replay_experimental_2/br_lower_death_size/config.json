@@ -32,7 +32,7 @@
 
     "stratified_memory_kwargs": {
         "bucket_capacities": [15000, 40000, 5000, 3000], 
-        "bucket_rates": [0.15, 0.5, 0.25, 0.1],         
+        "bucket_rates": [0.2, 0.5, 0.2, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
@@ -49,7 +49,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_150_step_20873.pt",                  
+    "resume_checkpoint": "model_ep_200_step_24339.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_capacity": false,                 
 
