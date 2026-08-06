@@ -586,10 +586,6 @@ class StratifiedReplayMemory():
         transitions = transitions[start_index:]
         td_errors_abs = td_errors_abs[start_index:]
 
-        print("self.add_new_times:", self.add_new_times)
-        print("start_index:", start_index, " | new_transitions_count:", new_transitions_count)
-        print("transitions to move:", len(transitions), " | td_errors_abs:", len(td_errors_abs))
-        
         for transition, td_error in zip(transitions, td_errors_abs):
 
             # ------------------------------------------------------
