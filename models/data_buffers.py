@@ -426,9 +426,8 @@ class StratifiedReplayMemory():
 
         remaining = batch_size - new_count * self.add_new_times
 
-        td_index_border = (new_count * (self.add_new_times - 1), new_count * self.add_new_times)  # This is the index border for TD stats calculation.
-        # 'new_count' is the one plus of last index of new transitions,
-        # transitions to be used for TD stats calculation.
+        td_index_border = (new_count * (self.add_new_times - 1), new_count * self.add_new_times)  
+        # This is the index border for TD stats calculation.
 
         if remaining <= 0:
             # print("new return batch size:", len(batch))
@@ -586,6 +585,9 @@ class StratifiedReplayMemory():
 
         transitions = transitions[start_index:]
         td_errors_abs = td_errors_abs[start_index:]
+
+        print("start_index:", start_index, " | new_transitions_count:", new_transitions_count)
+        print("transitions to move:", len(transitions), " | td_errors_abs:", len(td_errors_abs))
         
         for transition, td_error in zip(transitions, td_errors_abs):
 
