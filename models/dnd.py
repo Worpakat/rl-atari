@@ -250,6 +250,7 @@ class DND(nn.Module):
         return_indices: bool = False,
         return_similarities: bool = False,
         return_neighbors: bool = False,
+        track_key_updates: bool = False  
     ) -> LookupResult:
         """
         Retrieves the nearest neighbors of the given key and estimates its
