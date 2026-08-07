@@ -41,10 +41,10 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_300_step_40274.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_100_step_13513.pt",                  
     "load_replay_memory": true,
-    "use_checkpoint_capacity": false,                 
+    "use_checkpoint_capacity": true,                 
 
 
     "checkpoint_start": 0,
