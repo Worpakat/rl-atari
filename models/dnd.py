@@ -87,9 +87,9 @@ class DND(nn.Module):
             device=self.device,
             
         )
-        self.generations = torch.zeros(
+        self.last_used = torch.zeros(
             self.max_memory,
-            dtype=torch.float,
+            dtype=torch.long,
             device=self.device,
         )
 
@@ -100,7 +100,7 @@ class DND(nn.Module):
                 device=self.device,
             )
 
-        self.write_index = 0
+        self.lookup_counter = 0
         self.memory_size = 0
 
         self._pending_keys = []
@@ -170,7 +170,6 @@ class DND(nn.Module):
             pending_auxiliary = torch.stack(self._pending_auxiliary).to(self.device)
 
         if self.memory_size < self.max_memory:
-
             free = self.max_memory - self.memory_size
             append_count = min(free, pending_size)
 
@@ -180,8 +179,16 @@ class DND(nn.Module):
                 device=self.keys.device,
             )
 
-            self.generations[append_indices] += 1
+            # Marking recently used neighbors with timestamps for LRU eviction.
+            timestamps = torch.arange(
+                self.lookup_counter + 1,
+                self.lookup_counter + append_count + 1,
+                device=self.device,
+            )
+            self.last_used[append_indices] = timestamps
+            self.lookup_counter += append_count
 
+            # Inserting the new pending entries to the end of the memory.
             with torch.no_grad(): # Since keys are trainable.
                 self.keys[append_indices].copy_(pending_keys[:append_count])  
 
@@ -201,27 +208,31 @@ class DND(nn.Module):
             pending_size -= append_count
 
         if pending_size > 0:
-
-            write_indices = (
-                torch.arange(
-                    self.write_index,
-                    self.write_index + pending_size,
-                    device=self.keys.device,
-                )
-                % self.max_memory
+            # Getting smallest timestamps, which correspond to the least recently used entries.
+            _, write_indices = torch.topk(
+                self.last_used[:self.memory_size],
+                k=pending_size,
+                largest=False, 
             )
 
-            self.generations[write_indices] += 1
+            # Marking recently used neighbors with timestamps for LRU eviction.
+            timestamps = torch.arange(
+                self.lookup_counter + 1,
+                self.lookup_counter + pending_size + 1,
+                device=self.device,
+            )
+            self.last_used[write_indices] = timestamps
+            self.lookup_counter += pending_size
 
-            with torch.no_grad(): # Since keys are trainable.
+            # Overwriting the least recently used entries with the new pending entries.
+            with torch.no_grad():
                 self.keys[write_indices].copy_(pending_keys)
-            
+
             self.values[write_indices] = pending_values.unsqueeze(dim=1)
 
             if self.use_auxiliary:
                 self.auxiliary[write_indices] = pending_auxiliary
 
-            self.write_index = (self.write_index + pending_size) % self.max_memory
 
         self._pending_keys.clear()
         self._pending_values.clear()
@@ -242,6 +253,7 @@ class DND(nn.Module):
         self.neighbor_index.build(
             self.keys[:self.memory_size] # ! WE FUCKING HAVE TO PASS ONLY THE VALID PART !!.
             )
+
     
     def lookup(
         self,
@@ -270,15 +282,26 @@ class DND(nn.Module):
         key = key.to(self.device)
 
         neighbor_indices = self.neighbor_index.search(key, self.num_neighbors)
-        
-        neighbor_generations = self.generations[neighbor_indices]
+
+        # Marking recently used neighbors with timestamps for LRU eviction.
+        timestamps = torch.arange(
+            self.lookup_counter + len(neighbor_indices),
+            self.lookup_counter,
+            -1, # Closest neighbor gets the highest timestamp, which makes it the least likely to be evicted.
+            device=self.device,
+        )
+
+        self.last_used[neighbor_indices] = timestamps
+        self.lookup_counter += len(neighbor_indices)
+
+        # Getting the neighbor keys, values, and auxiliary data (if it exists) for similarity computation.
         neighbor_keys = self.keys[neighbor_indices]
         neighbor_values = self.values[neighbor_indices]
-
         neighbor_auxiliary = None
 
         if self.use_auxiliary:
             neighbor_auxiliary = self.auxiliary[neighbor_indices]
+
 
         similarities = self.similarity_function(
             key=key,
@@ -295,7 +318,6 @@ class DND(nn.Module):
 
         if return_indices:
             result.neighbor_indices = neighbor_indices
-            result.neighbor_generations = neighbor_generations
 
         if return_similarities:
             result.similarities = similarities
@@ -387,9 +409,9 @@ class DND(nn.Module):
         return {
             "keys": self.keys.detach(),
             "values": self.values.detach(),
-            "generations": self.generations.detach(),
+            "last_used": self.last_used.detach(),
             "auxiliary": self.auxiliary.detach() if self.use_auxiliary else None,
-            "write_index": self.write_index,
+            "lookup_counter": self.lookup_counter,
             "memory_size": self.memory_size,
         }
     
@@ -399,17 +421,17 @@ class DND(nn.Module):
         """
         self.keys = state["keys"].to(self.device)
         self.values = state["values"].to(self.device)
-        self.generations = state["generations"].to(self.device)
+        self.last_used = state["last_used"].to(self.device)
 
         self.keys.requires_grad_(True) # To make sure it works properly, we are assigning manually
         self.values.requires_grad_(False)
-        self.generations.requires_grad_(False)
+        self.last_used.requires_grad_(False)
         
         if self.use_auxiliary:
             self.auxiliary = state["auxiliary"].to(self.device)
             self.auxiliary.requires_grad_(False)
 
-        self.write_index = state["write_index"]
+        self.lookup_counter = state["lookup_counter"]
         self.memory_size = state["memory_size"]
         
         self.build_index()
