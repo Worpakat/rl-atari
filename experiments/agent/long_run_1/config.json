@@ -1,7 +1,7 @@
 {
     "colab_execution": false,
     "kaggle_execution": true,
-    
+
 
     "experiment_dir": "experiments/agent/long_run_1",
     "environment_name": "ALE/Riverraid-v5",    
@@ -44,7 +44,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_100_step_13513.pt",                  
+    "resume_checkpoint": "model_ep_150_step_20405.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_capacity": false,                 
 
