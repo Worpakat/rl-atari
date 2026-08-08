@@ -933,11 +933,13 @@ class StratifiedReplayMemory():
         files = sorted(save_directory.glob(f"{prefix}_*.pt"))
 
         for file in files:
-
-            chunk = torch.load(
-                file,
-                map_location="cpu",
-                weights_only=False,
-            )
+            try:
+                chunk = torch.load(
+                    file,
+                    map_location="cpu",
+                    weights_only=False,
+                )
+            except Exception as e:
+                print(f"Error loading {file}: {e}")
 
             bucket.extend(chunk)
