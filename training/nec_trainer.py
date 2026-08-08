@@ -937,7 +937,8 @@ class NECTrainer:
         model_checkpoint = self.checkpoint_manager.load(
             self.config.resume_checkpoint,
             map_location=self.device,
-            colab_execution=self.config.colab_execution
+            colab_execution=self.config.colab_execution,
+            kaggle_execution=self.config.kaggle_execution
         )
 
         self.agent.load_checkpoint_state(model_checkpoint["model"])
@@ -983,8 +984,11 @@ class NECTrainer:
                     )
 
                 elif isinstance(self.replay_memory, StratifiedReplayMemory):
-                    replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
-                    # There might be file extensions in the directory name.
+                    if self.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
+                        replay_memory_dir = Path("/kaggle/working/checkpoints") / replay_filename.replace(".pt", "")
+                    else:
+                        replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
+                        # There might be file extensions in the directory name.
 
                     print(f"Replay memory directory: {replay_memory_dir}")
 

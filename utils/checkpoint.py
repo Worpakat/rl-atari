@@ -62,7 +62,11 @@ class CheckpointManager:
 
         return filepath
 
-    def load(self, filename: str | Path, map_location=None, colab_execution: bool = False) -> dict:
+    def load(
+        self, filename: str | Path, map_location=None, 
+        colab_execution: bool = False,
+        kaggle_execution: bool = False,
+        ) -> dict:
         """
         Loads a checkpoint.
 
@@ -78,7 +82,12 @@ class CheckpointManager:
             local_checkpoint_dir = Path("/content/checkpoints")
             self.checkpoints_dir = local_checkpoint_dir
 
-        filepath = self.checkpoints_dir / filename
+        #THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION
+        if kaggle_execution: # Load from kaggle session local storage
+            local_checkpoint_dir = Path("/kaggle/working/checkpoints")
+            filepath = local_checkpoint_dir / filename
+        else:
+            filepath = self.checkpoints_dir / filename
 
         return torch.load(filepath, map_location=map_location)
 

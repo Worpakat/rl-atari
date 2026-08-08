@@ -1,5 +1,7 @@
 {
     "colab_execution": false,
+    "kaggle_execution": true,
+    
 
     "experiment_dir": "experiments/agent/long_run_1",
     "environment_name": "ALE/Riverraid-v5",    
