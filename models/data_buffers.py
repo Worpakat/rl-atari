@@ -944,4 +944,8 @@ class StratifiedReplayMemory():
             except Exception as e:
                 print(f"Error loading {file}: {e}")
 
+            print("Bucket:", prefix)
+            for transition in chunk:
+                print(transition.bucket)
+
             bucket.extend(chunk)
