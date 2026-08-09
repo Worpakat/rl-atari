@@ -50,7 +50,7 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 100,
+    "checkpoint_period": 300,
     "save_replay_memory": true,
     "replay_memory_chunk_size": 5000,
     "log_batch_index": false,
@@ -77,9 +77,9 @@
     "hidden_dim": 512,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 128,                          
+    "latent_dim": 256,                          
     "adapter": true,                            
-    "representation_dim": 32,   
+    "representation_dim": 64,   
     "sequence_prior": false,    
 
 
