@@ -87,7 +87,7 @@
     "encoder_learning_rate": 1e-6,            
     "encoder_optimizer_kwargs": {},           
  
-    "kl_loss_weight": 0.1,                
+    "kl_loss_weight": 0.05,                
     "network_optimization_period": 4,
     "key_updates": true, 
 
