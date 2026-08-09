@@ -825,7 +825,7 @@ class StratifiedReplayMemory():
         self._warmup_bucket.clear()
 
         # Load buckets
-        # self._load_bucket(self._low_bucket, "low", save_directory)
+        self._load_bucket(self._low_bucket, "low", save_directory)
         self._load_bucket(self._medium_bucket, "medium", save_directory)
         self._load_bucket(self._high_bucket, "high", save_directory)
         self._load_bucket(self._death_bucket, "death", save_directory)
@@ -942,7 +942,7 @@ class StratifiedReplayMemory():
             # This is a sanity check to ensure that the loaded transitions have the correct bucket type.
             for transition in chunk: 
                 if transition.bucket != ReplayBucketType[prefix.upper()]:                
-                    print(f"Warning: Transition bucket mismatch in {file}. Expected {prefix.upper()}, got {transition.bucket}.")
+                    # print(f"Warning: Transition bucket mismatch in {file}. Expected {prefix.upper()}, got {transition.bucket}.")
                     transition.bucket = ReplayBucketType[prefix.upper()]
 
             bucket.extend(chunk)
