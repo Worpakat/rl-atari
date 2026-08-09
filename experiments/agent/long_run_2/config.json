@@ -77,7 +77,7 @@
     "hidden_dim": 512,                          
     "lstm_layers": 1,                           
     "flatten_output": true,                     
-    "latent_dim": 256,                          
+    "latent_dim": 128,                          
     "adapter": true,                            
     "representation_dim": 32,   
     "sequence_prior": false,    
