@@ -50,7 +50,7 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 50,
+    "checkpoint_period": 100,
     "save_replay_memory": true,
     "replay_memory_chunk_size": 5000,
     "log_batch_index": false,
@@ -92,7 +92,7 @@
     "key_updates": true, 
 
 
-    "dnd_max_memory": 50000,                   
+    "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 100,                    
 
     "dnd_duplicate_threshold": 0.01,            
