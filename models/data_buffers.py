@@ -614,7 +614,7 @@ class StratifiedReplayMemory():
                 continue
             
             print(f"Moving transition from {transition.bucket} to {destination_bucket} | TD-error: {td_error:.4f}")
-            
+
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
                 self.buckets[transition.bucket].remove(transition)
 
@@ -831,7 +831,7 @@ class StratifiedReplayMemory():
         self._warmup_bucket.clear()
 
         # Load buckets
-        self._load_bucket(self._low_bucket, "low", save_directory)
+        # self._load_bucket(self._low_bucket, "low", save_directory)
         self._load_bucket(self._medium_bucket, "medium", save_directory)
         self._load_bucket(self._high_bucket, "high", save_directory)
         self._load_bucket(self._death_bucket, "death", save_directory)
