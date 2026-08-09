@@ -944,8 +944,11 @@ class StratifiedReplayMemory():
             except Exception as e:
                 print(f"Error loading {file}: {e}")
 
-            print("Bucket:", prefix)
-            for transition in chunk:
-                print(transition.bucket)
+            
+            # This is a sanity check to ensure that the loaded transitions have the correct bucket type.
+            for transition in chunk: 
+                if transition.bucket != ReplayBucketType[prefix.upper()]:                
+                    print(f"Warning: Transition bucket mismatch in {file}. Expected {prefix.upper()}, got {transition.bucket}.")
+                    transition.bucket = ReplayBucketType[prefix.upper()]
 
             bucket.extend(chunk)
