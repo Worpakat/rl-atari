@@ -208,6 +208,7 @@ class DND(nn.Module):
             pending_size -= append_count
 
         if pending_size > 0:
+            print(f"Memory full. Overwriting {pending_size} least recently used entries.")
             # Getting smallest timestamps, which correspond to the least recently used entries.
             _, write_indices = torch.topk(
                 self.last_used[:self.memory_size],
