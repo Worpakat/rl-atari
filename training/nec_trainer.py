@@ -985,7 +985,7 @@ class NECTrainer:
 
                 elif isinstance(self.replay_memory, StratifiedReplayMemory):
                     if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
-                        replay_memory_dir = Path("/kaggle/input/datasets/ibrahim2ksxh1q/rl-atari-checkpoints-2") / replay_filename.replace(".pt", "")
+                        replay_memory_dir = Path("/kaggle/input/rl-atari-checkpoints-2") / replay_filename.replace(".pt", "")
                     else:
                         replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
                         # There might be file extensions in the directory name.
