@@ -30,7 +30,7 @@
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
-        "add_new_times": 3,
+        "add_new_times": 2,
         "verbose": true            
     },
 
@@ -44,7 +44,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_300_step_40201.pt",                  
+    "resume_checkpoint": "model_ep_150_step_20405.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_capacity": false,                 
 
