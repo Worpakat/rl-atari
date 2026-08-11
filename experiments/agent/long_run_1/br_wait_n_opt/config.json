@@ -3,7 +3,7 @@
     "kaggle_execution": true,
 
 
-    "experiment_dir": "experiments/agent/long_run_1",
+    "experiment_dir": "experiments/agent/long_run_1/br_wait_n_opt",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
