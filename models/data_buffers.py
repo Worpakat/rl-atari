@@ -607,6 +607,8 @@ class StratifiedReplayMemory():
             else:
                 break
 
+        print(f"move between, new count: {new_transitions_count}")
+
         # We only want to move the last added new transitions to their corresponding buckets.
         start_index = new_transitions_count / self.add_new_times 
         start_index = int((self.add_new_times-1) * start_index) 
