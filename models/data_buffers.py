@@ -266,6 +266,7 @@ class StratifiedReplayMemory():
         td_std_multiplier: float = 1.0,
         death_window: int = 15,
         add_new_times: int = 1,
+        new_incluede_period: int = 1,
         verbose: bool = False,
     ):
         super().__init__()
@@ -293,13 +294,14 @@ class StratifiedReplayMemory():
 
         # Sampling
         self.death_window = death_window # Used to mark death and near-death transitions.
+        # [LOW, MEDIUM, HIGH, DEATH]
+        
         self.bucket_rates = {
             ReplayBucketType.LOW: bucket_rates[0],
             ReplayBucketType.MEDIUM: bucket_rates[1],
             ReplayBucketType.HIGH: bucket_rates[2],
             ReplayBucketType.DEATH: bucket_rates[3],
         }
-        # [LOW, MEDIUM, HIGH, DEATH]
         
 
         # TD statistics
@@ -319,7 +321,10 @@ class StratifiedReplayMemory():
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
         
         self.add_new_times = add_new_times # How many times to add new transitions to the batch during sampling. 
+        self.new_incluede_period = new_incluede_period # How many every optimization steps to include new transitions in the batch.
 
+        self._new_incluede_counter = 1 # Used to track new_incluede_period progress. 
+        # ! Start from 1 to include new transitions in the first optimization step.
         self._new_index = 0 # Used to track _new_bucket sampling progress.
         
         self.verbose = verbose # For reporting
@@ -389,6 +394,27 @@ class StratifiedReplayMemory():
         """
         return True
 
+    def update_optimization_steps(
+        self, steps: int, 
+        network_optimization_period: int
+        ) -> int:
+        """
+        Determines how many optimization steps to perform in the current turn
+        with respect to the "wait and optimize" strategy. Uses `new_incluede_period`.
+        """
+        if (
+            self.new_incluede_period > 1 and 
+            ((self._new_incluede_counter - 1) % self.new_incluede_period == 0)
+            ): 
+            # If it is new bucket transition including turn, we optimize until new bucket transitions is fnished.
+
+            return int(len(self._new_bucket) / network_optimization_period) + 1
+
+        # Otherwise we optimize as many as we do originally.
+        return steps
+
+
+
     def sample(
         self,
         batch_size: int,
@@ -409,29 +435,31 @@ class StratifiedReplayMemory():
 
         batch = []
         td_index_border = 0
+        remaining = batch_size
 
         # ==========================================================
         # NEW transitions
         # ==========================================================
+        if (self._new_incluede_counter - 1) % self.new_incluede_period == 0:
 
-        new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
+            new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
-        for _ in range(self.add_new_times): # Add new transitions multiple times to the batch.
-            for i in range(self._new_index, self._new_index + new_count):
-                batch.append(self._new_bucket[i])
+            for _ in range(self.add_new_times): # Add new transitions multiple times to the batch.
+                for i in range(self._new_index, self._new_index + new_count):
+                    batch.append(self._new_bucket[i])
 
 
-        if self.first_turn:        
-            self._new_index += new_count
+            if self.first_turn:        
+                self._new_index += new_count
 
-        remaining = batch_size - new_count * self.add_new_times
+            remaining = batch_size - new_count * self.add_new_times
 
-        td_index_border = (new_count * (self.add_new_times - 1), new_count * self.add_new_times)  
-        # This is the index border for TD stats calculation.
+            td_index_border = (new_count * (self.add_new_times - 1), new_count * self.add_new_times)  
+            # This is the index border for TD stats calculation.
 
-        if remaining <= 0:
-            # print("new return batch size:", len(batch))
-            return td_index_border, batch 
+            if remaining <= 0:
+                # print("new return batch size:", len(batch))
+                return td_index_border, batch 
 
         
         # ==========================================================
@@ -701,6 +729,8 @@ class StratifiedReplayMemory():
     def reset_new_bucket(self) -> None:
         self._new_bucket.clear()
         self._new_index = 0
+
+        self._new_incluede_counter += 1  
 
     def report(self):
         if not self.verbose:
