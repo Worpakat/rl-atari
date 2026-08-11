@@ -295,7 +295,7 @@ class StratifiedReplayMemory():
         # Sampling
         self.death_window = death_window # Used to mark death and near-death transitions.
         # [LOW, MEDIUM, HIGH, DEATH]
-        
+
         self.bucket_rates = {
             ReplayBucketType.LOW: bucket_rates[0],
             ReplayBucketType.MEDIUM: bucket_rates[1],
@@ -434,7 +434,7 @@ class StratifiedReplayMemory():
         """
 
         batch = []
-        td_index_border = 0
+        td_index_border = (0, 0)
         remaining = batch_size
 
         # ==========================================================
@@ -475,7 +475,7 @@ class StratifiedReplayMemory():
 
             remaining -= count
 
-            td_index_border = batch_size - remaining 
+            td_index_border = (td_index_border[0], (batch_size - remaining))
             # This one is most likely not required, but we keep it just in case.
             # Why is not it required?: 
             # -> It is very unlikely that there will be any trnasition in the warmup bucket after the first turn. 
