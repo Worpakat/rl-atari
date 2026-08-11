@@ -26,11 +26,11 @@
     "replay_memory_type": "stratified",    
     "stratified_memory_kwargs": {
         "bucket_capacities": [15000, 80000, 5000, 4000], 
-        "bucket_rates": [0.22, 0.45, 0.23, 0.1],         
+        "bucket_rates": [0.25, 0.45, 0.2, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
-        "add_new_times": 1,
+        "add_new_times": 2,
         "new_incluede_period": 5,
         "verbose": true            
     },
@@ -45,7 +45,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_200_step_27068.pt",                  
+    "resume_checkpoint": "model_ep_250_step_39081.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_capacity": false,                 
 
