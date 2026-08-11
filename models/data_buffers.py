@@ -263,7 +263,7 @@ class ReplayMemory(BaseBuffer):
         memory = list(self._memory)
 
         for chunk_index, start in enumerate(range(0, len(memory), chunk_size)):
-            chunk = self._memory[start : start + chunk_size]
+            chunk = memory[start : start + chunk_size]
 
             torch.save(
                 chunk,
