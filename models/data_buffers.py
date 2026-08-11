@@ -407,7 +407,7 @@ class StratifiedReplayMemory():
             ((self._new_incluede_counter - 1) % self.new_incluede_period == 0)
             ): 
             # If it is new bucket transition including turn, we optimize until new bucket transitions is fnished.
-
+            print("new bucekt size: ", len(self._new_bucket))
             return int(len(self._new_bucket) / network_optimization_period) + 1
 
         # Otherwise we optimize as many as we do originally.
@@ -440,8 +440,8 @@ class StratifiedReplayMemory():
         # ==========================================================
         # NEW transitions
         # ==========================================================
-        if (self._new_incluede_counter - 1) % self.new_incluede_period == 0:
-
+        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0:
+            print("_new_incluede_counter - 1: ", (self._new_incluede_counter - 1))
             new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
             for _ in range(self.add_new_times): # Add new transitions multiple times to the batch.

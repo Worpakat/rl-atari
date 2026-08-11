@@ -604,6 +604,7 @@ class NECTrainer:
         
         return insert_update_counts
 
+
     def _network_optimization_step(self):
         """
         Optimizes the encoder (and optionally the DND keys) using
@@ -642,6 +643,7 @@ class NECTrainer:
                     steps, 
                     self.config.network_optimization_period
                     )
+                print("stpes:" , steps)
                 
 
         for _ in range(steps):
