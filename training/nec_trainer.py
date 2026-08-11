@@ -732,7 +732,7 @@ class NECTrainer:
 
             self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
-            self.replay_memory.report() # Print current circumstances.
+        self.replay_memory.report() # Print current circumstances.
         
 
         return indices, losses

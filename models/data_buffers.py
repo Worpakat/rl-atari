@@ -140,12 +140,15 @@ class ReplayMemory(BaseBuffer):
         prioritized: bool = False,
         priority_alpha: float = 0.6,
         priority_epsilon: float = 1e-5,
+        verbose: bool = False
     ):
         super().__init__(capacity)
 
         self.prioritized = prioritized
         self.priority_alpha = priority_alpha
         self.priority_epsilon = priority_epsilon
+
+        self.verbose = verbose
 
 
     def append(self, transition: Transition, q_target: torch.Tensor, warmup: bool = False) -> None:
@@ -228,6 +231,13 @@ class ReplayMemory(BaseBuffer):
             
             self._memory[index].priority = (error + 1) ** self.priority_alpha # Experimental priority
 
+    def report(self):
+        if not self.verbose:
+            return
+
+        print(f"Replay Memory Size: {self.__len__()}")
+        
+
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
@@ -269,7 +279,6 @@ class ReplayMemory(BaseBuffer):
                 chunk,
                 save_directory / f"{"replay"}_{chunk_index:03d}.pt",
             )
-
 
     def load(
         self,
