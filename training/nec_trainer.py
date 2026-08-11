@@ -902,8 +902,6 @@ class NECTrainer:
                     )
                     print(evaluation_summary)
 
-                    self._optuna_step(evaluation_summary)
-
 
             return self.logger.last()
 
