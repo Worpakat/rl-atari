@@ -639,11 +639,11 @@ class NECTrainer:
                 # Eventually, we gather all batches and TD errors;
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
 
-                steps = self.replay_memory.update_optimization_steps(
-                    steps, 
-                    self.config.network_optimization_period
-                    )
-                print("stpes:" , steps)
+            steps = self.replay_memory.update_optimization_steps(
+                steps, 
+                self.config.network_optimization_period
+                )
+            print("stpes:" , steps)
                 
 
         for _ in range(steps):
