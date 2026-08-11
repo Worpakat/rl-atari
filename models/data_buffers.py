@@ -407,7 +407,6 @@ class StratifiedReplayMemory():
             ((self._new_incluede_counter - 1) % self.new_incluede_period == 0)
             ): 
             # If it is new bucket transition including turn, we optimize until new bucket transitions is fnished.
-            print("new bucekt size: ", len(self._new_bucket))
             return int(len(self._new_bucket) / network_optimization_period) + 1
 
         # Otherwise we optimize as many as we do originally.
@@ -606,8 +605,6 @@ class StratifiedReplayMemory():
                 new_transitions_count += 1
             else:
                 break
-
-        print(f"move between, new count: {new_transitions_count}")
 
         # We only want to move the last added new transitions to their corresponding buckets.
         start_index = new_transitions_count / self.add_new_times 
