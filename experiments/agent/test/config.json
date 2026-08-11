@@ -58,7 +58,7 @@
     "checkpoint_start": 0,
     "checkpoint_period": 2,
     "save_replay_memory": true,
-    "replay_memory_chunk_size": 5000,
+    "replay_memory_chunk_size": 500,
     "log_batch_index": false,     
     "evaluation_period": 50,                   
     "evaluation_episodes": 3,                  
