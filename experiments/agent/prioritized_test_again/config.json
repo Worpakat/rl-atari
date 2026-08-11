@@ -1,9 +1,9 @@
 {
-    "colab_execution": false,
-    "kaggle_execution": true,
+    "colab_execution": true,
+    "kaggle_execution": false,
 
 
-    "experiment_dir": "experiments/agent/long_run_2",
+    "experiment_dir": "experiments/agent/prioritized_test_again",
     "environment_name": "ALE/Riverraid-v5",    
     "grayscale": true,
     "num_actions": 5,                           
@@ -23,15 +23,12 @@
     "cache_representations": true,      
 
 
-    "replay_memory_type": "stratified",    
-    "stratified_memory_kwargs": {
-        "bucket_capacities": [15000, 60000, 5000, 3000], 
-        "bucket_rates": [0.22, 0.45, 0.23, 0.1],         
-        "td_statistics_beta": 0.96,
-        "td_std_multiplier":  0.9,
-        "death_window": 10, 
-        "add_new_times": 3,
-        "verbose": true            
+    "replay_memory_type": "normal",        
+    "normal_memory_kwargs": {
+        "capacity": 30000,
+        "prioritized": true,
+        "priority_alpha": 0.7,
+        "priority_epsilon": 1e-5
     },
 
 
@@ -44,13 +41,13 @@
 
 
     "resume_training": false,                   
-    "resume_checkpoint": "model_ep_300_step_40201.pt",                  
+    "resume_checkpoint": "model_ep_300_step_41178.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_config": false,                 
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 300,
+    "checkpoint_period": 50,
     "save_replay_memory": true,
     "replay_memory_chunk_size": 5000,
     "log_batch_index": false,
@@ -79,7 +76,7 @@
     "flatten_output": true,                     
     "latent_dim": 256,                          
     "adapter": true,                            
-    "representation_dim": 64,   
+    "representation_dim": 16,   
     "sequence_prior": false,    
 
 
