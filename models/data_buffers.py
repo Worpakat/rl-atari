@@ -161,7 +161,7 @@ class ReplayMemory(BaseBuffer):
                 state=transition.state.copy(),
                 action=transition.action,
                 q_target=q_target.to("cpu").detach().numpy(),
-                priority=initial_priority,
+                priority=initial_priority,                
             )
         )
 
@@ -195,7 +195,6 @@ class ReplayMemory(BaseBuffer):
 
         return indices.tolist(), batch
     
-
     def extract_batch(
             self, 
             batch: list[ReplayMemoryUnit],
@@ -218,7 +217,6 @@ class ReplayMemory(BaseBuffer):
         
         return states, actions, q_targets
     
-
     def update_priorities(
         self,
         indices: list[int],
@@ -230,10 +228,104 @@ class ReplayMemory(BaseBuffer):
             
             self._memory[index].priority = (error + 1) ** self.priority_alpha # Experimental priority
 
-
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
         return np.sum([transition.state.nbytes for transition in self._memory]) / 1024**2
+
+    def save(
+        self,
+        save_directory: str | Path,
+        chunk_size: int = 5000,
+    ) -> None:
+        """
+        Saves the stratified replay memory into a directory.
+
+        Directory structure
+        -------------------
+        replay_memory/
+            metadata.pt
+            replay_000.pt
+            replay_001.pt
+            ...
+        """
+        save_directory = ensure_directory(save_directory)
+
+        # Metadata
+        metadata = {
+            "capacity": self.capacity,
+            "prioritized": self.prioritized,
+            "priority_alpha": self.priority_alpha,
+            "priority_epsilon":self.priority_epsilon,
+        }
+        torch.save(metadata, (save_directory / "metadata.pt"))
+
+        # Memory
+        memory = list(self._memory)
+
+        for chunk_index, start in enumerate(range(0, len(memory), chunk_size)):
+            chunk = self._memory[start : start + chunk_size]
+
+            torch.save(
+                chunk,
+                save_directory / f"{"replay"}_{chunk_index:03d}.pt",
+            )
+
+
+    def load(
+        self,
+        save_directory: str | Path,
+        use_checkpoint_config: bool = True,
+    ) -> None:
+        """
+        Loads a previously saved stratified replay memory.
+        """
+        save_directory = Path(save_directory)
+
+        if not save_directory.exists():
+            raise FileNotFoundError(
+                f"Replay memory directory does not exist: {save_directory}"
+            )
+
+        # Metadata
+        metadata = torch.load(
+            save_directory / "metadata.pt",
+            map_location="cpu",
+            weights_only=False,
+        )
+
+        if use_checkpoint_config: # Use the saved metadata configurations from the checkpoint.
+            self.capacity=metadata["capacity"] 
+            self.prioritized=metadata["prioritized"]
+            self.priority_alpha=metadata["priority_alpha"]
+            self.priority_epsilon=metadata["priority_epsilon"]
+
+        # Clear existing replay
+        self._memory.clear()
+
+        # Load memory chunks
+        files = sorted(save_directory.glob("replay_*.pt"))
+
+        for file in files:
+            try:
+                chunk = torch.load(
+                    file,
+                    map_location="cpu",
+                    weights_only=False,
+                )
+            except Exception as e:
+                print(f"Error loading {file}: {e}")
+
+            self._memory.extend(chunk)
+
+        print(f"Loaded replay memory:" 
+              f"\n  size: {len(self._memory)} transitions" 
+              f"\n  ({self.get_states_total_size():.2f} MB)" 
+              f"\n  capacity: {self.capacity}" 
+              f"\n  prioritized: {self.prioritized}"
+              f"\n  priority_alpha: {self.priority_alpha}"
+              f"\n  priority_epsilon: {self.priority_epsilon}"
+              ) 
+        
 
 
 class StratifiedReplayMemory():
@@ -394,13 +486,13 @@ class StratifiedReplayMemory():
         """
         return True
 
-    def update_optimization_steps( # ! EXPERIMENTAL: "Wait and Add"
+    def update_optimization_steps( # ! EXPERIMENTAL: "Wait and Opt"
         self, steps: int, 
         network_optimization_period: int
         ) -> int:
         """
         Determines how many optimization steps to perform in the current turn
-        with respect to the "wait and add" strategy. Uses `new_incluede_period`.
+        with respect to the "wait and Opt" strategy. Uses `new_incluede_period`.
         """
         if (
             self.new_incluede_period > 1 and 
@@ -411,8 +503,6 @@ class StratifiedReplayMemory():
 
         # Otherwise we optimize as many as we do originally.
         return steps
-
-
 
     def sample(
         self,
@@ -439,7 +529,7 @@ class StratifiedReplayMemory():
         # ==========================================================
         # NEW transitions
         # ==========================================================
-        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Add"
+        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Opt"
 
             new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
@@ -726,7 +816,7 @@ class StratifiedReplayMemory():
         return states, actions, q_targets
 
     def reset_new_bucket(self) -> None:
-        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Add"
+        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Opt"
             self._new_bucket.clear()
 
         self._new_index = 0
@@ -748,7 +838,6 @@ class StratifiedReplayMemory():
             + f"New: {len(self._new_bucket)}, |"
             + f"Warmup: {len(self._warmup_bucket)}, |"
             + f"Total: {total_len}")
-
 
     def save(
         self,

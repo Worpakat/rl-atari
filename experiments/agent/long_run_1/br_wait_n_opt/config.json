@@ -47,7 +47,7 @@
     "resume_training": true,                   
     "resume_checkpoint": "model_ep_250_step_39081.pt",                  
     "load_replay_memory": true,
-    "use_checkpoint_capacity": false,                 
+    "use_checkpoint_config": false,                 
 
 
     "checkpoint_start": 0,

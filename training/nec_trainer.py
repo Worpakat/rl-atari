@@ -105,10 +105,6 @@ class NECTrainer:
         if self.config.replay_memory_type == "normal":
             self.replay_memory = ReplayMemory(
                 **self.config.normal_memory_kwargs
-                # capacity=config.replay_memory_size,
-                # prioritized=config.prioritized_replay,
-                # priority_alpha=config.priority_alpha,
-                # priority_epsilon=config.priority_epsilon,
             )
 
         elif self.config.replay_memory_type == "stratified":
@@ -826,14 +822,6 @@ class NECTrainer:
             }
         }
     
-        # dnd_lengths = []
-        # dnd_sizes = []
-        # for i, dnd in enumerate(self.agent.dnds):
-        #     dnd_lengths.append(len(dnd.keys))
-        #     dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
-
-        # print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
-
         filename = f"model_ep_{self.episode}_step_{self.optimization_step}"
         self.checkpoint_manager.save(
             model_checkpoint,
@@ -841,45 +829,44 @@ class NECTrainer:
             colab_execution=self.config.colab_execution
         )
 
+        # Replay Memory
         print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
         
         if self.config.save_replay_memory:
             print("Saving replay memory...")
 
-            if isinstance(self.replay_memory, ReplayMemory): # Standard / prioritized replay memory.
-                replay_memory_checkpoint = {
-                    "replay_memory": self.replay_memory.state_dict(),
-                    "training_state": {
-                        "optimization_step": self.optimization_step,
-                        "environment_step": self.global_step,
-                        "episode": self.episode,
-                    }
-                }
+            # if isinstance(self.replay_memory, ReplayMemory): # Standard / prioritized replay memory.
+            #     replay_memory_checkpoint = {
+            #         "replay_memory": self.replay_memory.state_dict(),
+            #         "training_state": {
+            #             "optimization_step": self.optimization_step,
+            #             "environment_step": self.global_step,
+            #             "episode": self.episode,
+            #         }
+            #     }
         
-                self.checkpoint_manager.save(
-                    replay_memory_checkpoint,
-                    filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
-                    colab_execution=self.config.colab_execution
-                )
+            #     self.checkpoint_manager.save(
+            #         replay_memory_checkpoint,
+            #         filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
+            #         colab_execution=self.config.colab_execution
+            #     )
 
-            elif isinstance(self.replay_memory, StratifiedReplayMemory): # Stratified replay memory.
-                replay_memory_dir = (
-                    self.checkpoint_manager.checkpoints_dir /
-                    f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"
-                )
+            # elif isinstance(self.replay_memory, StratifiedReplayMemory): # Stratified replay memory.
+               
+            replay_memory_dir = (
+                self.checkpoint_manager.checkpoints_dir /
+                f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"
+            )
 
-                self.replay_memory.save(
-                    replay_memory_dir,
-                    chunk_size=self.config.replay_memory_chunk_size
-                    )
+            self.replay_memory.save(
+                replay_memory_dir,
+                chunk_size=self.config.replay_memory_chunk_size
+                )
 
         
         print(f"Checkpoint check: Checkpoint {filename+'.pt'} saved.")
 
         self.checkpoint_start = self.optimization_step
-        
-    def _optuna_step(self, logs):
-        ...
 
 
     def train(self):
@@ -974,28 +961,29 @@ class NECTrainer:
                     .replace("model_", "rep_memo_")
                 )
 
-                if isinstance(self.replay_memory, ReplayMemory):
-                    replay_checkpoint = self.checkpoint_manager.load(
-                        replay_filename,
-                        map_location="cpu",
-                    )
+                # if isinstance(self.replay_memory, ReplayMemory):
+                #     replay_checkpoint = self.checkpoint_manager.load(
+                #         replay_filename,
+                #         map_location="cpu",
+                #     )
 
-                    self.replay_memory.load_state_dict(
-                        replay_checkpoint["replay_memory"]
-                    )
+                #     self.replay_memory.load_state_dict(
+                #         replay_checkpoint["replay_memory"]
+                #     )
 
-                elif isinstance(self.replay_memory, StratifiedReplayMemory):
-                    if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
-                        replay_memory_dir = Path("/kaggle/input/datasets/ibrahim2ksxh1q/rl-atari-checkpoints-2") / replay_filename.replace(".pt", "")
-                    else:
-                        replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
-                        # There might be file extensions in the directory name.
+                # elif isinstance(self.replay_memory, StratifiedReplayMemory):
+                
+                if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
+                    replay_memory_dir = Path("/kaggle/input/datasets/ibrahim2ksxh1q/rl-atari-checkpoints-2") / replay_filename.replace(".pt", "")
+                else:
+                    replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
+                    # There might be file extensions in the directory name.
 
-                    print(f"Replay memory directory: {replay_memory_dir}")
+                print(f"Replay memory directory: {replay_memory_dir}")
 
-                    use_checkpoint_capacity = self.config.get("use_checkpoint_capacity", True)
+                use_checkpoint_config = self.config.get("use_checkpoint_config", True)
 
-                    self.replay_memory.load(replay_memory_dir, use_checkpoint_capacity=use_checkpoint_capacity)
+                self.replay_memory.load(replay_memory_dir, use_checkpoint_config=use_checkpoint_config)
 
                 
             except Exception as err:

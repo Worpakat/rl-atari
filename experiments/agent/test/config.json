@@ -20,12 +20,12 @@
     "batch_size": 32,                           
     "cache_representations": true,    
     
-    "replay_memory_type": "stratified",
+    "replay_memory_type": "normal",
     
     "normal_memory_kwargs": {
         "capacity": 30000,
         "prioritized": true,
-        "priority_alpha": 1.4,
+        "priority_alpha": 0.7,
         "priority_epsilon": 1e-5
     },
 
@@ -50,7 +50,8 @@
 
     "resume_training": false,                   
     "resume_checkpoint": "model_ep_10_step_624",                  
-    "load_replay_memory": true,                 
+    "load_replay_memory": true,      
+    "use_checkpoint_config": false,
 
 
     "checkpoint_start": 0,
