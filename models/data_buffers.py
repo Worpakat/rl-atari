@@ -394,13 +394,13 @@ class StratifiedReplayMemory():
         """
         return True
 
-    def update_optimization_steps(
+    def update_optimization_steps( # ! EXPERIMENTAL: "Wait and Add"
         self, steps: int, 
         network_optimization_period: int
         ) -> int:
         """
         Determines how many optimization steps to perform in the current turn
-        with respect to the "wait and optimize" strategy. Uses `new_incluede_period`.
+        with respect to the "wait and add" strategy. Uses `new_incluede_period`.
         """
         if (
             self.new_incluede_period > 1 and 
@@ -440,8 +440,8 @@ class StratifiedReplayMemory():
         # ==========================================================
         # NEW transitions
         # ==========================================================
-        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0:
-            print("_new_incluede_counter - 1: ", (self._new_incluede_counter - 1))
+        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Add"
+
             new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
             for _ in range(self.add_new_times): # Add new transitions multiple times to the batch.
@@ -729,7 +729,9 @@ class StratifiedReplayMemory():
         return states, actions, q_targets
 
     def reset_new_bucket(self) -> None:
-        self._new_bucket.clear()
+        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Add"
+            self._new_bucket.clear()
+
         self._new_index = 0
 
         self._new_incluede_counter += 1  

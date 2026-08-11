@@ -628,7 +628,7 @@ class NECTrainer:
             # Those are going to moved to death bucket.
             self.replay_memory.mark_death_windows() 
 
-            steps = self.replay_memory.update_optimization_steps(
+            steps = self.replay_memory.update_optimization_steps( # ! EXPERIMENTAL: "Wait and Add"
                 steps, 
                 self.config.network_optimization_period
                 )
@@ -646,7 +646,6 @@ class NECTrainer:
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
 
                 
-
         for _ in range(steps):
     
             # Sample a mini-batch.
