@@ -28,7 +28,8 @@
         "capacity": 30000,
         "prioritized": true,
         "priority_alpha": 0.7,
-        "priority_epsilon": 1e-5
+        "priority_epsilon": 1e-5,
+        "verbose": true
     },
 
 
