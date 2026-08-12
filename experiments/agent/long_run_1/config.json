@@ -86,7 +86,7 @@
     "encoder_optimizer": "RMSprop",                
     "encoder_learning_rate": 1e-6,            
     "encoder_optimizer_kwargs": {},           
-    "manual_lr_adjustment": 1e-7,
+    
  
     "kl_loss_weight": 0.0,                
     "network_optimization_period": 4,
@@ -98,7 +98,7 @@
 
     "dnd_duplicate_threshold": 0.01,            
 
-    "dnd_learning_rate": 1e-7,                
+    "dnd_learning_rate": 1e-6,                
     "dnd_q_learning_rate": 0.01,   
     "dnd_exploration_update": false,             
     "dnd_exploration_q_lr": 0.8,              
