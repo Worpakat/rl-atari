@@ -26,7 +26,7 @@
     "replay_memory_type": "stratified",    
     "stratified_memory_kwargs": {
         "bucket_capacities": [15000, 80000, 5000, 4000], 
-        "bucket_rates": [0.23, 0.42, 0.25, 0.1],         
+        "bucket_rates": [0.25, 0.45, 0.25, 0.05],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
         "death_window": 10, 
