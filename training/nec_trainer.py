@@ -600,7 +600,6 @@ class NECTrainer:
         
         return insert_update_counts
 
-
     def _network_optimization_step(self):
         """
         Optimizes the encoder (and optionally the DND keys) using
@@ -834,11 +833,16 @@ class NECTrainer:
         
         if self.config.save_replay_memory:
             print("Saving replay memory...")
-               
-            replay_memory_dir = (
-                self.checkpoint_manager.checkpoints_dir /
-                f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"
-            )
+            rep_memo_folder = f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"   
+
+            if self.config.colab_execution:
+                replay_memory_dir = Path("/content/checkpoints") / rep_memo_folder
+
+            elif self.config.kaggle_execution:
+                replay_memory_dir = Path("/kaggle/working") / rep_memo_folder
+
+            else:
+                replay_memory_dir = self.checkpoint_manager.checkpoints_dir / rep_memo_folder
 
             self.replay_memory.save(
                 replay_memory_dir,

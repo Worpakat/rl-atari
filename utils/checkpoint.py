@@ -34,6 +34,7 @@ class CheckpointManager:
         checkpoint: dict, 
         filename: str, 
         colab_execution: bool,
+        kaggle_execution: bool,
         ) -> Path:
         """
         Saves a checkpoint dictionary.
@@ -56,12 +57,19 @@ class CheckpointManager:
             filename += ".pt"
 
         if colab_execution: # Save to colab session local storage
-            local_checkpoint_dir = Path("/content/checkpoints")
-            local_checkpoint_dir.mkdir(exist_ok=True)
-            self.checkpoints_dir = local_checkpoint_dir
+            save_dir = Path("/content/checkpoints")
+            save_dir.mkdir(exist_ok=True)
+            filepath = save_dir / filename
+            
+        elif kaggle_execution: 
+            # Save to kaggle session local storage with respect to how we save checkpoints as a dataset.
+            save_dir = Path("/kaggle/working")
+            save_dir.mkdir(exist_ok=True)
+            filepath = save_dir / filename
 
-        # Save to experiment's checkpoints directory
-        filepath = self.checkpoints_dir / filename
+        else:
+            # Save to experiment's checkpoints directory
+            filepath = self.checkpoints_dir / filename
 
         torch.save(checkpoint, filepath)
 

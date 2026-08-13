@@ -43,8 +43,8 @@
     },
 
 
-    "resume_training": false,                   
-    "resume_checkpoint": "model_ep_300_step_41178.pt",                  
+    "resume_training": true,                   
+    "resume_checkpoint": "model_ep_15_step_1991.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_config": false,                 
 
@@ -93,7 +93,7 @@
     "key_updates": true, 
 
 
-    "dnd_max_memory": 50000,                   
+    "dnd_max_memory": 100000,                   
     "dnd_num_neighbors": 100,                    
 
     "dnd_duplicate_threshold": 0.01,            
