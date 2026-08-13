@@ -842,14 +842,10 @@ class StratifiedReplayMemory():
             
             # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
-                # print("Transition will be removed, check:", transition in self.buckets[transition.bucket])
                 self.buckets[transition.bucket].remove(transition)
-                # print("Transition removed, check:", transition in self.buckets[transition.bucket])
 
             transition.bucket = destination_bucket
             self.buckets[destination_bucket].append(transition)
-
-            # print("Transition moved, check:", transition in self.buckets[destination_bucket], "length:", len(self.buckets[destination_bucket]))
 
 
         # Remove oldest transitions if any bucket exceeds its capacity.
@@ -1091,7 +1087,6 @@ class StratifiedReplayMemory():
             )
         )
 
-        print(self._death_bucket)
 
         # Sanity check.
         self._make_sure_transition_buckets(self._low_bucket, "low")
@@ -1195,12 +1190,7 @@ class StratifiedReplayMemory():
         """ 
         This is a sanity check to ensure that the loaded transitions have the correct bucket type.
         """
-        print("make sure", prefix)
         for transition in bucket: 
-            # print(f"transition bucket {transition.bucket}")
-            # print(ReplayBucketType[prefix.upper()])
-            # print(transition.bucket == ReplayBucketType[prefix.upper()])
-
             if transition.bucket != ReplayBucketType[prefix.upper()]:
                 print(f"Transition {transition.insert_id} has incorrect bucket type: {transition.bucket}")                
                 transition.bucket = ReplayBucketType[prefix.upper()]
