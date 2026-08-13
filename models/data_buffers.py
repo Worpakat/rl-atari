@@ -1191,7 +1191,8 @@ class StratifiedReplayMemory():
         This is a sanity check to ensure that the loaded transitions have the correct bucket type.
         """
         for transition in bucket: 
-            if transition.bucket != ReplayBucketType[prefix.upper()]:                
+            if transition.bucket != ReplayBucketType[prefix.upper()]:
+                print(f"Transition {transition.insert_id} has incorrect bucket type: {transition.bucket}")                
                 transition.bucket = ReplayBucketType[prefix.upper()]
 
 
