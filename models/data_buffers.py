@@ -840,7 +840,7 @@ class StratifiedReplayMemory():
             if transition.bucket == destination_bucket:
                 continue
 
-            print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
+            # print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
             
             # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
@@ -915,10 +915,10 @@ class StratifiedReplayMemory():
                 convert_and_norm_sequence(
                     np.stack([ # Stacking the batch
                         np.stack([ # Stacking the transition frames
-                            self._frames[unit.start_frame_id + i].frame
+                            self._frames[transition.start_frame_id + i].frame
                             for i in range(self._sequence_length)
                         ])
-                        for unit in batch
+                        for transition in batch
                     ])
                 )
             )
