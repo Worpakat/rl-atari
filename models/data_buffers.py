@@ -953,8 +953,8 @@ class StratifiedReplayMemory():
             + f"Death: {len(self._death_bucket)}, {len(self._death_bucket) / total_len * 100:.2f}% | "
             + f"New: {len(self._new_bucket)}, |"
             + f"Warmup: {len(self._warmup_bucket)}, |"
-            + f"Total: {total_len}"
-            + f"Frames: {len(self._frames)} | {self.get_states_total_size()} MB")
+            + f"Total: {total_len}, |"
+            + f"Frames: {len(self._frames)} / {self.get_states_total_size()} MB")
 
 
     def save(
