@@ -50,7 +50,7 @@
     },
 
 
-    "resume_training": true,                   
+    "resume_training": false,                   
     "resume_checkpoint": "model_ep_2_step_29",                  
     "load_replay_memory": true,      
     "use_checkpoint_config": true,
