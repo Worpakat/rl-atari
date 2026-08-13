@@ -836,11 +836,12 @@ class StratifiedReplayMemory():
             # ------------------------------------------------------
             # Move transition
             # ------------------------------------------------------
-
+            
+            print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
+            
             if transition.bucket == destination_bucket:
                 continue
 
-            # print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
             
             # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
