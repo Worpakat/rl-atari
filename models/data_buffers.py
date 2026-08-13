@@ -1087,7 +1087,9 @@ class StratifiedReplayMemory():
                 weights_only=False,
             )
         )
-        print("TEST")
+
+        print(self._death_bucket)
+
         # Sanity check.
         self._make_sure_transition_buckets(self._low_bucket, "low")
         self._make_sure_transition_buckets(self._medium_bucket, "medium")
