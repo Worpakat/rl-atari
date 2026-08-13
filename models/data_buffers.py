@@ -1061,7 +1061,7 @@ class StratifiedReplayMemory():
         # ---------------------------------------------------------
         # 2. Load buckets
         # ---------------------------------------------------------
-        self._low_bucket = deque(
+        self._low_bucket.extend(
             torch.load(
                 save_directory / "low.pt",
                 map_location="cpu",
@@ -1069,7 +1069,7 @@ class StratifiedReplayMemory():
             )
         )
 
-        self._medium_bucket = deque(
+        self._medium_bucket.extend(
             torch.load(
                 save_directory / "medium.pt",
                 map_location="cpu",
@@ -1077,7 +1077,7 @@ class StratifiedReplayMemory():
             )
         )
 
-        self._high_bucket = deque(
+        self._high_bucket.extend(
             torch.load(
                 save_directory / "high.pt",
                 map_location="cpu",
@@ -1085,7 +1085,7 @@ class StratifiedReplayMemory():
             )
         )
 
-        self._death_bucket = deque(
+        self._death_bucket.extend(
             torch.load(
                 save_directory / "death.pt",
                 map_location="cpu",
@@ -1110,14 +1110,18 @@ class StratifiedReplayMemory():
         frame_files = sorted(save_directory.glob("frames_*.pt"))
 
         for frame_file in frame_files:
-            frame_chunk = torch.load(
-                frame_file,
-                map_location="cpu",
-                weights_only=False,
-            )
+            try:
+                frame_chunk = torch.load(
+                    frame_file,
+                    map_location="cpu",
+                    weights_only=False,
+                )
 
-            for frame in frame_chunk:
-                self._frames[frame.frame_id] = frame
+                for frame in frame_chunk:
+                    self._frames[frame.frame_id] = frame
+
+            except Exception as e:
+                print(f"Failed to load {frame_file}: {e}")
 
         print(
             f"Replay memory loaded from {save_directory}:"
@@ -1131,12 +1135,7 @@ class StratifiedReplayMemory():
 
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
-        sum_mbs = 0
-
-        
-        sum_mbs = sum([frame_unit.frame.nbytes for frame_unit in self._frames.values()]) / 1024**2
-
-        return sum_mbs
+        return sum([frame_unit.frame.nbytes for frame_unit in self._frames.values()]) / 1024**2 
         
     def _clip_buckets(self) -> None:
         """
