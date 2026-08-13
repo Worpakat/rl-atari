@@ -840,6 +840,8 @@ class StratifiedReplayMemory():
             if transition.bucket == destination_bucket:
                 continue
 
+            print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
+            
             # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
                 self.buckets[transition.bucket].remove(transition)
@@ -1191,9 +1193,9 @@ class StratifiedReplayMemory():
         """
         print("make sure", prefix)
         for transition in bucket: 
-            print(f"transition bucket {transition.bucket}")
-            print(ReplayBucketType[prefix.upper()])
-            print(transition.bucket == ReplayBucketType[prefix.upper()])
+            # print(f"transition bucket {transition.bucket}")
+            # print(ReplayBucketType[prefix.upper()])
+            # print(transition.bucket == ReplayBucketType[prefix.upper()])
 
             if transition.bucket != ReplayBucketType[prefix.upper()]:
                 print(f"Transition {transition.insert_id} has incorrect bucket type: {transition.bucket}")                
