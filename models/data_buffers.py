@@ -845,10 +845,13 @@ class StratifiedReplayMemory():
             
             # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
+                print("Transition will be removed, check:", transition in self.buckets[transition.bucket])
                 self.buckets[transition.bucket].remove(transition)
+                print("Transition removed, check:", transition in self.buckets[transition.bucket])
 
             transition.bucket = destination_bucket
             self.buckets[destination_bucket].append(transition)
+            print("Transition moved, check:", transition in self.buckets[destination_bucket])
 
         # Remove oldest transitions if any bucket exceeds its capacity.
         self._clip_buckets()
