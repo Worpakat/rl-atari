@@ -606,7 +606,7 @@ class StratifiedReplayMemory():
         """
         if (
             self.new_incluede_period > 1 and 
-            ((self._new_incluede_counter - 1) % self.new_incluede_period == 0)
+            ((self._new_incluede_counter + 1) % self.new_incluede_period == 0)
             ): 
             # If it is new bucket transition including turn, we optimize until new bucket transitions is fnished.
             return int(len(self._new_bucket) / network_optimization_period) + 1
@@ -639,7 +639,10 @@ class StratifiedReplayMemory():
         # ==========================================================
         # NEW transitions
         # ==========================================================
-        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Opt"
+        if (
+            (self._new_incluede_counter + 1) % self.new_incluede_period == 0 or # ! EXPERIMENTAL: "Wait and Opt"
+            self.first_turn # We sample from new bucket in the first turn.
+        ): 
 
             new_count = min(network_optimization_period, (len(self._new_bucket) - self._new_index))
 
@@ -931,7 +934,10 @@ class StratifiedReplayMemory():
         return states, actions, q_targets
 
     def reset_new_bucket(self) -> None:
-        if ((self._new_incluede_counter - 1) % self.new_incluede_period )== 0: # ! EXPERIMENTAL: "Wait and Opt"
+        if ( # ! EXPERIMENTAL: "Wait and Opt": New bucket transitions are used, so we reset it.
+            (self._new_incluede_counter + 1) % self.new_incluede_period == 0 or 
+            self.first_turn # We used new bucket transitions at first turn, so we need to clear it.
+        ):
             self._new_bucket.clear()
 
         self._new_index = 0
@@ -954,7 +960,6 @@ class StratifiedReplayMemory():
             + f"Warmup: {len(self._warmup_bucket)}, |"
             + f"Total: {total_len}, |"
             + f"Frames: {len(self._frames)} / {self.get_states_total_size()} MB")
-
 
     def save(
         self,
@@ -1006,7 +1011,6 @@ class StratifiedReplayMemory():
                 chunk,
                 (save_directory / f"frames_{chunk_index:03d}.pt"),
             )
-
 
     def load(
         self, 
@@ -1087,13 +1091,11 @@ class StratifiedReplayMemory():
             )
         )
 
-
         # Sanity check.
         self._make_sure_transition_buckets(self._low_bucket, "low")
         self._make_sure_transition_buckets(self._medium_bucket, "medium")
         self._make_sure_transition_buckets(self._high_bucket, "high")
         self._make_sure_transition_buckets(self._death_bucket, "death")
-
 
         # ---------------------------------------------------------
         # 3. Reconstruct frame dictionary
@@ -1124,7 +1126,6 @@ class StratifiedReplayMemory():
             f"\n  High:   {len(self._high_bucket)}"
             f"\n  Death:  {len(self._death_bucket)}"
         )
-
 
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""

@@ -825,7 +825,8 @@ class NECTrainer:
         self.checkpoint_manager.save(
             model_checkpoint,
             filename=filename,
-            colab_execution=self.config.colab_execution
+            colab_execution=self.config.colab_execution,
+            kaggle_execution=self.config.kaggle_execution
         )
 
         # Replay Memory
@@ -853,7 +854,6 @@ class NECTrainer:
         print(f"Checkpoint check: Checkpoint {filename+'.pt'} saved.")
 
         self.checkpoint_start = self.optimization_step
-
 
     def train(self):
         """
@@ -894,7 +894,6 @@ class NECTrainer:
         finally:
 
             self.environment.close()
-
 
     def load_checkpoint(self):
         """
