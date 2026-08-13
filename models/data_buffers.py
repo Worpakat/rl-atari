@@ -111,7 +111,7 @@ class FrameUnit:
     """
     frame_id: int
     frame: np.ndarray
-    transition_count: int = 0@dataclass(slots=True)
+    transition_count: int = 0
 
 
 @dataclass(slots=True, eq=False)
