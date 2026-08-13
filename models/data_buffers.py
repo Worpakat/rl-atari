@@ -1087,6 +1087,12 @@ class StratifiedReplayMemory():
                 weights_only=False,
             )
         )
+        # Sanity check.
+        self._make_sure_transition_buckets(self._low_bucket, "low")
+        self._make_sure_transition_buckets(self._medium_bucket, "medium")
+        self._make_sure_transition_buckets(self._high_bucket, "high")
+        self._make_sure_transition_buckets(self._death_bucket, "death")
+
 
         # ---------------------------------------------------------
         # 3. Reconstruct frame dictionary
@@ -1180,7 +1186,13 @@ class StratifiedReplayMemory():
             bucket.clear()
             bucket.extend(filtered_bucket)
   
-
+    def _make_sure_transition_buckets(self, bucket, prefix):
+        """ 
+        This is a sanity check to ensure that the loaded transitions have the correct bucket type.
+        """
+        for transition in bucket: 
+            if transition.bucket != ReplayBucketType[prefix.upper()]:                
+                transition.bucket = ReplayBucketType[prefix.upper()]
 
 
 #============================================================
