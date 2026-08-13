@@ -566,8 +566,6 @@ class StratifiedReplayMemory():
         # ------------------------------------------------------------
         if transition.death_transition:
             self._last_frame_ids = []
-        
-
 
     def mark_death_windows(self) -> None:
         """
@@ -1087,6 +1085,7 @@ class StratifiedReplayMemory():
                 weights_only=False,
             )
         )
+        print("TEST")
         # Sanity check.
         self._make_sure_transition_buckets(self._low_bucket, "low")
         self._make_sure_transition_buckets(self._medium_bucket, "medium")
