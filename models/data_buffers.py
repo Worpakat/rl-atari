@@ -836,9 +836,6 @@ class StratifiedReplayMemory():
             # ------------------------------------------------------
             # Move transition
             # ------------------------------------------------------
-            
-            print("Moving transition", transition.insert_id, "from", transition.bucket, "to", destination_bucket)
-            
             if transition.bucket == destination_bucket:
                 continue
 
@@ -851,7 +848,8 @@ class StratifiedReplayMemory():
 
             transition.bucket = destination_bucket
             self.buckets[destination_bucket].append(transition)
-            print("Transition moved, check:", transition in self.buckets[destination_bucket], "length:", len(self.buckets[destination_bucket]))
+
+            # print("Transition moved, check:", transition in self.buckets[destination_bucket], "length:", len(self.buckets[destination_bucket]))
 
 
         # Remove oldest transitions if any bucket exceeds its capacity.
