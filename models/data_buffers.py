@@ -989,6 +989,7 @@ class StratifiedReplayMemory():
             "next_insert_id": self.next_insert_id,
             "next_frame_id": self.next_frame_id,
             "bucket_capacities": self.bucket_capacities,
+            "new_incluede_counter": self._new_incluede_counter,
         }
 
         torch.save(metadata, save_directory / "metadata.pt")
@@ -1048,6 +1049,8 @@ class StratifiedReplayMemory():
 
         if use_checkpoint_config: # Use the saved bucket capacities from the checkpoint.
             self.bucket_capacities = metadata["bucket_capacities"]
+
+        self._new_incluede_counter = metadata["new_incluede_counter"]
 
         # Calculate last TD boundries.
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
