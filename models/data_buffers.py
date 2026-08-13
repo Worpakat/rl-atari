@@ -1191,6 +1191,10 @@ class StratifiedReplayMemory():
         """
         print("make sure", prefix)
         for transition in bucket: 
+            print(f"transition bucket {transition.bucket}")
+            print(ReplayBucketType[prefix.upper()])
+            print(transition.bucket == ReplayBucketType[prefix.upper()])
+
             if transition.bucket != ReplayBucketType[prefix.upper()]:
                 print(f"Transition {transition.insert_id} has incorrect bucket type: {transition.bucket}")                
                 transition.bucket = ReplayBucketType[prefix.upper()]
