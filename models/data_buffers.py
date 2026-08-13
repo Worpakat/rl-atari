@@ -1120,7 +1120,7 @@ class StratifiedReplayMemory():
         sum_mbs = 0
 
         
-        sum_mbs += sum([frame_unit.frame.nbytes for frame_unit in self._frames]) / 1024**2
+        sum_mbs = sum([frame_unit.frame.nbytes for frame_unit in self._frames.values()]) / 1024**2
 
         return sum_mbs
         
