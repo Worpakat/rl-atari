@@ -834,24 +834,6 @@ class NECTrainer:
         
         if self.config.save_replay_memory:
             print("Saving replay memory...")
-
-            # if isinstance(self.replay_memory, ReplayMemory): # Standard / prioritized replay memory.
-            #     replay_memory_checkpoint = {
-            #         "replay_memory": self.replay_memory.state_dict(),
-            #         "training_state": {
-            #             "optimization_step": self.optimization_step,
-            #             "environment_step": self.global_step,
-            #             "episode": self.episode,
-            #         }
-            #     }
-        
-            #     self.checkpoint_manager.save(
-            #         replay_memory_checkpoint,
-            #         filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
-            #         colab_execution=self.config.colab_execution
-            #     )
-
-            # elif isinstance(self.replay_memory, StratifiedReplayMemory): # Stratified replay memory.
                
             replay_memory_dir = (
                 self.checkpoint_manager.checkpoints_dir /
@@ -954,22 +936,7 @@ class NECTrainer:
         # -------------------------------------------------
         if self.config.load_replay_memory:
             try:
-                replay_filename = (
-                    self.config.resume_checkpoint
-                    .replace("model_", "rep_memo_")
-                )
-
-                # if isinstance(self.replay_memory, ReplayMemory):
-                #     replay_checkpoint = self.checkpoint_manager.load(
-                #         replay_filename,
-                #         map_location="cpu",
-                #     )
-
-                #     self.replay_memory.load_state_dict(
-                #         replay_checkpoint["replay_memory"]
-                #     )
-
-                # elif isinstance(self.replay_memory, StratifiedReplayMemory):
+                replay_filename = self.config.resume_checkpoint.replace("model_", "rep_memo_")
                 
                 if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
                     replay_memory_dir = Path("/kaggle/input/datasets/worpakat/lon-run-0-checkpoint-350") / replay_filename.replace(".pt", "")

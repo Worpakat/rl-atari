@@ -21,7 +21,7 @@
     "batch_size": 32,                           
     "cache_representations": true,    
     
-    "replay_memory_type": "normal",
+    "replay_memory_type": "stratified",
     
     "normal_memory_kwargs": {
         "capacity": 30000,
@@ -36,6 +36,7 @@
         "td_statistics_beta": 0.9,
         "td_std_multiplier":  1.0,
         "death_window": 5, 
+        "sequence_length": 4,
         "verbose": true            
     },
 
@@ -58,7 +59,7 @@
     "checkpoint_start": 0,
     "checkpoint_period": 2,
     "save_replay_memory": true,
-    "replay_memory_chunk_size": 500,
+    "replay_memory_chunk_size": 1000,
     "log_batch_index": false,     
     "evaluation_period": 50,                   
     "evaluation_episodes": 3,                  

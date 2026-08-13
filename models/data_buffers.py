@@ -61,11 +61,7 @@ class FrameSequenceBuffer:
         """
         return convert_and_norm_sequence(self.get_raw_sequence())
 
-
-
 # ------------------------------------
-
-
 
 #-----Used_for_DSAE--------
 
@@ -107,12 +103,23 @@ class ReplayBucketType(Enum):
     HIGH = auto()
     DEATH = auto()
 
+
+@dataclass(slots=True)
+class FrameUnit:
+    """
+    Stores a frame and counts the number of transitions that use it. 
+    """
+    frame_id: int
+    frame: np.ndarray
+    transition_count: int = 0@dataclass(slots=True)
+
+
 @dataclass(slots=True, eq=False)
 class ReplayMemoryUnit:
     """
     One replay memory sample used for network optimization.
     """
-    state: np.ndarray
+    start_frame_id: int
     action: int
     q_target: np.ndarray
     # q_target: torch.Tensor # Keeping old just in case.
@@ -131,7 +138,9 @@ class ReplayMemoryUnit:
     # Used only for stratified replay to track the order of insertion
     # and remove the oldest transitions when buckets are full.
 
- 
+    state: np.ndarray | None = None # This is kept for old save files. 
+
+
 class ReplayMemory(BaseBuffer):
 
     def __init__(
@@ -368,6 +377,7 @@ class StratifiedReplayMemory():
         death_window: int = 15,
         add_new_times: int = 1,
         new_incluede_period: int = 1,
+        sequence_length: int = 4,
         verbose: bool = False,
     ):
         super().__init__()
@@ -416,9 +426,19 @@ class StratifiedReplayMemory():
         self.low_boundary = None
         self.high_boundary = None
 
+        # --------------------------------------------
         # Utils
+        # --------------------------------------------
+        
+        # Frame Management
+        self._frames: dict[int, FrameUnit] = {} # Dictionary mapping frame IDs to frames
+        self._sequence_length = sequence_length # Transition sequence length
+        self.next_frame_id = 0 # Used to track unique frame IDs
+        self._last_frame_ids = [] # Used to track sequential overlapping frames during ``append()``.
+        self.next_insert_id = 0 # Used to track unique insert IDs of 'ReplayMemoryUnit's.
+
+
         self.first_turn = True # Used for first turn of fresh training and loaded checkpoints.
-        self.next_insert_id = 0
         # Used to track the order of insertion and remove the oldest transitions when buckets are full.
         
         self.add_new_times = add_new_times # How many times to add new transitions to the batch during sampling. 
@@ -434,37 +454,120 @@ class StratifiedReplayMemory():
     # ------------------------------------------------------------------
     # Public API
     # ------------------------------------------------------------------
-    
-    def append(self, transition: Transition, q_target: torch.Tensor, warmup: bool = False) -> None:
+
+    def append(
+        self,
+        transition: Transition,
+        q_target: torch.Tensor,
+        warmup: bool = False,
+    ) -> None:
         """
-        Converts a Transition into a ReplayMemoryUnit and stores it in the
-        temporary NEW bucket.
+        Converts a Transition into a ReplayMemoryUnit while storing each
+        frame only once.
+
+        Consecutive transitions reuse overlapping frames. A death transition
+        terminates the current frame sequence, so the next transition starts
+        a new sequence.
         """
-        if warmup:
-            self._warmup_bucket.append(
-                ReplayMemoryUnit(
-                    state=transition.state.copy(),
-                    action=transition.action,
-                    q_target=q_target.to("cpu").detach().numpy(),
-                    death_transition=transition.death_transition,
-                    bucket=ReplayBucketType.WARMUP,
-                    insert_id=self.next_insert_id
+
+        # ------------------------------------------------------------
+        # 1. Determine which bucket receives the transition
+        # ------------------------------------------------------------
+        bucket = ReplayBucketType.WARMUP if warmup else ReplayBucketType.NEW
+        target_bucket = self._warmup_bucket if warmup else self._new_bucket
+
+        # A transition state consists of consecutive frames.
+        state_frames = transition.state
+
+        # ------------------------------------------------------------
+        # 2. First transition of a sequence
+        # ------------------------------------------------------------
+        if len(self._last_frame_ids) == 0:
+
+            start_frame_id = self.next_frame_id
+
+            for frame in state_frames:
+                frame_unit = FrameUnit(
+                    frame_id=self.next_frame_id,
+                    frame=frame.copy(),
+                    transition_count=1,
                 )
+
+                self._frames[self.next_frame_id] = frame_unit
+                self._last_frame_ids.append(self.next_frame_id)
+
+                self.next_frame_id += 1
+
+        # ------------------------------------------------------------
+        # 3. Consecutive transition
+        # ------------------------------------------------------------
+        else:
+
+            # The first N-1 frames are already present because the
+            # states overlap.
+            #
+            # Example for 4-frame states:
+            #
+            # previous: [f0, f1, f2, f3]
+            # current:  [f1, f2, f3, f4]
+            #
+            # Reuse f1, f2, f3 and create only f4.
+
+            overlap = min(
+                len(self._last_frame_ids),
+                self._sequence_length - 1,
             )
 
-        else:                
-            self._new_bucket.append(
-                ReplayMemoryUnit(
-                    state=transition.state.copy(),
-                    action=transition.action,
-                    q_target=q_target.to("cpu").detach().numpy(),
-                    death_transition=transition.death_transition,
-                    bucket=ReplayBucketType.NEW,
-                    insert_id=self.next_insert_id
+            # The state starts at the corresponding overlapping frame.
+            start_frame_id = self._last_frame_ids[-overlap]
+
+            # Increase reference counts for the frames belonging to
+            # this new transition.
+            for frame_id in self._last_frame_ids[-overlap:]:
+                self._frames[frame_id].transition_count += 1
+
+            # Add newly appearing frames.
+            new_frame_start = overlap
+
+            for frame in state_frames[new_frame_start:]:
+                frame_unit = FrameUnit(
+                    frame_id=self.next_frame_id,
+                    frame=frame.copy(),
+                    transition_count=1,
                 )
-            )
+
+                self._frames[self.next_frame_id] = frame_unit
+                self._last_frame_ids.append(self.next_frame_id)
+
+                self.next_frame_id += 1
+
+            # Keep only the frame IDs necessary to construct the next
+            # overlapping state.
+            self._last_frame_ids = self._last_frame_ids[-self._sequence_length:]
+
+        # ------------------------------------------------------------
+        # 4. Create ReplayMemoryUnit
+        # ------------------------------------------------------------
+        replay_unit = ReplayMemoryUnit(
+            start_frame_id=start_frame_id,
+            action=transition.action,
+            q_target=q_target.to("cpu").detach().numpy(),
+            death_transition=transition.death_transition,
+            bucket=bucket,
+            insert_id=self.next_insert_id,
+        )
+
+        target_bucket.append(replay_unit)
 
         self.next_insert_id += 1
+
+        # ------------------------------------------------------------
+        # 5. Death transition terminates the sequence
+        # ------------------------------------------------------------
+        if transition.death_transition:
+            self._last_frame_ids = []
+        
+
 
     def mark_death_windows(self) -> None:
         """
@@ -738,9 +841,8 @@ class StratifiedReplayMemory():
 
             if transition.bucket == destination_bucket:
                 continue
-            
-            # print(f"Moving transition from {transition.bucket} to {destination_bucket} | TD-error: {td_error:.4f}")
 
+            # Remove transition from its current bucket.
             if transition.bucket != ReplayBucketType.WARMUP: # WARMUP transitions are already removed from buckets during sampling.
                 self.buckets[transition.bucket].remove(transition)
 
@@ -799,7 +901,6 @@ class StratifiedReplayMemory():
         self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
         self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
 
-
     def extract_batch(
             self, 
             batch: list[ReplayMemoryUnit],
@@ -811,16 +912,22 @@ class StratifiedReplayMemory():
 
         states = (
             torch.from_numpy(
-            convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
-            ).unsqueeze(2)
+                convert_and_norm_sequence(
+                    np.stack([ # Stacking the batch
+                        np.stack([ # Stacking the transition frames
+                            self._frames[unit.start_frame_id + i].frame
+                            for i in range(self._sequence_length)
+                        ])
+                        for unit in batch
+                    ])
+                )
+            )
+            .unsqueeze(2) # For Grayscale
             .to(device)
-        ) # For Grayscale
+        ) 
 
-        # print("extract_batch states shape:", states.shape)
-        
         actions = [transition.action for transition in batch]
         q_targets = torch.from_numpy(np.stack([transition.q_target for transition in batch])).to(device)
-        # q_targets = torch.stack([transition.q_target for transition in batch]).to(device)
         
         return states, actions, q_targets
 
@@ -846,27 +953,29 @@ class StratifiedReplayMemory():
             + f"Death: {len(self._death_bucket)}, {len(self._death_bucket) / total_len * 100:.2f}% | "
             + f"New: {len(self._new_bucket)}, |"
             + f"Warmup: {len(self._warmup_bucket)}, |"
-            + f"Total: {total_len}")
+            + f"Total: {total_len}"
+            + f"Frames: {len(self._frames)} | {self.get_states_total_size()} MB")
+
 
     def save(
         self,
         save_directory: str | Path,
-        chunk_size: int = 5000,
+        chunk_size: int = 20_000,
     ) -> None:
         """
-        Saves the stratified replay memory into a directory.
+        Saves the stratified replay memory and shared frame store.
 
         Directory structure
         -------------------
         replay_memory/
             metadata.pt
-            low_000.pt
-            low_001.pt
+            low.pt
+            medium.pt
+            high.pt
+            death.pt
+            frames_000.pt
+            frames_001.pt
             ...
-            medium_000.pt
-            ...
-            high_000.pt
-            death_000.pt
         """
         save_directory = ensure_directory(save_directory)
 
@@ -874,48 +983,45 @@ class StratifiedReplayMemory():
             "td_mean": self.td_mean,
             "td_std": self.td_std,
             "next_insert_id": self.next_insert_id,
+            "next_frame_id": self.next_frame_id,
             "bucket_capacities": self.bucket_capacities,
         }
 
-        torch.save(metadata, (save_directory / "metadata.pt"))
+        torch.save(metadata, save_directory / "metadata.pt")
 
-        self._save_bucket(
-            self._low_bucket,
-            "low",
-            save_directory,
-            chunk_size,
-        )
+        # Save each replay bucket as a single file.
+        torch.save(list(self._low_bucket), save_directory / "low.pt")
+        torch.save(list(self._medium_bucket), save_directory / "medium.pt",)
+        torch.save(list(self._high_bucket), save_directory / "high.pt")
+        torch.save(list(self._death_bucket), save_directory / "death.pt")
 
-        self._save_bucket(
-            self._medium_bucket,
-            "medium",
-            save_directory,
-            chunk_size,
-        )
+        # Save shared frames in chunks.
+        frames = list(self._frames.values())
 
-        self._save_bucket(
-            self._high_bucket,
-            "high",
-            save_directory,
-            chunk_size,
-        )
+        for chunk_index, start in enumerate(
+            range(0, len(frames), chunk_size)
+        ):
+            chunk = frames[start:start + chunk_size]
 
-        self._save_bucket(
-            self._death_bucket,
-            "death",
-            save_directory,
-            chunk_size,
-        )
+            torch.save(
+                chunk,
+                (save_directory / f"frames_{chunk_index:03d}.pt"),
+            )
+
 
     def load(
-        self,
+        self, 
         save_directory: str | Path,
         use_checkpoint_config: bool = True,
-    ) -> None:
+        ) -> None:
         """
-        Loads a previously saved stratified replay memory.
-        """
+        Loads a stratified replay memory saved by save().
 
+        Reconstructs:
+            - replay buckets
+            - frame dictionary
+            - replay metadata
+        """
         save_directory = Path(save_directory)
 
         if not save_directory.exists():
@@ -923,7 +1029,9 @@ class StratifiedReplayMemory():
                 f"Replay memory directory does not exist: {save_directory}"
             )
 
-        # Metadata
+        # ---------------------------------------------------------
+        # 1. Load metadata
+        # ---------------------------------------------------------
         metadata = torch.load(
             save_directory / "metadata.pt",
             map_location="cpu",
@@ -933,6 +1041,7 @@ class StratifiedReplayMemory():
         self.td_mean = metadata["td_mean"]
         self.td_std = metadata["td_std"]
         self.next_insert_id = metadata["next_insert_id"]
+        self.next_frame_id = metadata["next_frame_id"]
 
         if use_checkpoint_config: # Use the saved bucket capacities from the checkpoint.
             self.bucket_capacities = metadata["bucket_capacities"]
@@ -944,23 +1053,61 @@ class StratifiedReplayMemory():
         # It is not actually a first turn
         self.first_turn = False
 
-        # Clear existing replay
-        self._low_bucket.clear()
-        self._medium_bucket.clear()
-        self._high_bucket.clear()
-        self._death_bucket.clear()
+        # ---------------------------------------------------------
+        # 2. Load buckets
+        # ---------------------------------------------------------
+        self._low_bucket = deque(
+            torch.load(
+                save_directory / "low.pt",
+                map_location="cpu",
+                weights_only=False,
+            )
+        )
 
-        self._new_bucket.clear()
-        self._warmup_bucket.clear()
+        self._medium_bucket = deque(
+            torch.load(
+                save_directory / "medium.pt",
+                map_location="cpu",
+                weights_only=False,
+            )
+        )
 
-        # Load buckets
-        self._load_bucket(self._low_bucket, "low", save_directory)
-        self._load_bucket(self._medium_bucket, "medium", save_directory)
-        self._load_bucket(self._high_bucket, "high", save_directory)
-        self._load_bucket(self._death_bucket, "death", save_directory)
+        self._high_bucket = deque(
+            torch.load(
+                save_directory / "high.pt",
+                map_location="cpu",
+                weights_only=False,
+            )
+        )
+
+        self._death_bucket = deque(
+            torch.load(
+                save_directory / "death.pt",
+                map_location="cpu",
+                weights_only=False,
+            )
+        )
+
+        # ---------------------------------------------------------
+        # 3. Reconstruct frame dictionary
+        # ---------------------------------------------------------
+        self._frames = {}
+
+        frame_files = sorted(save_directory.glob("frames_*.pt"))
+
+        for frame_file in frame_files:
+            frame_chunk = torch.load(
+                frame_file,
+                map_location="cpu",
+                weights_only=False,
+            )
+
+            for frame in frame_chunk:
+                self._frames[frame.frame_id] = frame
 
         print(
-            f"Loaded replay memory:"
+            f"Replay memory loaded from {save_directory}:"
+            f"\n  Total Frames: {len(self._frames)}"
             f"\n  Low:    {len(self._low_bucket)}"
             f"\n  Medium: {len(self._medium_bucket)}"
             f"\n  High:   {len(self._high_bucket)}"
@@ -972,20 +1119,19 @@ class StratifiedReplayMemory():
         """Returns the total size of the states in MB."""
         sum_mbs = 0
 
-        for bucket in self.buckets.values():
-            sum_mbs += sum([transition.state.nbytes for transition in bucket]) / 1024**2
+        
+        sum_mbs += sum([frame_unit.frame.nbytes for frame_unit in self._frames]) / 1024**2
 
         return sum_mbs
         
-
-    # ------------------------------------------------------------------
-    # Internal helpers
-    # ------------------------------------------------------------------
-
     def _clip_buckets(self) -> None:
         """
         Clips replay buckets to their maximum capacities by removing the
         oldest transitions (smallest insert_id).
+
+        When a transition is removed, the reference count of every frame
+        belonging to that transition is decremented. Frames with no remaining
+        transitions are removed from the frame store.
         """
 
         managed_buckets = (
@@ -996,82 +1142,348 @@ class StratifiedReplayMemory():
         )
 
         for bucket, bucket_capacity in zip(managed_buckets, self.bucket_capacities):
-
             excess = len(bucket) - bucket_capacity
 
             if excess <= 0:
                 continue
 
             # Oldest transitions to remove.
-            remove_ids = [
-                transition.insert_id
-                for transition in sorted(
-                    bucket,
-                    key=lambda transition: transition.insert_id,
-                )[:excess]
-            ]
+            transitions_to_remove = sorted(
+                bucket,
+                key=lambda transition: transition.insert_id,
+            )[:excess]
+
+            remove_ids = {transition.insert_id for transition in transitions_to_remove}
+
+            # Update frame reference counts.
+            for transition in transitions_to_remove:
+                start_id = transition.start_frame_id
+
+                for frame_id in range(
+                    start_id,
+                    start_id + self._sequence_length
+                ):
+                    frame = self._frames[frame_id]
+
+                    frame.transition_count -= 1
+
+                    if frame.transition_count == 0: # Frame is no longer used, remove it.
+                        del self._frames[frame_id]
 
             # Rebuild bucket without removed transitions.
             filtered_bucket = deque(
-                (
-                    transition
-                    for transition in bucket
-                    if transition.insert_id not in remove_ids
-                )
+                transition
+                for transition in bucket
+                if transition.insert_id not in remove_ids
             )
 
             bucket.clear()
             bucket.extend(filtered_bucket)
+  
 
+
+
+#============================================================
+#============================================================
+#-----------------------OLD_CODE-----------------------------
+
+# ----------OLD_VERSION----------
+
+# @dataclass(slots=True, eq=False)
+# class ReplayMemoryUnit:
+#     """
+#     One replay memory sample used for network optimization.
+#     """
+#     state: np.ndarray
+#     action: int
+#     q_target: np.ndarray
+#     # q_target: torch.Tensor # Keeping old just in case.
     
-    def _save_bucket(
-        self,
-        bucket: deque[ReplayMemoryUnit],
-        bucket_name: str,
-        save_directory: Path,
-        chunk_size: int = 5000,
-    ) -> None:
-        """
-        Saves one replay bucket into multiple chunk files.
+#     priority: float = 1.0
+#     # Priority used by prioritized replay.
+#     # Ignored when uniform replay or stratified replay is used.
 
-        Example:
-            low_000.pt
-            low_001.pt
-            ...
-        """
+#     bucket: ReplayBucketType | None = None
+#     # Used only for stratified replay. 
+#     # Indicates which bucket the transition is currently in.
 
-        bucket = list(bucket)
+#     death_transition: bool = False
 
-        for chunk_index, start in enumerate(range(0, len(bucket), chunk_size)):
+#     insert_id: int = 0
+#     # Used only for stratified replay to track the order of insertion
+#     # and remove the oldest transitions when buckets are full.
 
-            chunk = bucket[start : start + chunk_size]
+# -------------------------------------------------------
 
-            torch.save(
-                chunk,
-                save_directory / f"{bucket_name}_{chunk_index:03d}.pt",
-            )
 
-    def _load_bucket(self, bucket: deque, prefix: str, save_directory: str | Path):
-        """
-        Rebuilds a bucket by loading and merging multiple chunks.
-        """
-        files = sorted(save_directory.glob(f"{prefix}_*.pt"))
+    # def append(self, transition: Transition, q_target: torch.Tensor, warmup: bool = False) -> None:
+    #     """
+    #     Converts a Transition into a ReplayMemoryUnit and stores it in the
+    #     temporary NEW bucket.
+    #     """
+    #     if warmup:
+    #         self._warmup_bucket.append(
+    #             ReplayMemoryUnit(
+    #                 state=transition.state.copy(),
+    #                 action=transition.action,
+    #                 q_target=q_target.to("cpu").detach().numpy(),
+    #                 death_transition=transition.death_transition,
+    #                 bucket=ReplayBucketType.WARMUP,
+    #                 insert_id=self.next_insert_id
+    #             )
+    #         )
 
-        for file in files:
-            try:
-                chunk = torch.load(
-                    file,
-                    map_location="cpu",
-                    weights_only=False,
-                )
-            except Exception as e:
-                print(f"Error loading {file}: {e}")
+    #     else:                
+    #         self._new_bucket.append(
+    #             ReplayMemoryUnit(
+    #                 state=transition.state.copy(),
+    #                 action=transition.action,
+    #                 q_target=q_target.to("cpu").detach().numpy(),
+    #                 death_transition=transition.death_transition,
+    #                 bucket=ReplayBucketType.NEW,
+    #                 insert_id=self.next_insert_id
+    #             )
+    #         )
 
+    #     self.next_insert_id += 1
+    
+
+    # def extract_batch(
+    #         self, 
+    #         batch: list[ReplayMemoryUnit],
+    #         device: torch.device = torch.device("cpu"),
+    #         ) -> tuple[torch.Tensor, list[int], torch.Tensor]:
+    #     """
+    #     Helper method. Extracts, converts, and returns batch of states, actions and Q-targets.
+    #     """
+
+    #     states = (
+    #         torch.from_numpy(
+    #         convert_and_norm_sequence(np.stack([transition.state for transition in batch]))
+    #         ).unsqueeze(2)
+    #         .to(device)
+    #     ) # For Grayscale
+
+    #     actions = [transition.action for transition in batch]
+    #     q_targets = torch.from_numpy(np.stack([transition.q_target for transition in batch])).to(device)
+        
+    #     return states, actions, 
+    
+
+    # def _clip_buckets(self) -> None:
+    #     """
+    #     Clips replay buckets to their maximum capacities by removing the
+    #     oldest transitions (smallest insert_id).
+    #     """
+
+    #     managed_buckets = (
+    #         self._low_bucket,
+    #         self._medium_bucket,
+    #         self._high_bucket,
+    #         self._death_bucket,
+    #     )
+
+    #     for bucket, bucket_capacity in zip(managed_buckets, self.bucket_capacities):
+
+    #         excess = len(bucket) - bucket_capacity
+
+    #         if excess <= 0:
+    #             continue
+
+    #         # Oldest transitions to remove.
+    #         remove_ids = [
+    #             transition.insert_id
+    #             for transition in sorted(
+    #                 bucket,
+    #                 key=lambda transition: transition.insert_id,
+    #             )[:excess]
+    #         ]
+
+    #         # Rebuild bucket without removed transitions.
+    #         filtered_bucket = deque(
+    #             (
+    #                 transition
+    #                 for transition in bucket
+    #                 if transition.insert_id not in remove_ids
+    #             )
+    #         )
+
+    #         bucket.clear()
+    #         bucket.extend(filtered_bucket)
+
+
+    # def save(
+    #     self,
+    #     save_directory: str | Path,
+    #     chunk_size: int = 5000,
+    # ) -> None:
+    #     """
+    #     Saves the stratified replay memory into a directory.
+
+    #     Directory structure
+    #     -------------------
+    #     replay_memory/
+    #         metadata.pt
+    #         low_000.pt
+    #         low_001.pt
+    #         ...
+    #         medium_000.pt
+    #         ...
+    #         high_000.pt
+    #         death_000.pt
+    #     """
+    #     save_directory = ensure_directory(save_directory)
+
+    #     metadata = {
+    #         "td_mean": self.td_mean,
+    #         "td_std": self.td_std,
+    #         "next_insert_id": self.next_insert_id,
+    #         "bucket_capacities": self.bucket_capacities,
+    #     }
+
+    #     torch.save(metadata, (save_directory / "metadata.pt"))
+
+    #     self._save_bucket(
+    #         self._low_bucket,
+    #         "low",
+    #         save_directory,
+    #         chunk_size,
+    #     )
+
+    #     self._save_bucket(
+    #         self._medium_bucket,
+    #         "medium",
+    #         save_directory,
+    #         chunk_size,
+    #     )
+
+    #     self._save_bucket(
+    #         self._high_bucket,
+    #         "high",
+    #         save_directory,
+    #         chunk_size,
+    #     )
+
+    #     self._save_bucket(
+    #         self._death_bucket,
+    #         "death",
+    #         save_directory,
+    #         chunk_size,
+    #     )
+
+
+    # def load(
+    #     self,
+    #     save_directory: str | Path,
+    #     use_checkpoint_config: bool = True,
+    # ) -> None:
+    #     """
+    #     Loads a previously saved stratified replay memory.
+    #     """
+
+    #     save_directory = Path(save_directory)
+
+    #     if not save_directory.exists():
+    #         raise FileNotFoundError(
+    #             f"Replay memory directory does not exist: {save_directory}"
+    #         )
+
+    #     # Metadata
+    #     metadata = torch.load(
+    #         save_directory / "metadata.pt",
+    #         map_location="cpu",
+    #         weights_only=False,
+    #     )
+
+    #     self.td_mean = metadata["td_mean"]
+    #     self.td_std = metadata["td_std"]
+    #     self.next_insert_id = metadata["next_insert_id"]
+
+    #     if use_checkpoint_config: # Use the saved bucket capacities from the checkpoint.
+    #         self.bucket_capacities = metadata["bucket_capacities"]
+
+    #     # Calculate last TD boundries.
+    #     self.low_boundary = self.td_mean - self.td_std * self.td_std_multiplier
+    #     self.high_boundary = self.td_mean + self.td_std * self.td_std_multiplier
+
+    #     # It is not actually a first turn
+    #     self.first_turn = False
+
+    #     # Clear existing replay
+    #     self._low_bucket.clear()
+    #     self._medium_bucket.clear()
+    #     self._high_bucket.clear()
+    #     self._death_bucket.clear()
+
+    #     self._new_bucket.clear()
+    #     self._warmup_bucket.clear()
+
+    #     # Load buckets
+    #     self._load_bucket(self._low_bucket, "low", save_directory)
+    #     self._load_bucket(self._medium_bucket, "medium", save_directory)
+    #     self._load_bucket(self._high_bucket, "high", save_directory)
+    #     self._load_bucket(self._death_bucket, "death", save_directory)
+
+    #     print(
+    #         f"Loaded replay memory:"
+    #         f"\n  Low:    {len(self._low_bucket)}"
+    #         f"\n  Medium: {len(self._medium_bucket)}"
+    #         f"\n  High:   {len(self._high_bucket)}"
+    #         f"\n  Death:  {len(self._death_bucket)}"
+    #     )
+
+
+    # def _save_bucket(
+    #     self,
+    #     bucket: deque[ReplayMemoryUnit],
+    #     bucket_name: str,
+    #     save_directory: Path,
+    #     chunk_size: int = 5000,
+    #     ) -> None:
+    #     """
+    #     Saves one replay bucket into multiple chunk files.
+
+    #     Example:
+    #         low_000.pt
+    #         low_001.pt
+    #         ...
+    #     """
+
+    #     bucket = list(bucket)
+
+    #     for chunk_index, start in enumerate(range(0, len(bucket), chunk_size)):
+
+    #         chunk = bucket[start : start + chunk_size]
+
+    #         torch.save(
+    #             chunk,
+    #             save_directory / f"{bucket_name}_{chunk_index:03d}.pt",
+    #         )
+
+    # def _load_bucket(
+    #     self, bucket: deque, 
+    #     prefix: str, 
+    #     save_directory: str | Path
+    #     ):
+    #     """
+    #     Rebuilds a bucket by loading and merging multiple chunks.
+    #     """
+    #     files = sorted(save_directory.glob(f"{prefix}_*.pt"))
+
+    #     for file in files:
+    #         try:
+    #             chunk = torch.load(
+    #                 file,
+    #                 map_location="cpu",
+    #                 weights_only=False,
+    #             )
+    #         except Exception as e:
+    #             print(f"Error loading {file}: {e}")
             
-            # This is a sanity check to ensure that the loaded transitions have the correct bucket type.
-            for transition in chunk: 
-                if transition.bucket != ReplayBucketType[prefix.upper()]:                
-                    # print(f"Warning: Transition bucket mismatch in {file}. Expected {prefix.upper()}, got {transition.bucket}.")
-                    transition.bucket = ReplayBucketType[prefix.upper()]
+    #         # This is a sanity check to ensure that the loaded transitions have the correct bucket type.
+    #         for transition in chunk: 
+    #             if transition.bucket != ReplayBucketType[prefix.upper()]:                
+    #                 # print(f"Warning: Transition bucket mismatch in {file}. Expected {prefix.upper()}, got {transition.bucket}.")
+    #                 transition.bucket = ReplayBucketType[prefix.upper()]
 
-            bucket.extend(chunk)
+    #         bucket.extend(chunk)

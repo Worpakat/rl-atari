@@ -29,7 +29,12 @@ class CheckpointManager:
     def __init__(self, experiment_dir: str | Path):
         self.checkpoints_dir = ensure_directory(Path(experiment_dir) / "checkpoints")
 
-    def save(self, checkpoint: dict, filename: str, colab_execution: bool) -> Path:
+    def save(
+        self, 
+        checkpoint: dict, 
+        filename: str, 
+        colab_execution: bool,
+        ) -> Path:
         """
         Saves a checkpoint dictionary.
 
