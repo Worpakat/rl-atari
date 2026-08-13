@@ -31,6 +31,8 @@
         "td_std_multiplier":  0.9,
         "death_window": 10, 
         "add_new_times": 2,
+        "new_incluede_period": 10,
+        "sequence_length": 4,
         "verbose": true            
     },
 
