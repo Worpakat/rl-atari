@@ -52,7 +52,7 @@
 
 
     "checkpoint_start": 0,
-    "checkpoint_period": 5,
+    "checkpoint_period": 2,
     "save_replay_memory": true,
     "replay_memory_chunk_size": 5000,
     "log_batch_index": false,
