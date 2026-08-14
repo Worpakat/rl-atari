@@ -572,6 +572,13 @@ class StratifiedReplayMemory():
         Marks death and near-death transitions inside the warmup and new
         buckets to later be moved to the death bucket.
         """
+        if (not # ! EXPERIMENTAL: "Wait and Opt"
+            (((self._new_incluede_counter + 1) % self.new_incluede_period == 0) or 
+            self.first_turn)
+        ):
+            return 
+
+        
         for source_bucket in (self._warmup_bucket, self._new_bucket):
 
             if len(source_bucket) == 0:
