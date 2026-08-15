@@ -942,8 +942,8 @@ class NECTrainer:
                 replay_filename = self.config.resume_checkpoint.replace("model_", "rep_memo_")
                 
                 if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
-                    replay_memory_dir = Path("/kaggle/input/datasets/worpakat/lon-run-0-checkpoint-350") / replay_filename.replace(".pt", "")
-                    # replay_memory_dir = Path("/kaggle/working") / replay_filename.replace(".pt", "")
+                    # replay_memory_dir = Path("/kaggle/input/datasets/worpakat/lon-run-0-checkpoint-350") / replay_filename.replace(".pt", "")
+                    replay_memory_dir = Path("/kaggle/working") / replay_filename.replace(".pt", "")
                 else:
                     replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
                     # There might be file extensions in the directory name.
