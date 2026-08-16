@@ -831,7 +831,7 @@ class StratifiedReplayMemory():
         for transition, redundancy_index in zip(batch, redundancy_indices):
             transition.redundancy_index = float(redundancy_index)
 
-        print(f"Redundancy indices: {redundancy_indices}")
+
 
     def move_between_buckets(
         self,
