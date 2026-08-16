@@ -25,7 +25,7 @@
 
     "replay_memory_type": "stratified",    
     "stratified_memory_kwargs": {
-        "bucket_capacities": [50000, 200000, 15000, 10000], 
+        "bucket_capacities": [50000, 200000, 15000, 20000], 
         "bucket_rates": [0.2, 0.5, 0.2, 0.1],         
         "td_statistics_beta": 0.96,
         "td_std_multiplier":  0.9,
@@ -46,7 +46,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_200_step_53945.pt",                  
+    "resume_checkpoint": "model_ep_300_step_78820.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_config": true,                 
 
