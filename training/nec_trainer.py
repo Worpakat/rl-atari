@@ -654,11 +654,13 @@ class NECTrainer:
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
             # Estimate Q-values from the episodic memories.
-            predicted_q_values = self.agent.lookup_batch(
+            bacth_similarities, predicted_q_values = self.agent.lookup_batch( # batch_similarities is "EXPERIMENTAL: Replay Removal Strat."
                 representations=encoder_output.representation,
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
+
+            self.replay_memory.update_redundancy_indices(batch, bacth_similarities) # "EXPERIMENTAL: Replay Removal Strat."
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.

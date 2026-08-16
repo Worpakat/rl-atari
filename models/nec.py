@@ -364,6 +364,7 @@ class NECAgent(nn.Module):
                 dnd.initialize_key_optimizer()
 
         predictions = []
+        batch_similarities = [] # EXPERIMENTAL: Replay Removal Strat.
 
         for batch_index, (representation, action) in enumerate(zip(representations, actions)):
             representation = representation.unsqueeze(0) # To match neighbor_index.search() expected shape
@@ -372,12 +373,14 @@ class NECAgent(nn.Module):
                 action=action,
                 key=representation,
                 auxiliary=None if auxiliary is None else auxiliary[batch_index],
-                track_key_updates=track_key_updates,
+                return_similarities=True, # EXPERIMENTAL: Replay Removal Strat.
+                track_key_updates=track_key_updates, 
             )
 
-            predictions.append(lookup_result.value) 
+            predictions.append(lookup_result.value)
+            batch_similarities.append(lookup_result.similarities) # EXPERIMENTAL: Replay Removal Strat.
 
-        return torch.stack(predictions).squeeze(1) # To match with 'q_target' shape.
+        return batch_similarities, torch.stack(predictions).squeeze(1) # To match with 'q_target' shape.
 
     def zero_key_gradients(self) -> None:
         """

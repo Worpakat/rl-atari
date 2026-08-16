@@ -138,6 +138,11 @@ class ReplayMemoryUnit:
     # Used only for stratified replay to track the order of insertion
     # and remove the oldest transitions when buckets are full.
 
+    redundancy_index: float = 0.0 
+    # Used only for stratified replay to track the redundancy of the transition
+    # and remove the most redundant transitions when buckets are full. 
+    # Higher value => more redundant => higher removal priority.
+
     state: np.ndarray | None = None # This is kept for old save files. 
 
 
@@ -796,6 +801,38 @@ class StratifiedReplayMemory():
         # We return indices and batch from same name function of ReplayMemory.
         # To not break the training code, we return None for indices here since they are not used in stratified replay.
 
+    def update_redundancy_indices(
+        self,
+        batch: list[ReplayMemoryUnit],
+        batch_similarities: torch.Tensor,
+    ) -> None:
+        """
+        Updates the redundancy index of each transition using its k-nearest
+        neighbor similarities.
+
+        Higher mean similarity and lower similarity variance produce a higher
+        redundancy index, meaning the transition is considered more redundant.
+
+        The resulting values are stored as CPU-side Python floats.
+        """
+
+        # Detach first so no computation graph is retained by replay memory.
+        similarities = batch_similarities.detach().cpu().numpy()
+
+        # Mean similarity across the k neighbors.
+        mean_similarity = similarities.mean(axis=1)
+
+        # Standard deviation of neighbor similarities.
+        std_similarity = similarities.std(axis=1)
+
+        # Higher value => more redundant => higher removal priority.
+        redundancy_indices = mean_similarity / (std_similarity + 1e-8)
+
+        for transition, redundancy_index in zip(batch, redundancy_indices):
+            transition.redundancy_index = float(redundancy_index)
+
+        print(f"Redundancy indices: {redundancy_indices}")
+
     def move_between_buckets(
         self,
         transitions: list[ReplayMemoryUnit],
@@ -1140,11 +1177,15 @@ class StratifiedReplayMemory():
     def get_states_total_size(self) -> int:
         """Returns the total size of the states in MB."""
         return sum([frame_unit.frame.nbytes for frame_unit in self._frames.values()]) / 1024**2 
-        
-    def _clip_buckets(self) -> None:
+
+    def _clip_buckets(self) -> None: # EXPERIMENTAL: Replay Removal Strat. ! Previous code exists at the bottom of this file. 
         """
-        Clips replay buckets to their maximum capacities by removing the
-        oldest transitions (smallest insert_id).
+        Clips replay buckets to their maximum capacities.
+
+        When a bucket exceeds its capacity, the 5*N transitions with the highest
+        redundancy index are selected as removal candidates, where N is the
+        number of transitions that must be removed. The oldest N transitions
+        among those candidates are then removed.
 
         When a transition is removed, the reference count of every frame
         belonging to that transition is decremented. Frames with no remaining
@@ -1164,13 +1205,25 @@ class StratifiedReplayMemory():
             if excess <= 0:
                 continue
 
-            # Oldest transitions to remove.
-            transitions_to_remove = sorted(
+            # Select 5*N most redundant transitions as candidates.
+            candidate_count = min(5 * excess, len(bucket))
+
+            candidates = sorted(
                 bucket,
+                key=lambda transition: transition.redundancy_index,
+                reverse=True,
+            )[:candidate_count]
+
+            # Among redundant candidates, remove the oldest N transitions.
+            transitions_to_remove = sorted(
+                candidates,
                 key=lambda transition: transition.insert_id,
             )[:excess]
 
-            remove_ids = {transition.insert_id for transition in transitions_to_remove}
+            remove_ids = {
+                transition.insert_id
+                for transition in transitions_to_remove
+            }
 
             # Update frame reference counts.
             for transition in transitions_to_remove:
@@ -1184,7 +1237,7 @@ class StratifiedReplayMemory():
 
                     frame.transition_count -= 1
 
-                    if frame.transition_count == 0: # Frame is no longer used, remove it.
+                    if frame.transition_count == 0:
                         del self._frames[frame_id]
 
             # Rebuild bucket without removed transitions.
@@ -1196,7 +1249,7 @@ class StratifiedReplayMemory():
 
             bucket.clear()
             bucket.extend(filtered_bucket)
-  
+ 
     def _make_sure_transition_buckets(self, bucket, prefix):
         """ 
         This is a sanity check to ensure that the loaded transitions have the correct bucket type.
@@ -1205,6 +1258,11 @@ class StratifiedReplayMemory():
             if transition.bucket != ReplayBucketType[prefix.upper()]:
                 print(f"Transition {transition.insert_id} has incorrect bucket type: {transition.bucket}")                
                 transition.bucket = ReplayBucketType[prefix.upper()]
+
+            if not hasattr(transition, "redundancy_index"): # EXPERIMENTAL: Replay Removal Strat.
+                # ! Old save files do not have this attribute, so we need to add it.
+                transition.redundancy_index = 0.0
+
 
 
 #============================================================
@@ -1511,3 +1569,65 @@ class StratifiedReplayMemory():
     #                 transition.bucket = ReplayBucketType[prefix.upper()]
 
     #         bucket.extend(chunk)
+
+
+#-----------------------------------------------------------------------------
+
+    # NOTE!!: Below function is compatible with frame storage new Replay Memory implementation. 
+    # Removes the oldest transitions.
+
+    # def _clip_buckets(self) -> None:  
+    #     """
+    #     Clips replay buckets to their maximum capacities by removing the
+    #     oldest transitions (smallest insert_id).
+
+    #     When a transition is removed, the reference count of every frame
+    #     belonging to that transition is decremented. Frames with no remaining
+    #     transitions are removed from the frame store.
+    #     """
+
+    #     managed_buckets = (
+    #         self._low_bucket,
+    #         self._medium_bucket,
+    #         self._high_bucket,
+    #         self._death_bucket,
+    #     )
+
+    #     for bucket, bucket_capacity in zip(managed_buckets, self.bucket_capacities):
+    #         excess = len(bucket) - bucket_capacity
+
+    #         if excess <= 0:
+    #             continue
+
+    #         # Oldest transitions to remove.
+    #         transitions_to_remove = sorted(
+    #             bucket,
+    #             key=lambda transition: transition.insert_id,
+    #         )[:excess]
+
+    #         remove_ids = {transition.insert_id for transition in transitions_to_remove}
+
+    #         # Update frame reference counts.
+    #         for transition in transitions_to_remove:
+    #             start_id = transition.start_frame_id
+
+    #             for frame_id in range(
+    #                 start_id,
+    #                 start_id + self._sequence_length
+    #             ):
+    #                 frame = self._frames[frame_id]
+
+    #                 frame.transition_count -= 1
+
+    #                 if frame.transition_count == 0: # Frame is no longer used, remove it.
+    #                     del self._frames[frame_id]
+
+    #         # Rebuild bucket without removed transitions.
+    #         filtered_bucket = deque(
+    #             transition
+    #             for transition in bucket
+    #             if transition.insert_id not in remove_ids
+    #         )
+
+    #         bucket.clear()
+    #         bucket.extend(filtered_bucket)
