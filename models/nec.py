@@ -380,7 +380,7 @@ class NECAgent(nn.Module):
             predictions.append(lookup_result.value)
             batch_similarities.append(lookup_result.similarities) # EXPERIMENTAL: Replay Removal Strat.
 
-        return batch_similarities, torch.stack(predictions).squeeze(1) # To match with 'q_target' shape.
+        return torch.stack(batch_similarities), torch.stack(predictions).squeeze(1) # To match with 'q_target' shape.
 
     def zero_key_gradients(self) -> None:
         """
