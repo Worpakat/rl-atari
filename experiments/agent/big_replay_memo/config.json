@@ -1,6 +1,6 @@
 {
-    "colab_execution": true,
-    "kaggle_execution": false,
+    "colab_execution": false,
+    "kaggle_execution": true,
 
 
     "experiment_dir": "experiments/agent/big_replay_memo",
