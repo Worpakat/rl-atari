@@ -97,8 +97,8 @@ class CheckpointManager:
 
         #THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION
         if kaggle_execution: # Load from kaggle session local storage
-            # local_checkpoint_dir = Path("/kaggle/input/lon-run-0-checkpoint-350")
-            local_checkpoint_dir = Path("/kaggle/working")
+            local_checkpoint_dir = Path("/kaggle/input/lon-run-0-checkpoint-350")
+            # local_checkpoint_dir = Path("/kaggle/working")
             filepath = local_checkpoint_dir / filename
         else:
             filepath = self.checkpoints_dir / filename
