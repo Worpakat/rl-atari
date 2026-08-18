@@ -1,6 +1,6 @@
 {
-    "colab_execution": false,
-    "kaggle_execution": true,
+    "colab_execution": true,
+    "kaggle_execution": false,
 
 
     "experiment_dir": "experiments/agent/big_replay_memo",
@@ -31,7 +31,7 @@
         "td_std_multiplier":  0.9,
         "death_window": 10, 
         "add_new_times": 2,
-        "new_incluede_period": 5,
+        "new_incluede_period": 60,
         "sequence_length": 4,
         "verbose": true            
     },
@@ -46,7 +46,7 @@
 
 
     "resume_training": true,                   
-    "resume_checkpoint": "model_ep_550_step_139236.pt",                  
+    "resume_checkpoint": "model_ep_600_step_151578.pt",                  
     "load_replay_memory": true,
     "use_checkpoint_config": false,                 
 

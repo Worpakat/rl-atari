@@ -686,9 +686,12 @@ class NECTrainer:
 
                     else: # Normal turns.
                         self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
-                        self.replay_memory.register_td_errors(td_errors_abs[indices[0]:indices[1]])
+                        # self.replay_memory.register_td_errors(td_errors_abs[indices[0]:indices[1]])
                         # We return 'new_bucket' indices to use them for TD stats.
                         # !! It is the 1+ of last index of transitions to be used for TD stats.
+                        
+                        self.replay_memory.register_td_errors(td_errors_abs)
+                        # EXPERIMENTAL!: Register All TD Errors
 
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
