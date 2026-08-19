@@ -1,6 +1,6 @@
 {
-    "colab_execution": true,
-    "kaggle_execution": false,
+    "colab_execution": false,
+    "kaggle_execution": true,
 
 
     "experiment_dir": "experiments/agent/big_replay_memo",
@@ -31,7 +31,7 @@
         "td_std_multiplier":  0.9,
         "death_window": 10, 
         "add_new_times": 2,
-        "new_incluede_period": 60,
+        "new_incluede_period": 5,
         "sequence_length": 4,
         "verbose": true            
     },
