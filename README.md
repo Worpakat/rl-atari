@@ -14,7 +14,7 @@ The main goal is to investigate how **learned sequential representations and epi
 
 Project is on progress at the moment. 
 
-# Best Recorded Agent Performance Until Now
+**Best Recorded Agent Performance Until Now**
 
 https://github.com/user-attachments/assets/eb4a4553-d636-469a-8fcd-6d34c59840af
 
