@@ -97,7 +97,7 @@ class CheckpointManager:
 
         #THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION
         if kaggle_execution: # Load from kaggle session local storage
-            local_checkpoint_dir = Path("/kaggle/input/datasets/worpakat/lon-run-0-checkpoint-350")
+            local_checkpoint_dir = Path("/kaggle/input/datasets/ibrahim2ksxh1q/rl-atari-checkpoints-2")
             # local_checkpoint_dir = Path("/kaggle/working")
             filepath = local_checkpoint_dir / filename
         else:
