@@ -12,4 +12,4 @@ The project combines ideas from several areas:
 
 The main goal is to investigate how **learned sequential representations and episodic memory interact with reinforcement learning**, with the experiments gradually evolving into a custom NEC-based RL architecture.
 
-<video src="best_performance_until_now.mp4" controls width="720"></video>
+<video src="best_performance_until_now.mp4" controls width="400"></video>
