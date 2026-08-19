@@ -29,7 +29,13 @@ class CheckpointManager:
     def __init__(self, experiment_dir: str | Path):
         self.checkpoints_dir = ensure_directory(Path(experiment_dir) / "checkpoints")
 
-    def save(self, checkpoint: dict, filename: str, colab_execution: bool) -> Path:
+    def save(
+        self, 
+        checkpoint: dict, 
+        filename: str, 
+        colab_execution: bool,
+        kaggle_execution: bool,
+        ) -> Path:
         """
         Saves a checkpoint dictionary.
 
@@ -51,18 +57,29 @@ class CheckpointManager:
             filename += ".pt"
 
         if colab_execution: # Save to colab session local storage
-            local_checkpoint_dir = Path("/content/checkpoints")
-            local_checkpoint_dir.mkdir(exist_ok=True)
-            self.checkpoints_dir = local_checkpoint_dir
+            save_dir = Path("/content/checkpoints")
+            save_dir.mkdir(exist_ok=True)
+            filepath = save_dir / filename
+            
+        elif kaggle_execution: 
+            # Save to kaggle session local storage with respect to how we save checkpoints as a dataset.
+            save_dir = Path("/kaggle/working")
+            save_dir.mkdir(exist_ok=True)
+            filepath = save_dir / filename
 
-        # Save to experiment's checkpoints directory
-        filepath = self.checkpoints_dir / filename
+        else:
+            # Save to experiment's checkpoints directory
+            filepath = self.checkpoints_dir / filename
 
         torch.save(checkpoint, filepath)
 
         return filepath
 
-    def load(self, filename: str | Path, map_location=None, colab_execution: bool = False) -> dict:
+    def load(
+        self, filename: str | Path, map_location=None, 
+        colab_execution: bool = False,
+        kaggle_execution: bool = False,
+        ) -> dict:
         """
         Loads a checkpoint.
 
@@ -78,7 +95,13 @@ class CheckpointManager:
             local_checkpoint_dir = Path("/content/checkpoints")
             self.checkpoints_dir = local_checkpoint_dir
 
-        filepath = self.checkpoints_dir / filename
+        #THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION
+        if kaggle_execution: # Load from kaggle session local storage
+            local_checkpoint_dir = Path("/kaggle/input/lon-run-0-checkpoint-350")
+            # local_checkpoint_dir = Path("/kaggle/working")
+            filepath = local_checkpoint_dir / filename
+        else:
+            filepath = self.checkpoints_dir / filename
 
         return torch.load(filepath, map_location=map_location)
 

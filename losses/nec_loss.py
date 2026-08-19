@@ -18,7 +18,7 @@ def compute_network_loss(
     # TD loss
     td_loss = F.mse_loss(predicted_q_values, q_targets, reduction=reduction)
 
-    if encoder_output.prior_mean and encoder_output.prior_logvar:
+    if encoder_output.prior_mean is not None and encoder_output.prior_logvar is not None:
         # Temporal KL loss
         kl_loss = dynamics_kl_loss(
             encoder_output.posterior_mean,

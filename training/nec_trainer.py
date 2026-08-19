@@ -105,10 +105,6 @@ class NECTrainer:
         if self.config.replay_memory_type == "normal":
             self.replay_memory = ReplayMemory(
                 **self.config.normal_memory_kwargs
-                # capacity=config.replay_memory_size,
-                # prioritized=config.prioritized_replay,
-                # priority_alpha=config.priority_alpha,
-                # priority_epsilon=config.priority_epsilon,
             )
 
         elif self.config.replay_memory_type == "stratified":
@@ -627,6 +623,12 @@ class NECTrainer:
             # Those are going to moved to death bucket.
             self.replay_memory.mark_death_windows() 
 
+            steps = self.replay_memory.update_optimization_steps( # ! EXPERIMENTAL: "Wait and Opt."
+                steps, 
+                self.config.network_optimization_period
+                )
+            print("steps:" , steps)
+
             if self.replay_memory.first_turn:
                 all_batches = []
                 all_td_errors_abs = [] 
@@ -638,13 +640,7 @@ class NECTrainer:
                 # Eventually, we gather all batches and TD errors;
                 # At the end we calculate TD stats, and move transitions to proeper buckets.
 
-
-        # # Experimental: Optimize for each transition just before evaluation.
-        # optimization_period = 1 if self._should_evaluate() else self.config.network_optimization_period
-        # steps = (int(steps * self.config.network_optimization_period )+ 1) if self._should_evaluate() else steps
-        # print(f"Network is goint to be optimized {steps} times.")
-
-
+                
         for _ in range(steps):
     
             # Sample a mini-batch.
@@ -658,11 +654,13 @@ class NECTrainer:
             encoder_output = self.agent.encode(states, random_sampling=False) # We use 'posterior_mean's as representations for stability
 
             # Estimate Q-values from the episodic memories.
-            predicted_q_values = self.agent.lookup_batch(
+            bacth_similarities, predicted_q_values = self.agent.lookup_batch( # batch_similarities is "EXPERIMENTAL: Replay Removal Strat."
                 representations=encoder_output.representation,
                 actions=actions,
                 track_key_updates=self.config.key_updates,
             )
+
+            self.replay_memory.update_redundancy_indices(batch, bacth_similarities) # "EXPERIMENTAL: Replay Removal Strat."
 
             with torch.no_grad(): 
             # To make sure gradients are not affected by calculations of priorities.
@@ -688,9 +686,12 @@ class NECTrainer:
 
                     else: # Normal turns.
                         self.replay_memory.move_between_buckets(transitions=batch, td_errors_abs=td_errors_abs)
-                        self.replay_memory.register_td_errors(td_errors_abs[indices[0]:indices[1]])
+                        # self.replay_memory.register_td_errors(td_errors_abs[indices[0]:indices[1]])
                         # We return 'new_bucket' indices to use them for TD stats.
                         # !! It is the 1+ of last index of transitions to be used for TD stats.
+                        
+                        self.replay_memory.register_td_errors(td_errors_abs)
+                        # EXPERIMENTAL!: Register All TD Errors
 
             loss = compute_network_loss(
                 predicted_q_values=predicted_q_values,
@@ -735,7 +736,7 @@ class NECTrainer:
 
             self.replay_memory.reset_new_bucket() # We don't want to carry over it to the following turns.
 
-            self.replay_memory.report() # Print current circumstances.
+        self.replay_memory.report() # Print current circumstances.
         
 
         return indices, losses
@@ -825,61 +826,39 @@ class NECTrainer:
             }
         }
     
-        # dnd_lengths = []
-        # dnd_sizes = []
-        # for i, dnd in enumerate(self.agent.dnds):
-        #     dnd_lengths.append(len(dnd.keys))
-        #     dnd_sizes.append(dnd.keys.numel() * dnd.keys.element_size() / 1024**2)
-
-        # print(f"DND lengths: {dnd_lengths} | DND sizes: {dnd_sizes} | total: {np.sum(dnd_sizes)} MB")
-
         filename = f"model_ep_{self.episode}_step_{self.optimization_step}"
         self.checkpoint_manager.save(
             model_checkpoint,
             filename=filename,
-            colab_execution=self.config.colab_execution
+            colab_execution=self.config.colab_execution,
+            kaggle_execution=self.config.kaggle_execution
         )
 
+        # Replay Memory
         print(f"Replay memory states total size: {self.replay_memory.get_states_total_size()} MB")
         
         if self.config.save_replay_memory:
             print("Saving replay memory...")
+            rep_memo_folder = f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"   
 
-            if isinstance(self.replay_memory, ReplayMemory): # Standard / prioritized replay memory.
-                replay_memory_checkpoint = {
-                    "replay_memory": self.replay_memory.state_dict(),
-                    "training_state": {
-                        "optimization_step": self.optimization_step,
-                        "environment_step": self.global_step,
-                        "episode": self.episode,
-                    }
-                }
-        
-                self.checkpoint_manager.save(
-                    replay_memory_checkpoint,
-                    filename=f"rep_memo_ep_{self.episode}_step_{self.optimization_step}",
-                    colab_execution=self.config.colab_execution
+            if self.config.colab_execution:
+                replay_memory_dir = Path("/content/checkpoints") / rep_memo_folder
+
+            elif self.config.kaggle_execution:
+                replay_memory_dir = Path("/kaggle/working") / rep_memo_folder
+
+            else:
+                replay_memory_dir = self.checkpoint_manager.checkpoints_dir / rep_memo_folder
+
+            self.replay_memory.save(
+                replay_memory_dir,
+                chunk_size=self.config.replay_memory_chunk_size
                 )
-
-            elif isinstance(self.replay_memory, StratifiedReplayMemory): # Stratified replay memory.
-                replay_memory_dir = (
-                    self.checkpoint_manager.checkpoints_dir /
-                    f"rep_memo_ep_{self.episode}_step_{self.optimization_step}"
-                )
-
-                self.replay_memory.save(
-                    replay_memory_dir,
-                    chunk_size=self.config.replay_memory_chunk_size
-                    )
 
         
         print(f"Checkpoint check: Checkpoint {filename+'.pt'} saved.")
 
         self.checkpoint_start = self.optimization_step
-        
-    def _optuna_step(self, logs):
-        ...
-
 
     def train(self):
         """
@@ -914,15 +893,12 @@ class NECTrainer:
                     )
                     print(evaluation_summary)
 
-                    self._optuna_step(evaluation_summary)
-
 
             return self.logger.last()
 
         finally:
 
             self.environment.close()
-
 
     def load_checkpoint(self):
         """
@@ -937,7 +913,8 @@ class NECTrainer:
         model_checkpoint = self.checkpoint_manager.load(
             self.config.resume_checkpoint,
             map_location=self.device,
-            colab_execution=self.config.colab_execution
+            colab_execution=self.config.colab_execution,
+            kaggle_execution=self.config.kaggle_execution
         )
 
         self.agent.load_checkpoint_state(model_checkpoint["model"])
@@ -967,30 +944,20 @@ class NECTrainer:
         # -------------------------------------------------
         if self.config.load_replay_memory:
             try:
-                replay_filename = (
-                    self.config.resume_checkpoint
-                    .replace("model_", "rep_memo_")
-                )
-
-                if isinstance(self.replay_memory, ReplayMemory):
-                    replay_checkpoint = self.checkpoint_manager.load(
-                        replay_filename,
-                        map_location="cpu",
-                    )
-
-                    self.replay_memory.load_state_dict(
-                        replay_checkpoint["replay_memory"]
-                    )
-
-                elif isinstance(self.replay_memory, StratifiedReplayMemory):
+                replay_filename = self.config.resume_checkpoint.replace("model_", "rep_memo_")
+                
+                if self.config.kaggle_execution: # THIS ONE IS TEMPORARY, NEED TO BE REMOVED LATER OR REPLACED WITH A BETTER SOLUTION!!
+                    replay_memory_dir = Path("/kaggle/input/lon-run-0-checkpoint-350") / replay_filename.replace(".pt", "")
+                    # replay_memory_dir = Path("/kaggle/working") / replay_filename.replace(".pt", "")
+                else:
                     replay_memory_dir = self.checkpoint_manager.checkpoints_dir / replay_filename.replace(".pt", "")
                     # There might be file extensions in the directory name.
 
-                    print(f"Replay memory directory: {replay_memory_dir}")
+                print(f"Replay memory directory: {replay_memory_dir}")
 
-                    use_checkpoint_capacity = self.config.get("use_checkpoint_capacity", True)
+                use_checkpoint_config = self.config.get("use_checkpoint_config", True)
 
-                    self.replay_memory.load(replay_memory_dir, use_checkpoint_capacity=use_checkpoint_capacity)
+                self.replay_memory.load(replay_memory_dir, use_checkpoint_config=use_checkpoint_config)
 
                 
             except Exception as err:
